@@ -29,8 +29,8 @@ class AuthServiceProvider extends ServiceProvider { //  implements DeferrablePro
     //public function boot(\Illuminate\Routing\Router $router)
   public function boot(\Illuminate\Routing\Router $router)
   {
-    $this->loadRoutesFrom(__DIR__.'/routes/web.php');
-    $this->loadViewsFrom(__DIR__.'/resources/views', 'auth');
+    // $this->loadRoutesFrom(__DIR__.'/routes/web.php');
+    // $this->loadViewsFrom(__DIR__.'/resources/views', 'auth');
 
     if(file_exists( base_path('/routes/auth-admin.php')  )) {
       Route::middleware(['web'])->group(function () {
