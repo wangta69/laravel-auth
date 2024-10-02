@@ -1,5 +1,5 @@
 <?php
-namespace Pondol\DeliveryTracking\Https\Controllers;
+namespace Pondol\Auth\Https\Controllers;
 
 
 use Illuminate\Http\Request;
@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Log;
 use Validator;
 use Response;
 
-use Pondol\DeliveryTracking\Traits\Tracking;
+use Pondol\Auth\Traits\Tracking;
 
-class DeliveryTrackingController  { //  extends Controller
+class AuthController  { //  extends Controller
 
   use Tracking;
 

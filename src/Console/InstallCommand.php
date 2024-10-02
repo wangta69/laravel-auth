@@ -1,6 +1,6 @@
 <?php
 
-namespace Pondol\DeliveryTracking\Console;
+namespace Pondol\Auth\Console;
 
 use Illuminate\Console\Command;
 // use Illuminate\Filesystem\Filesystem;
@@ -63,10 +63,11 @@ class InstallCommand extends Command
       $user->save();
       $user->roles()->attach(Role::firstOrCreate(['name' => 'administrator']));
     }
-    // \Artisan::call('vendor:publish',  [
-    //   '--force'=> true,
-    //   '--provider' => 'Pondol\DeliveryTrackingphp\DeliveryTrackingServiceProvider'
-    // ]);
+
+    \Artisan::call('vendor:publish',  [
+      '--force'=> true,
+      '--provider' => 'Pondol\Auth\AuthServiceProvider'
+    ]);
   }
 
 

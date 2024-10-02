@@ -4,7 +4,7 @@ namespace Pondol\Auth;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
 
-use Pondol\DeliveryTracking\Console\InstallCommand;
+use Pondol\Auth\Console\InstallCommand;
 
 class AuthServiceProvider extends ServiceProvider { //  implements DeferrableProvider
   /**
