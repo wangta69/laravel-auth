@@ -1,0 +1,24 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+
+Route::group(['prefix' => 'adm', 'as' => 'market.admin.', 'namespace' => 'App\Http\Controllers\Auth\Admin', 'middleware' => 'admin'], function () {
+
+    // 회원관리
+    Route::get('users', 'UserController@index')->name('users');
+    // Route::get('user/create', 'UserController@create')->name('user.create');
+    // Route::post('user/create', 'UserController@store');
+
+    Route::get('user/{user}', 'UserController@show')->name('user');
+    // Route::get('user/join', 'UserController@join')->name('user.join-list');
+    Route::get('user/{user}/edit', 'UserController@edit')->name('user.edit');
+    Route::put('user/{user}', 'UserController@update');
+    Route::put('user/{user_id}/active/{active}', 'UserController@updateActive'); // ->name('users.update.active')
+    Route::get('user/{user_id}/active/{active}', 'UserController@updateActive'); // for test
+    Route::delete('user/{user}', 'UserController@destroy')->name('user.destroy');
+    Route::get('user/login/{user}', 'UserController@login')->name('user.login'); // 현재 회원으로 로그인
+
+
+
+});

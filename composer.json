@@ -1,0 +1,36 @@
+{
+    "name": "wangta69/laravel_auth",
+    "description": "Auth for Laravel",
+    "keywords": ["laravel", "user", "auth" , "라라벨"],
+    "homepage": "https://www.onstory.fun/doc/programming/laravel/package.delivery-tracking",
+    "license": "MIT",
+    "authors": [
+      {
+        "name": "Pondol",
+        "email": "wangta69@gmail.com",
+        "homepage": "https://www.onstory.fun"
+      }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+      "php": ">=7.0.0",
+      "kyslik/column-sortable": "^6",
+      "laravel/ui": "*",
+      "tymon/jwt-auth": "^1"
+    },
+    "autoload": {
+      "files": [
+        "src/helpers.php"
+      ], "psr-4": {
+        "Pondol\\DeliveryTracking\\": "src/"
+      }
+    },
+    "extra": {
+      "laravel": {
+        "providers": [
+          "Pondol\\Auth\\AuthServiceProvider"
+        ]
+      }
+    }
+  }
+  
