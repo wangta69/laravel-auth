@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Market\Auth\User\Traits\Scopes;
+namespace App\Models\Auth\User\Traits\Scopes;
 
 use Arcanedev\Support\Bases\Model;
 

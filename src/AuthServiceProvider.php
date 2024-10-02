@@ -43,6 +43,18 @@ class AuthServiceProvider extends ServiceProvider { //  implements DeferrablePro
       });
     }
 
+
+    $this->publishes([
+      // copy config
+      // __DIR__.'/config/bbs.php' => config_path('bbs.php'),
+      // // copy resource 파일
+      // __DIR__.'/resources/views/bbs/components' => resource_path('views/bbs/components'),
+      // __DIR__.'/resources/views/bbs/templates' => resource_path('views/bbs/templates'),
+      // controllers;
+      __DIR__.'/Models/Auth/' => app_path('Models/Auth')
+    ]);
+
+
     $router->aliasMiddleware('role', \App\Http\Middleware\CheckRole::class);
 		$router->pushMiddlewareToGroup('admin', 'role:administrator');
   }

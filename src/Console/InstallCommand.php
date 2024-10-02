@@ -3,6 +3,10 @@
 namespace Pondol\Auth\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Hash;
+use App\Models\Auth\User\User;
+use App\Models\Auth\Role\Role;
 // use Illuminate\Filesystem\Filesystem;
 // use Illuminate\Support\Str;
 // use Symfony\Component\Process\PhpExecutableFinder;
@@ -45,6 +49,11 @@ class InstallCommand extends Command
     $this->replaceInFile("'model' => App\Models\User::class,", "'model' => App\Models\Auth\User\User::class,", config_path('auth.php'));
 
    
+    \Artisan::call('vendor:publish',  [
+      '--force'=> true,
+      '--provider' => 'Pondol\Auth\AuthServiceProvider'
+    ]);
+    
     \Artisan::call('migrate');
 
     $user_name = $this->ask('Name for administrator?'); 
@@ -64,10 +73,7 @@ class InstallCommand extends Command
       $user->roles()->attach(Role::firstOrCreate(['name' => 'administrator']));
     }
 
-    \Artisan::call('vendor:publish',  [
-      '--force'=> true,
-      '--provider' => 'Pondol\Auth\AuthServiceProvider'
-    ]);
+   
   }
 
 

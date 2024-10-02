@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models\Market\Auth\Role;
+namespace App\Models\Auth\Role;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Market\Auth\Role\Traits\Scopes\RoleScopes;
-use App\Models\Market\Auth\Role\Traits\Relations\RoleRelations;
+use App\Models\Market\Role\Traits\Scopes\RoleScopes;
+use App\Models\Market\Role\Traits\Relations\RoleRelations;
 
 class Role extends Model
 {

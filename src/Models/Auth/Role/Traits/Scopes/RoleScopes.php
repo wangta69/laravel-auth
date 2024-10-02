@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Market\Auth\Role\Traits\Scopes;
+namespace App\Models\Auth\Role\Traits\Scopes;
 
 trait RoleScopes
 {

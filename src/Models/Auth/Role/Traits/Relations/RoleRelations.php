@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Models\Market\Auth\Role\Traits\Relations;
+namespace App\Models\Auth\Role\Traits\Relations;
 
-use App\Models\Market\Auth\User\User;
+use App\Models\Auth\User\User;
 
 trait RoleRelations
 {
