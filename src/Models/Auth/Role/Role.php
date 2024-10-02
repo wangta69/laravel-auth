@@ -3,8 +3,8 @@
 namespace App\Models\Auth\Role;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Market\Role\Traits\Scopes\RoleScopes;
-use App\Models\Market\Role\Traits\Relations\RoleRelations;
+use App\Models\Auth\Role\Traits\Scopes\RoleScopes;
+use App\Models\Auth\Role\Traits\Relations\RoleRelations;
 
 class Role extends Model
 {

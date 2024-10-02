@@ -39,7 +39,7 @@ class InstallCommand extends Command
   public function handle()
   {
 
-    $this->info(" Install Laravel Delivery Tracking ");
+    $this->info(" Install Pondol's Auth ");
 
     copy(__DIR__.'/../Http/Middleware/CheckRole.php', app_path('Http/Middleware/CheckRole.php'));
 
@@ -53,24 +53,27 @@ class InstallCommand extends Command
       '--force'=> true,
       '--provider' => 'Pondol\Auth\AuthServiceProvider'
     ]);
-    
+
     \Artisan::call('migrate');
-
-    $user_name = $this->ask('Name for administrator?'); 
-    $user_email = $this->ask('Email for administrator?'); 
-    $user_password = $this->ask('Password for administrator?'); 
     
-    $count = User::where('email', $user_email)->count();
-    if(!$count) {
-      $user = User::create([
-        'name' => $user_name,
-        'email' => $user_email,
-        'password' => Hash::make($user_password),
-      ]);
+    if ($this->confirm('Do you want to create administrator account?')) {
+    
+      $user_name = $this->ask('Name for administrator?'); 
+      $user_email = $this->ask('Email for administrator?'); 
+      $user_password = $this->ask('Password for administrator?'); 
+      
+      $count = User::where('email', $user_email)->count();
+      if(!$count) {
+        $user = User::create([
+          'name' => $user_name,
+          'email' => $user_email,
+          'password' => Hash::make($user_password),
+        ]);
 
-      $user->active = 1;
-      $user->save();
-      $user->roles()->attach(Role::firstOrCreate(['name' => 'administrator']));
+        $user->active = 1;
+        $user->save();
+        $user->roles()->attach(Role::firstOrCreate(['name' => 'administrator']));
+      }
     }
 
    

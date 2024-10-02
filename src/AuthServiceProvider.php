@@ -50,8 +50,13 @@ class AuthServiceProvider extends ServiceProvider { //  implements DeferrablePro
       // // copy resource 파일
       // __DIR__.'/resources/views/bbs/components' => resource_path('views/bbs/components'),
       // __DIR__.'/resources/views/bbs/templates' => resource_path('views/bbs/templates'),
+      __DIR__.'/resources/views/auth' => resource_path('views/auth'),
+      __DIR__.'/routes/auth-admin.php' => base_path('/routes/auth-admin.php'),
+      __DIR__.'/routes/auth.php' => base_path('/routes/auth.php'),
+      // models;
+      __DIR__.'/Models/Auth/' => app_path('Models/Auth'),
       // controllers;
-      __DIR__.'/Models/Auth/' => app_path('Models/Auth')
+      __DIR__.'/Http/Controllers/Auth/' => app_path('Http/Controllers/Auth')
     ]);
 
 

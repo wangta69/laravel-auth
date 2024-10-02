@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 
-Route::group(['prefix' => 'adm', 'as' => 'market.admin.', 'namespace' => 'App\Http\Controllers\Auth\Admin', 'middleware' => 'admin'], function () {
+Route::group(['prefix' => 'adm', 'as' => 'auth.admin.', 'namespace' => 'App\Http\Controllers\Auth\Admin', 'middleware' => 'admin'], function () {
 
     // 회원관리
     Route::get('users', 'UserController@index')->name('users');
