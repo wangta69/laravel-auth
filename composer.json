@@ -22,7 +22,7 @@
       "files": [
         "src/helpers.php"
       ], "psr-4": {
-        "Pondol\\DeliveryTracking\\": "src/"
+        "Pondol\\Auth\\": "src/"
       }
     },
     "extra": {
