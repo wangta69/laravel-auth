@@ -17,7 +17,7 @@ class InstallCommand extends Command
    *
    * @var string
    */
-  protected $signature = 'pondolauth:install';
+  protected $signature = 'pondol:install-auth';
 
   /**
    * The console command description.
