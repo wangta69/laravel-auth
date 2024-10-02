@@ -3,8 +3,10 @@ namespace Pondol\Auth;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Event;
 
 use Pondol\Auth\Console\InstallCommand;
+// use App\Listeners\UserEventSubscriber;
 
 class AuthServiceProvider extends ServiceProvider { //  implements DeferrableProvider
   /**
@@ -18,6 +20,10 @@ class AuthServiceProvider extends ServiceProvider { //  implements DeferrablePro
       $this->commands([
         InstallCommand::class,
       ]);
+    }
+    if(file_exists( app_path('/Listeners/UserEventSubscriber.php')  )) {
+      Event::subscribe(\App\Listeners\UserEventSubscriber::class);
+    //  $this->app->register(\App\Listeners\UserEventSubscriber::class);
     }
   }
 
@@ -56,7 +62,11 @@ class AuthServiceProvider extends ServiceProvider { //  implements DeferrablePro
       // models;
       __DIR__.'/Models/Auth/' => app_path('Models/Auth'),
       // controllers;
-      __DIR__.'/Http/Controllers/Auth/' => app_path('Http/Controllers/Auth')
+      __DIR__.'/Http/Controllers/Auth/' => app_path('Http/Controllers/Auth'),
+
+      // controllers;
+      __DIR__.'/Events/' => app_path('Events'),
+      __DIR__.'/Listeners/' => app_path('Listeners')
     ]);
 
 

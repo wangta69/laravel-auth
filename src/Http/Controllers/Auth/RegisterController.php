@@ -92,7 +92,7 @@ class RegisterController extends Controller
       'email' => ['required', 'string', 'email', 'max:50', 'unique:users'],
       'name' => ['required', 'string', 'min:2', 'max:50'],
       // 'national_code' => ['required', 'numeric'],
-      'mobile' => ['sometimes', 'numeric', 'digits_between:9,11', 'unique:users'],
+      'mobile' => ['sometimes', 'numeric', 'digits_between:9,11'], // , 'unique:users'
       'password' => ['required', 'confirmed', Rules\Password::defaults()],
     ], [
       'aggree_terms_of_use.required' => '이용약관에 동의해 주세요',
