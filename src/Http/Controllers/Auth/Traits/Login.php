@@ -9,7 +9,7 @@ trait Login {
     $http_user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT']:"";
     $remote_addr = $this->getRealIpAddr();
 
-    $log = new \App\Models\Market\MarketLogLogin;
+    $log = new \App\Models\Auth\User\UserLog;
     $log->user_id = $user->id;
     $log->http_referer = $http_referer;
     $log->http_origin = $http_origin;

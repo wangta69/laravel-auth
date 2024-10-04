@@ -23,7 +23,6 @@ class AuthServiceProvider extends ServiceProvider { //  implements DeferrablePro
     }
     if(file_exists( app_path('/Listeners/UserEventSubscriber.php')  )) {
       Event::subscribe(\App\Listeners\UserEventSubscriber::class);
-    //  $this->app->register(\App\Listeners\UserEventSubscriber::class);
     }
   }
 
@@ -52,7 +51,7 @@ class AuthServiceProvider extends ServiceProvider { //  implements DeferrablePro
 
     $this->publishes([
       // copy config
-      // __DIR__.'/config/bbs.php' => config_path('bbs.php'),
+      __DIR__.'/config/auth-pondol.php' => config_path('auth-pondol.php'),
       // // copy resource 파일
       // __DIR__.'/resources/views/bbs/components' => resource_path('views/bbs/components'),
       // __DIR__.'/resources/views/bbs/templates' => resource_path('views/bbs/templates'),

@@ -13,7 +13,7 @@ use Validator;
 // use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
-use App\Http\Controllers\Market\Traits\Auth\Login;
+use App\Http\Controllers\Auth\Traits\Login;
 
 class LoginController extends Controller
 {

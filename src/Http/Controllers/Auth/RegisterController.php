@@ -21,14 +21,15 @@ use DB;
 
 
 use App\Models\Auth\Role\Role;
-use App\Models\Market\MarketConfig;
+// use App\Models\Market\MarketConfig;
 use App\Models\Auth\User\User;
+use App\Models\Auth\User\UserConfig;
 
-use App\Http\Controllers\Market\Services\ConfigService;
+// use App\Http\Controllers\Market\Services\ConfigService;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Market\Services\MailService;
+// use App\Http\Controllers\Market\Services\MailService;
 
-use App\Http\Controllers\Market\Traits\Auth\Register;
+use App\Http\Controllers\Auth\Traits\Register;
 
 use App\Events\Registered as MarketRegistered;
 
@@ -62,12 +63,12 @@ class RegisterController extends Controller
    * @return void
    */
   public function __construct(
-    ConfigService $configSvc, 
-    MailService $mailSvc
+    // ConfigService $configSvc, 
+    // MailService $mailSvc
   ){
     // $this->middleware('guest');
-    $this->configSvc = $configSvc;
-    $this->mailSvc = $mailSvc;
+    // $this->configSvc = $configSvc;
+    // $this->mailSvc = $mailSvc;
   }
 
   // protected function authenticated(Request $request, User $user)
@@ -135,8 +136,8 @@ class RegisterController extends Controller
         'agreements' => $request->session()->get('agreement')
       ]);
     } else {
-      $termsOfUse = MarketConfig::where('key', 'termsOfUse')->first();
-      $privacyPolicy = MarketConfig::where('key', 'privacyPolicy')->first();
+      $termsOfUse = UserConfig::where('key', 'termsOfUse')->first();
+      $privacyPolicy = UserConfig::where('key', 'privacyPolicy')->first();
       return view('auth.'.config('market.template.auth.theme').'.register', [
         'termsOfUse' => $termsOfUse->value,
         'privacyPolicy' => $privacyPolicy->value
@@ -145,8 +146,8 @@ class RegisterController extends Controller
   }
 
   public function agreement(Request $request) {
-    $termsOfUse = MarketConfig::where('key', 'termsOfUse')->first();
-    $privacyPolicy = MarketConfig::where('key', 'privacyPolicy')->first();
+    $termsOfUse = UserConfig::where('key', 'termsOfUse')->first();
+    $privacyPolicy = UserConfig::where('key', 'privacyPolicy')->first();
     return view('auth.'.config('market.template.auth.theme').'.register-agreement', [
       'termsOfUse' => $termsOfUse->value,
       'privacyPolicy' => $privacyPolicy->value
@@ -208,16 +209,16 @@ class RegisterController extends Controller
       \Log::info('========================');
       \Log::info($request->all());
 
-      $usercfg = $this->configSvc->get('user');
-      if($usercfg['active'] == "auto") {
-        $user->active = 1;
+      // $usercfg = $this->configSvc->get('user');
+      // if(config('auth-pondol.active') == "auto") {
+        $user->active = config('auth-pondol.active');
         $user->save();
-      }
+      // }
 
       // 추가 (기본 role 적용)
-      if (config('market.roles.default_role')) {
-        $user->roles()->attach(Role::firstOrCreate(['name' => config('market.roles.default_role')]));
-      }
+      // if (config('auth-pondol.roles.default_role')) {
+        $user->roles()->attach(Role::firstOrCreate(['name' =>config('auth-pondol.roles.default_role')]));
+      // }
 
       DB::commit();
 
