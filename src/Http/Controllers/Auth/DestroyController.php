@@ -34,7 +34,7 @@ class DestroyController extends Controller
 
 
   public function delete(Request $request){
-    return view('auth.'.config('market.template.auth.theme').'.cancel-account');
+    return view('auth.templates.views.'.config('auth-pondol.template').'.cancel-account');
   }
 
   /**
@@ -61,12 +61,12 @@ class DestroyController extends Controller
 
     $request->session()->invalidate();
     $request->session()->regenerateToken();
-    return redirect()->route('market.cancel.account.success');
+    return redirect()->route('auth.cancel.account.success');
 
   }
 
   public function success() {
-    return view('auth.'.config('market.template.auth.theme').'.cancel-account-success');
+    return view('auth.templates.views.'.config('auth-pondol.template').'.cancel-account-success');
   }
 
 }

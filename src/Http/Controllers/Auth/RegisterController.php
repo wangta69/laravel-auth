@@ -125,20 +125,20 @@ class RegisterController extends Controller
    */
   public function create(Request $request) {
 
-    if (\View::exists($view = 'auth.'.config('market.template.auth.theme').'.register-agreement') 
+    if (\View::exists($view = 'auth.templates.views.'.config('auth-pondol.template').'.register-agreement') 
         && !$request->session()->has('agreement')) {
       return redirect()->route('auth.register.agreement');
     }
 
     // print_r($request->session()->get('agreement'));
     if ($request->session()->has('agreement')) {
-      return view('auth.'.config('market.template.auth.theme').'.register', [
+      return view('auth.templates.views.'.config('auth-pondol.template').'.register', [
         'agreements' => $request->session()->get('agreement')
       ]);
     } else {
       $termsOfUse = UserConfig::where('key', 'termsOfUse')->first();
       $privacyPolicy = UserConfig::where('key', 'privacyPolicy')->first();
-      return view('auth.'.config('market.template.auth.theme').'.register', [
+      return view('auth.templates.views.'.config('auth-pondol.template').'.register', [
         'termsOfUse' => $termsOfUse->value,
         'privacyPolicy' => $privacyPolicy->value
       ]);
@@ -148,7 +148,7 @@ class RegisterController extends Controller
   public function agreement(Request $request) {
     $termsOfUse = UserConfig::where('key', 'termsOfUse')->first();
     $privacyPolicy = UserConfig::where('key', 'privacyPolicy')->first();
-    return view('auth.'.config('market.template.auth.theme').'.register-agreement', [
+    return view('auth.templates.views.'.config('auth-pondol.template').'.register-agreement', [
       'termsOfUse' => $termsOfUse->value,
       'privacyPolicy' => $privacyPolicy->value
     ]);
@@ -185,10 +185,15 @@ class RegisterController extends Controller
   public function store(Request $request)
   {
 
-    $mobile = isset($request->mobile) ? str_replace('-', '', $request->mobile) : null;
-    $request->merge(['mobile' => $mobile]);
+    if (isset($request->mobile)) {
+      $mobile = str_replace('-', '', $request->mobile);
+      $request->merge(['mobile' => $mobile]);
+    }
 
     $validator = $this->validator($request->all());
+    // $validator = Validator::make($request->all(), [
+    //   'email' => 'sometimes|required|email' // request에 email이 있으면 유효성 검사를 진행합니다.
+    // ]);
 
     if ($validator->fails()) {
       return redirect()->back()->withInput()->withErrors($validator->errors());
@@ -201,10 +206,14 @@ class RegisterController extends Controller
       $user = User::create([
         'name' => $request->name,
         'email' => $request->email,
-        'mobile' => $request->mobile,
+        // 'mobile' => $request->mobile,
         'password' => Hash::make($request->password),
-          // 'active' => 1,
       ]);
+
+      if (isset($request->mobile)) {
+        $user->mobile = $request->mobile;
+        $user->save();
+      }
 
       \Log::info('========================');
       \Log::info($request->all());
@@ -241,7 +250,7 @@ class RegisterController extends Controller
    * 완료후 이동 페이지
    */
   public function success(Request $request) {
-    return view('auth.'.config('market.template.auth.theme').'.register-success', [
+    return view('auth.templates.views.'.config('auth-pondol.template').'.register-success', [
     ]);
   }
 }

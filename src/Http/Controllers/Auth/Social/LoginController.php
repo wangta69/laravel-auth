@@ -15,10 +15,10 @@ use App\Models\Auth\User\User;
 use App\Models\Auth\User\SocialAccount;
 
 use App\Providers\RouteServiceProvider;
-use App\Http\Controllers\Services\ConfigService;
+// use App\Http\Controllers\Services\ConfigService;
 use App\Http\Controllers\Controller;
 
-use App\Http\Controllers\Market\Traits\Auth\Login;
+use App\Http\Controllers\Auth\Traits\Login;
 use App\Events\Registered as MarketRegistered;
 
 class LoginController extends Controller
@@ -26,9 +26,9 @@ class LoginController extends Controller
 
   use Login;
 
-  public function __construct(ConfigService $configSvc)
+  public function __construct() // ConfigService $configSvc
   {
-    $this->configSvc = $configSvc;
+    // $this->configSvc = $configSvc;
   }
   // 1. redirectToProvider() 구글에 로그인요청
   public function redirectToProvider($provider)
@@ -71,7 +71,7 @@ class LoginController extends Controller
   //토큰을 활용하기위해 로컬에 저장해도 되고 세션에 저장하거나 쿠키에 저장해서 활용할 수 있겠습니다.
     if($type=="register") {
       event(new MarketRegistered($user));
-      return redirect()->route('market.register.success');
+      return redirect()->route('auth.register.success');
     } else { // login
       return redirect()->intended(RouteServiceProvider::HOME);
     }
@@ -100,8 +100,8 @@ class LoginController extends Controller
       }
   
       // 추가 (기본 role 적용)
-      if (config('market.roles.default_role')) {
-        $user->roles()->attach(Role::firstOrCreate(['name' => config('market.roles.default_role')]));
+      if (config('auth.roles.default_role')) {
+        $user->roles()->attach(Role::firstOrCreate(['name' => config('auth.roles.default_role')]));
       }
 
       event(new Registered($user));

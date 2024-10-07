@@ -1,11 +1,22 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 
-// 'prefix' => 'market', 
 Route::group(['as' => 'auth.', 'namespace' => 'App\Http\Controllers\Auth', 'middleware' => ['web']], function () {
-  Route::get('/', 'MainController@index')->name('main');
+  // Route::get('/', function() {})->name('main');
+  // Route::get('route-url', 'Services\ServiceController@routeUrl');
+  Route::get('auth/route-url', function (Request $request) {
+    try {
+      return route($request->name, $request->params);
+    } catch (\Exception $e) {
+   
+    }
+  });
+
+
+  // route-url
 
   // Auth
   Route::get('register', 'RegisterController@create')->name('register')->middleware('guest');
@@ -39,8 +50,8 @@ Route::group(['as' => 'auth.', 'namespace' => 'App\Http\Controllers\Auth', 'midd
 
   // 마이페이지
   // 개인정보
-  Route::get('auth/user', 'Mypage\UserController@index')->name('mypage.user');
-  Route::put('auth/user/update/email', 'Mypage\UserController@updateEmail')->name('mypage.user.update.email');
-  Route::put('auth/user/update/password', 'Mypage\UserController@updatePassword')->name('mypage.user.update.password');
-  Route::put('auth/user/update/mobile', 'Mypage\UserController@updateMobile')->name('mypage.user.update.mobile');
+  // Route::get('auth/user', 'Mypage\UserController@index')->name('mypage.user');
+  // Route::put('auth/user/update/email', 'Mypage\UserController@updateEmail')->name('mypage.user.update.email');
+  // Route::put('auth/user/update/password', 'Mypage\UserController@updatePassword')->name('mypage.user.update.password');
+  // Route::put('auth/user/update/mobile', 'Mypage\UserController@updateMobile')->name('mypage.user.update.mobile');
 });

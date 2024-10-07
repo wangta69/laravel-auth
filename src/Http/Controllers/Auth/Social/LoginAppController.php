@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 
 use App\Models\Auth\User\User;
 use App\Models\Auth\User\SocialAccount;
-use App\Models\CfgEvent;
+// use App\Models\CfgEvent;
 use JWTAuth;
 use GuzzleHttp\Client;
 

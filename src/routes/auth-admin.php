@@ -3,9 +3,10 @@
 use Illuminate\Support\Facades\Route;
 
 
-Route::group(['prefix' => 'adm', 'as' => 'auth.admin.', 'namespace' => 'App\Http\Controllers\Auth\Admin', 'middleware' => 'admin'], function () {
+Route::group(['prefix' => 'auth/admin', 'as' => 'auth.admin.', 'namespace' => 'App\Http\Controllers\Auth\Admin', 'middleware' => 'admin'], function () {
 
     // 회원관리
+    Route::get('/', 'DashboardController@index')->name('dashboard');
     Route::get('users', 'UserController@index')->name('users');
     // Route::get('user/create', 'UserController@create')->name('user.create');
     // Route::post('user/create', 'UserController@store');
@@ -18,7 +19,4 @@ Route::group(['prefix' => 'adm', 'as' => 'auth.admin.', 'namespace' => 'App\Http
     Route::get('user/{user_id}/active/{active}', 'UserController@updateActive'); // for test
     Route::delete('user/{user}', 'UserController@destroy')->name('user.destroy');
     Route::get('user/login/{user}', 'UserController@login')->name('user.login'); // 현재 회원으로 로그인
-
-
-
 });

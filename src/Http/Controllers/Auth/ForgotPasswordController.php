@@ -38,7 +38,7 @@ class ForgotPasswordController extends Controller
 
   protected function showLinkRequestForm() {
     // return view('pages/ko/auth/password_reset');
-    return view('auth.'.config('market.template.auth.theme').'.forgot-password');
+    return view('auth.templates.views.'.config('auth-pondol.template').'.forgot-password');
   }
 
   public function sendResetLinkEmail(Request $request)

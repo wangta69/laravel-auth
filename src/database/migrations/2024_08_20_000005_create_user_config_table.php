@@ -19,7 +19,7 @@ class  CreateUserConfigTable extends Migration
         $table->text('value');
 
 
-        DB::table('market_configs')->insert(
+        DB::table('user_configs')->insert(
           [
             ['key' => 'termsOfUse','value' => '<b>제1조 목적</b><br>
   <br>

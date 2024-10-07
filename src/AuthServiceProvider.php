@@ -50,6 +50,8 @@ class AuthServiceProvider extends ServiceProvider { //  implements DeferrablePro
 
 
     $this->publishes([
+
+      __DIR__.'/resources/pondol/auth' => public_path('pondol/auth'),
       // copy config
       __DIR__.'/config/auth-pondol.php' => config_path('auth-pondol.php'),
       // // copy resource 파일
