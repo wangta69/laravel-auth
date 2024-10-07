@@ -16,6 +16,7 @@
       "php": ">=7.0.0",
       "guzzlehttp/guzzle": "^7",
       "kyslik/column-sortable": "^6",
+      "laravel/socialite": "^5",
       "laravel/ui": "*",
       "tymon/jwt-auth": "^1"
     },
