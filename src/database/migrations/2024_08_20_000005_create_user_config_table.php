@@ -17,9 +17,10 @@ class  CreateUserConfigTable extends Migration
       Schema::create('user_configs', function(BluePrint $table) {
         $table->string('key', '20');
         $table->text('value');
+      });
 
 
-        DB::table('user_configs')->insert(
+      DB::table('user_configs')->insert(
           [
             ['key' => 'termsOfUse','value' => '<b>제1조 목적</b><br>
   <br>
@@ -163,7 +164,7 @@ class  CreateUserConfigTable extends Migration
           ]
         );
         
-      });
+ 
     }
   }
 
