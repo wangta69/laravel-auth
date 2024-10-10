@@ -12,7 +12,7 @@
           </div> <!-- .card-bod -->
           <div class="card-footer">
             <a class="btn btn-primary" href="/">Home</a> 
-            <a class="btn btn-primary" href="{{ route('auth.login') }}">Login</a>
+            <a class="btn btn-primary" href="{{ route('login') }}">Login</a>
           </div><!-- .card-footer -->
         </div> <!-- .card -->
       </div><!-- . class="col-lg-6" -->

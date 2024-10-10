@@ -10,28 +10,23 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Auth\Events\Registered;
-// use Illuminate\Auth\Events\Registered;
+
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
-// use App\Notifications\RedisPublish;
 use DB;
 
 
+use App\Notifications\sendEmailRegisteredNotification;
 
 use App\Models\Auth\Role\Role;
-// use App\Models\Market\MarketConfig;
 use App\Models\Auth\User\User;
 use App\Models\Auth\User\UserConfig;
 
-// use App\Http\Controllers\Market\Services\ConfigService;
 use App\Http\Controllers\Controller;
-// use App\Http\Controllers\Market\Services\MailService;
 
 use App\Http\Controllers\Auth\Traits\Register;
-
-use App\Events\Registered as MarketRegistered;
 
 class RegisterController extends Controller
 {
@@ -63,12 +58,7 @@ class RegisterController extends Controller
    * @return void
    */
   public function __construct(
-    // ConfigService $configSvc, 
-    // MailService $mailSvc
   ){
-    // $this->middleware('guest');
-    // $this->configSvc = $configSvc;
-    // $this->mailSvc = $mailSvc;
   }
 
   // protected function authenticated(Request $request, User $user)
@@ -85,10 +75,8 @@ class RegisterController extends Controller
   protected function validator(array $data)
   {
 
-    \Log::info($data);
     return Validator::make($data, [
-      'aggree_terms_of_use' => ['required'],
-      'privacy_policy' => ['required'],
+
 
       'email' => ['required', 'string', 'email', 'max:50', 'unique:users'],
       'name' => ['required', 'string', 'min:2', 'max:50'],
@@ -125,30 +113,30 @@ class RegisterController extends Controller
    */
   public function create(Request $request) {
 
-    if (\View::exists($view = 'auth.templates.views.'.config('auth-pondol.template').'.register-agreement') 
+    if (\View::exists($view = 'auth.templates.views.'.config('auth-pondol.template.user').'.register-agreement') 
         && !$request->session()->has('agreement')) {
-      return redirect()->route('auth.register.agreement');
+      return redirect()->route('register.agreement');
     }
 
-    // print_r($request->session()->get('agreement'));
-    if ($request->session()->has('agreement')) {
-      return view('auth.templates.views.'.config('auth-pondol.template').'.register', [
-        'agreements' => $request->session()->get('agreement')
-      ]);
-    } else {
+    // if ($request->session()->has('agreement')) {
+    //   return view('auth.templates.views.'.config('auth-pondol.template.user').'.register', [
+    //     'agreements' => $request->session()->get('agreement')
+    //   ]);
+    // } else {
       $termsOfUse = UserConfig::where('key', 'termsOfUse')->first();
       $privacyPolicy = UserConfig::where('key', 'privacyPolicy')->first();
-      return view('auth.templates.views.'.config('auth-pondol.template').'.register', [
+      return view('auth.templates.views.'.config('auth-pondol.template.user').'.register', [
         'termsOfUse' => $termsOfUse->value,
-        'privacyPolicy' => $privacyPolicy->value
+        'privacyPolicy' => $privacyPolicy->value,
+        'agreements' => $request->session()->get('agreement')
       ]);
-    }
+    // }
   }
 
   public function agreement(Request $request) {
     $termsOfUse = UserConfig::where('key', 'termsOfUse')->first();
     $privacyPolicy = UserConfig::where('key', 'privacyPolicy')->first();
-    return view('auth.templates.views.'.config('auth-pondol.template').'.register-agreement', [
+    return view('auth.templates.views.'.config('auth-pondol.template.user').'.register-agreement', [
       'termsOfUse' => $termsOfUse->value,
       'privacyPolicy' => $privacyPolicy->value
     ]);
@@ -173,7 +161,7 @@ class RegisterController extends Controller
       'privacy_policy'=>$request->privacy_policy
     ]);
 
-    return response()->json(['error'=>false, 'next'=>route('auth.register')]);
+    return response()->json(['error'=>false, 'next'=>route('register')]);
   }
 
   /**
@@ -191,16 +179,20 @@ class RegisterController extends Controller
     }
 
     $validator = $this->validator($request->all());
-    // $validator = Validator::make($request->all(), [
-    //   'email' => 'sometimes|required|email' // request에 email이 있으면 유효성 검사를 진행합니다.
-    // ]);
+
+    $agreement = \View::exists($view = 'auth.templates.views.'.config('auth-pondol.template.user').'.register-agreement') ? true : false; 
+
+    $validator->sometimes('aggree_terms_of_use', 'required', function () use ($agreement) {
+      return $agreement;
+    });
+    $validator->sometimes('privacy_policy', 'required', function () use ($agreement) {
+      return $agreement;
+    });
 
     if ($validator->fails()) {
       return redirect()->back()->withInput()->withErrors($validator->errors());
     }
     
-    \Log::info('========================');
-    \Log::info($request->all());
     DB::beginTransaction();
     try {
       $user = User::create([
@@ -215,14 +207,11 @@ class RegisterController extends Controller
         $user->save();
       }
 
-      \Log::info('========================');
-      \Log::info($request->all());
-
       // $usercfg = $this->configSvc->get('user');
-      // if(config('auth-pondol.active') == "auto") {
-        $user->active = config('auth-pondol.active');
+      if(config('auth-pondol.activate') == "auto") {
+        $user->active = 1;
         $user->save();
-      // }
+      }
 
       // 추가 (기본 role 적용)
       // if (config('auth-pondol.roles.default_role')) {
@@ -232,12 +221,16 @@ class RegisterController extends Controller
       DB::commit();
 
       event(new Registered($user));
-      // event(new MarketRegistered($user));
+      $user->notify(new sendEmailRegisteredNotification);
       Auth::login($user);
       // return redirect('/register/success');
-      return redirect()->route('auth.register.success');
+      if(config('auth-pondol.activate') == "email") {
+        return redirect()->route('verification.notice');
+      } else {
+        return redirect()->route('register.success');
+      }
+      
     } catch (\Exception $e) {
-      \Log::info($e);
       DB::rollback();
       return redirect()->back()->withInput()->withErrors(['dberror'=>'DataBase Occur']);
       // return redirect()->withInput()->back()->with(['error'=>'DataBase Occur']);
@@ -250,7 +243,7 @@ class RegisterController extends Controller
    * 완료후 이동 페이지
    */
   public function success(Request $request) {
-    return view('auth.templates.views.'.config('auth-pondol.template').'.register-success', [
+    return view('auth.templates.views.'.config('auth-pondol.template.user').'.register-success', [
     ]);
   }
 }

@@ -14,7 +14,7 @@
             <a href='/auth/social/github/redirect' class="btn">github</a>
             <a href='/auth/social/google/redirect' class="btn">구글 로그인</a>
 
-            <form method="POST" action="{{ route('auth.login') }}" style="width: 100%;">
+            <form method="POST" action="{{ route('login') }}" style="width: 100%;">
                 @csrf
             <div class="">
             <div class="form-floating mb-3">
@@ -38,7 +38,7 @@
               <label class="form-check-label" for="inputRememberPassword">Remember Password</label>
             </div>
             <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
-              <a class="small" href="{{ route('auth.password.request') }}">Forgot Password?</a>
+              <a class="small" href="{{ route('password.request') }}">Forgot Password?</a>
 
               <button type="submit" class="btn btn-primary">로그인</button>
               @if ( session('error'))
@@ -54,7 +54,7 @@
           <div class="card-body">
               * 주문번호를 입력하세요
 
-              <form method="get" action="{{ route('auth.mypage.order') }}" style="width: 100%;">
+              <form method="get" action="{{ route('mypage.order') }}" style="width: 100%;">
               <div class="">
               <div>
               <label>주문번호</label>

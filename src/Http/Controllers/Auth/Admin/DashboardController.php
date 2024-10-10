@@ -4,12 +4,10 @@ namespace App\Http\Controllers\Auth\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Notifications\Notifiable;
-// use App\Notifications\CountChanged;
-use Validator;
-use DB;
+// use Illuminate\Notifications\Notifiable;
 
-
+// use Validator;
+// use DB;
 
 class DashboardController extends Controller
 {

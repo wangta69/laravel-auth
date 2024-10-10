@@ -2,7 +2,7 @@
     "name": "wangta69/laravel_auth",
     "description": "Auth for Laravel",
     "keywords": ["laravel", "user", "auth" , "라라벨"],
-    "homepage": "https://www.onstory.fun/doc/programming/laravel/package.delivery-tracking",
+    "homepage": "https://www.onstory.fun/doc/programming/laravel/package.laravel-auth",
     "license": "MIT",
     "authors": [
       {
@@ -18,7 +18,8 @@
       "kyslik/column-sortable": "^6",
       "laravel/socialite": "^5",
       "laravel/ui": "*",
-      "tymon/jwt-auth": "^1"
+      "tymon/jwt-auth": "^1",
+      "wangta69/laravel-editor": "^8"
     },
     "autoload": {
       "files": [

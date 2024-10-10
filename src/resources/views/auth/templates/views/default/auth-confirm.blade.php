@@ -55,7 +55,7 @@
                 <div class="card-body">
                     * 주문번호를 입력하세요
 
-                    <form method="get" action="{{ route('auth.mypage.order') }}" style="width: 100%;">
+                    <form method="get" action="{{ route('mypage.order') }}" style="width: 100%;">
                     <div class="">
                     <div>
                     <label>주문번호</label>

@@ -2,6 +2,7 @@
 
 namespace Pondol\Auth\Console;
 
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Hash;
@@ -53,6 +54,16 @@ class InstallCommand extends Command
       '--force'=> true,
       '--provider' => 'Pondol\Auth\AuthServiceProvider'
     ]);
+
+    // editor
+    \Artisan::call('vendor:publish',  [
+      '--force'=> true,
+      '--provider' => 'Pondol\Editor\EditorServiceProvider'
+    ]);
+
+    if(!Schema::hasTable('jobs')) {
+      \Artisan::call('queue:table'); // job table  생성 (11 은 php artisan make:queue-table) 명령을 사용하는데 호환성 테스트 필요
+    }
 
     \Artisan::call('migrate');
     

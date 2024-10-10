@@ -89,4 +89,9 @@ class User extends Authenticatable implements JWTSubject
     return [];
   }
 
+  // public function sendEmailVerificationNotification()
+  // {
+  //   $this->notify(new \App\Notifications\sendEmailVerificationNotification);
+  // }
+
 }

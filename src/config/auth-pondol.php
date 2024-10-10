@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'active'=>1,
-    'template'=>'default',
+    'activate'=>'email',
+    'template'=>['user'=>'default','mail'=>'default'],
     'roles' => [
         'default_role' => 'user'
     ]

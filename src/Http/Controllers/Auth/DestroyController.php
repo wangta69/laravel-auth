@@ -4,24 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-// use App\Notifications\CountChanged;
+
 use App\Http\Controllers\Controller;
 
 class DestroyController extends Controller
 {
-  /*
-  |--------------------------------------------------------------------------
-  | Login Controller
-  |--------------------------------------------------------------------------
-  |
-  | This controller handles authenticating users for the application and
-  | redirecting them to your home screen. The controller uses a trait
-  | to conveniently provide its functionality to your applications.
-  |
-  */
-
-
-
   /**
    * Create a new controller instance.
    *
@@ -32,9 +19,8 @@ class DestroyController extends Controller
 
   }
 
-
   public function delete(Request $request){
-    return view('auth.templates.views.'.config('auth-pondol.template').'.cancel-account');
+    return view('auth.templates.views.'.config('auth-pondol.template.user').'.cancel-account');
   }
 
   /**
@@ -61,12 +47,12 @@ class DestroyController extends Controller
 
     $request->session()->invalidate();
     $request->session()->regenerateToken();
-    return redirect()->route('auth.cancel.account.success');
+    return redirect()->route('cancel.account.success');
 
   }
 
   public function success() {
-    return view('auth.templates.views.'.config('auth-pondol.template').'.cancel-account-success');
+    return view('auth.templates.views.'.config('auth-pondol.template.user').'.cancel-account-success');
   }
 
 }

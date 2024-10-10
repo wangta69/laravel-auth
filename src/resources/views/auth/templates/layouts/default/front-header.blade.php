@@ -3,14 +3,14 @@
   <div></div>
   @guest
   <menu>
-    <li><a href="{{ route('auth.login') }}" class="nav-link" href="{{ route('auth.login') }}">로그인</a></li>
-    <li><a href="{{ route('auth.register') }}" class="nav-link">회원가입</a></li>
+    <li><a href="{{ route('login') }}" class="nav-link" href="{{ route('login') }}">로그인</a></li>
+    <li><a href="{{ route('register') }}" class="nav-link">회원가입</a></li>
     <!-- <li>고객센터</li> -->
   </menu>
   @else
   <menu>
-    <li> <a class="nav-link" href="{{ route('auth.mypage.user') }}"><b>{{Auth::user()->name}}</b>님</a></li>
-    <li><a class="nav-link" href="{{ route('auth.logout') }}">로그아웃</a></li>
+    <li> <a class="nav-link""><b>{{Auth::user()->name}}</b>님</a></li>
+    <li><a class="nav-link" href="{{ route('logout') }}">로그아웃</a></li>
     <!-- <li>고객센터</li> -->
       
   </menu>
@@ -37,8 +37,6 @@
   list-style: none;
   padding-right: 9px;
 }
-}
-
 
 #top-nav {
 }

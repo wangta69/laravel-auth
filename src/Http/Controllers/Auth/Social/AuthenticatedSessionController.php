@@ -21,7 +21,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Auth\Traits\Login;
 use App\Events\Registered as MarketRegistered;
 
-class LoginController extends Controller
+class AuthenticatedSessionController extends Controller
 {
 
   use Login;
@@ -55,9 +55,7 @@ class LoginController extends Controller
         break;
     }
 
-
-    \Log::info(json_encode($socialUser));
-    
+   
     // 유저가 이미 회원인지 확인하는 메서드입니다.
     $result = $this->findOrCreateUser($provider, $socialUser);
     $user = $result['user'];
@@ -71,7 +69,7 @@ class LoginController extends Controller
   //토큰을 활용하기위해 로컬에 저장해도 되고 세션에 저장하거나 쿠키에 저장해서 활용할 수 있겠습니다.
     if($type=="register") {
       event(new MarketRegistered($user));
-      return redirect()->route('auth.register.success');
+      return redirect()->route('register.success');
     } else { // login
       return redirect()->intended(RouteServiceProvider::HOME);
     }

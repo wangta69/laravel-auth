@@ -56,7 +56,6 @@ class LoginAppController extends Controller
                 $res = json_decode($response->getBody(), true); // for json if error occur DB rollback
                 $access_token = $res['access_token'];
 
-                Log::info('access_token:' . $access_token);
                 // 사용자 정보를 획득한다.
                 $endpoint = 'https://kapi.kakao.com/v1/oidc/userinfo';
                 $response = $client->request('GET', $endpoint, ['headers' => ['Authorization' => 'Bearer '.$access_token]]);
@@ -105,12 +104,10 @@ class LoginAppController extends Controller
 
                 $response = $client->request('POST', $endpoint, ['form_params' => $form_params]);
                 $res = json_decode($response->getBody(), true); // for json if error occur DB rollback
-                Log::info('res:' . json_encode($res));
                 // $res = $res['response'];
 
                 $access_token = $res['access_token'];
 
-                Log::info('access_token:' . $access_token);
 
                 // $access_token = $request->access_token;
 
@@ -162,7 +159,6 @@ class LoginAppController extends Controller
     */
     public function socialLogin(Request $request) {
 
-        Log::debug((array) $request->all());
         $provider = $request->provider;
         $provider_id = $request->provider_id;
         $name = $request->name;
@@ -198,7 +194,7 @@ class LoginAppController extends Controller
                 break;
         }
 
-        Log::info(json_encode($request->all(), JSON_UNESCAPED_UNICODE));
+
         if (!$name) {
             $name = $provider_id;
         }
@@ -206,8 +202,6 @@ class LoginAppController extends Controller
             $email = $provider_id.'@'.$provider;
         }
 
-        // Log::info('email:'.$email);
-        // Log::info('name:'.$name);
 
         $user = $this->manualUserCreate($name, $email);
 
@@ -217,13 +211,9 @@ class LoginAppController extends Controller
         $this->manualSocialCreate($user, $provider, $provider_id, $name, $email, $refresh_token, $info);
 
         //$user뒤의 내용을 true로 설정하면 리멤버토큰(자동로그인)이 발급됩니다.
-        // Log::info(json_encode($user, JSON_UNESCAPED_UNICODE));
+
         \Auth::login($user, false);
         $userToken=JWTAuth::fromUser($user);
-
-        // Log::info(json_encode( $user->profile, JSON_UNESCAPED_UNICODE));
-
-        // $rtn = ['error'=>false, 'userToken'=>$userToken, 'profile' => ];
 
         $user->profile; // user에 profile을 덧 붙인다.
         return response()->json(['error'=>false, 'userToken'=>$userToken, 'user' => $user], 200);
@@ -335,7 +325,7 @@ class LoginAppController extends Controller
           'target_id_type'=>'user_id',
           'target_id'=>$target_id
         ];
-        // \Log::debug($query);
+
         $response = $client->request('POST', $endpoint, ['form_params' => $form_params]);
         // print_r($response->getBody()->getContents());
         $res = json_decode($response->getBody(), true); // for json if error occur DB rollback

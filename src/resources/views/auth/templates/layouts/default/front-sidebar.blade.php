@@ -6,7 +6,7 @@
 
 
         <h3>마이페이지</h3>
-        <a class="nav-link" href="{{ route('auth.login') }}">
+        <a class="nav-link" href="{{ route('login') }}">
             <div class="nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
             로그인
         </a>

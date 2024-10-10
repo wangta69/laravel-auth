@@ -15,9 +15,11 @@ use Illuminate\Support\Str;
 use App\Models\Auth\User\User;
 use App\Models\CodeRequest;
 use App\Services\SmsService;
+
+use App\Notifications\sendEmailResetPasswordToken;
 // use App\Services\LocaleService;
 
-class ForgotPasswordController extends Controller
+class PasswordResetLinkController extends Controller
 {
   /*
   |--------------------------------------------------------------------------
@@ -36,33 +38,45 @@ class ForgotPasswordController extends Controller
   {
   }
 
-  protected function showLinkRequestForm() {
+  protected function create() {
     // return view('pages/ko/auth/password_reset');
-    return view('auth.templates.views.'.config('auth-pondol.template').'.forgot-password');
+    return view('auth.templates.views.'.config('auth-pondol.template.user').'.forgot-password');
   }
 
-  public function sendResetLinkEmail(Request $request)
+  public function store(Request $request)
   {
     $validator = Validator::make($request->all(), [
       'email' =>  ['required', 'email'],
     ]);
 
+    // $validator =$request->validate([
+    //   'email' => ['required', 'email'],
+    // ]);
+
     if ($validator->fails()) {
-      return response()->json(['error'=>$validator->errors()->first()], 203);
+      return redirect()->back()->withInput()->withErrors($validator->errors());
+      // return response()->json(['error'=>$validator->errors()->first()], 203);
     }
 
       // We will send the password reset link to this user. Once we have attempted
       // to send the link, we will examine the response then see the message we
       // need to show to the user. Finally, we'll send out a proper response.
 
-      
-    $status = $this->broker()->sendResetLink(
-      $request->only('email')
-    );
+    // $status = Password::sendResetLink(
+    // $status = $this->broker()->sendResetLink(
+    //   $request->only('email')
+    // );
+    $user = User::where('email', $request->email)->first();
+    if (!$user) {
+      return back()->withErrors(['email' => '등록되지 않은 이메일 입니다.']);
+    }
 
-    return $status === Password::RESET_LINK_SENT
-    ? back()->with(['status' => __($status)])
-    : back()->withErrors(['email' => __($status)]);
+
+    $user->notify(new sendEmailResetPasswordToken);
+    return back()->with(['status' => '등록된 이메일로 비밀번호 초기화 링크를 전송하였습니다.']);
+    // return $status === Password::RESET_LINK_SENT
+    // ? back()->with(['status' => __($status)])
+    // : back()->withErrors(['email' => __($status)]);
 
   }
 

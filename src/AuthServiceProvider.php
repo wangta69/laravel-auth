@@ -65,9 +65,13 @@ class AuthServiceProvider extends ServiceProvider { //  implements DeferrablePro
       // controllers;
       __DIR__.'/Http/Controllers/Auth/' => app_path('Http/Controllers/Auth'),
 
-      // controllers;
-      __DIR__.'/Events/' => app_path('Events'),
-      __DIR__.'/Listeners/' => app_path('Listeners')
+      // Event and so on;
+      // __DIR__.'/Events/' => app_path('Events'),
+      // __DIR__.'/Listeners/' => app_path('Listeners'),
+      // __DIR__.'/Jobs/' => app_path('Jobs'),
+
+      // __DIR__.'/Mail/' => app_path('Mail'),
+      __DIR__.'/Notifications/' => app_path('Notifications')
     ]);
 
 

@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers\Auth\Traits;
 
-trait Login {
+trait AuthenticatedSession {
 
   private function storeToLog($user) {
     $http_referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER']:"";

@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Auth\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Notifications\Notifiable;
-// use App\Notifications\CountChanged;
+// use Illuminate\Notifications\Notifiable;
+
 use Validator;
 use DB;
 
@@ -184,11 +184,11 @@ class UserController extends Controller
   public function store(Request $request){
       $request->mobile = str_replace('-','', $request->mobile);
       $validator = Validator::make($request->all(), [
-          'email' => ['required', 'string', 'email', 'unique:users'],
-          'name' => ['required', 'string', 'min:2', 'max:10'], // , 'unique:users'
-          'password' => ['required', 'string', 'min:8', 'confirmed'],
-      //    'security_password' => ['required', 'numeric', 'digits:4', 'confirmed'],
-          'mobile' => ['required', 'unique:users'],
+        'email' => ['required', 'string', 'email', 'unique:users'],
+        'name' => ['required', 'string', 'min:2', 'max:10'], // , 'unique:users'
+        'password' => ['required', 'string', 'min:8', 'confirmed'],
+    //    'security_password' => ['required', 'numeric', 'digits:4', 'confirmed'],
+        'mobile' => ['required', 'unique:users'],
       ]);
 
       if ($validator->fails()) return redirect()->back()->withInput()->withErrors($validator->errors());
@@ -203,11 +203,11 @@ class UserController extends Controller
       // $user->notify(new CountChanged('add', 'users'));
       //roles
       if ($request->has('roles')) {
-          $user->roles()->detach();
+        $user->roles()->detach();
 
-          if ($request->get('roles')) {
-              $user->roles()->attach($request->get('roles'));
-          }
+        if ($request->get('roles')) {
+          $user->roles()->attach($request->get('roles'));
+        }
       }
 
       return redirect()->intended(route('auth.admin.users'));
@@ -293,36 +293,36 @@ class UserController extends Controller
 
     $users = \DB::table('users_deactivate as d')
       ->select(
-          'd.reason', 'd.created_at',
-          'u.id', 'u.email', 'u.name', 'u.mobile', 'u.tester', 'u.active', 'u.level', 'u.point', 'u.created_at as user_created_at',
-          'a.name as agent_name'
+        'd.reason', 'd.created_at',
+        'u.id', 'u.email', 'u.name', 'u.mobile', 'u.tester', 'u.active', 'u.level', 'u.point', 'u.created_at as user_created_at',
+        'a.name as agent_name'
       )
       ->leftjoin('users as u', function($join){
-          $join->on('d.user_id', '=', 'u.id');
+        $join->on('d.user_id', '=', 'u.id');
       })
       ->whereNull('d.deleted_at');
 
     if ($sv) {
-        if ($sk == 'u.mobile') {
-            $sv = (int)preg_replace("/[^0-9]+/", "", $sv);;
-        }
-        $users = $users->where($sk, 'like', '%' . $sv . '%');
+      if ($sk == 'u.mobile') {
+        $sv = (int)preg_replace("/[^0-9]+/", "", $sv);;
+      }
+      $users = $users->where($sk, 'like', '%' . $sv . '%');
     }
 
     if ($from_date) {
-        if (!$to_date) {
-            $to_date = date("Y-m-d");
-        }
-        $users = $users->where(function ($q) use($from_date, $to_date) {
-            // $q->where('sex', Auth::user()->sex)->orWhere('sex', 0);
-            $q->whereRaw("DATE(users.created_at) >= '".$from_date."' AND DATE(users.created_at)<= '".$to_date."'" );
-        });
+      if (!$to_date) {
+        $to_date = date("Y-m-d");
+      }
+      $users = $users->where(function ($q) use($from_date, $to_date) {
+        // $q->where('sex', Auth::user()->sex)->orWhere('sex', 0);
+        $q->whereRaw("DATE(users.created_at) >= '".$from_date."' AND DATE(users.created_at)<= '".$to_date."'" );
+      });
     }
 
     $users = $users->orderBy('d.id', 'desc')
-        ->paginate(20)->appends(request()->query());
+      ->paginate(20)->appends(request()->query());
     return view('admin.users.deactivate', [
-        'users' => $users
+      'users' => $users
     ]);
   }
 }

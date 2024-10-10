@@ -1,4 +1,4 @@
-@extends('auth.admin.layouts.main')
+@extends('auth.admin.layouts.blank')
 @section('title', '회원정보')
 @section('content')
 @include('auth.admin.users.tabs', ['id'=>$user->id])

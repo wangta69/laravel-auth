@@ -13,12 +13,12 @@ use Validator;
 // use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
-use App\Http\Controllers\Auth\Traits\Login;
+use App\Http\Controllers\Auth\Traits\AuthenticatedSession;
 
-class LoginController extends Controller
+class AuthenticatedSessionController extends Controller
 {
 
-  use Login;
+  use AuthenticatedSession;
   // use AuthenticatesUsers;
 
   /**
@@ -57,7 +57,7 @@ class LoginController extends Controller
   {
     $f = $request->f; // f 가  auth.mypage.order 이면 주문내역 확인 이므로 비회원인 경우 주문내역으로 바록가게 하고 없으면 일반적 로그인이므로 비회원 주문확인을 삭제한다.
     // return view('auth.'.config('auth.template.auth.theme').'.login', ['f'=>$f]);
-    return view('auth.templates.views.'.config('auth-pondol.template').'.login', ['f'=>$f]);
+    return view('auth.templates.views.'.config('auth-pondol.template.user').'.login', ['f'=>$f]);
   }
 
   /** @POST

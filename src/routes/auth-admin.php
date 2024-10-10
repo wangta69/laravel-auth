@@ -19,4 +19,7 @@ Route::group(['prefix' => 'auth/admin', 'as' => 'auth.admin.', 'namespace' => 'A
     Route::get('user/{user_id}/active/{active}', 'UserController@updateActive'); // for test
     Route::delete('user/{user}', 'UserController@destroy')->name('user.destroy');
     Route::get('user/login/{user}', 'UserController@login')->name('user.login'); // 현재 회원으로 로그인
+
+    Route::get('config', 'ConfigController@index')->name('config'); // 관리
+    Route::put('config', 'ConfigController@update')->name('config.update'); 
 });
