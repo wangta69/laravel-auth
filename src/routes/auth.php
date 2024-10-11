@@ -4,17 +4,18 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
 
+Route::get('route-url', function (Request $request) {
+  try {
+    return route($request->route, $request->segments);
+  } catch (\Exception $e) {
+ 
+  }
+});
+
 Route::group(['namespace' => 'App\Http\Controllers\Auth', 'middleware' => ['web']], function () { // 'as' => 'auth.', 
   // Route::get('/', function() {})->name('main');
   // Route::get('route-url', 'Services\ServiceController@routeUrl');
-  Route::get('auth/route-url', function (Request $request) {
-    try {
-      \Log::info($request->all());
-      return route($request->route, $request->segments);
-    } catch (\Exception $e) {
-   
-    }
-  });
+
 
 
   // route-url

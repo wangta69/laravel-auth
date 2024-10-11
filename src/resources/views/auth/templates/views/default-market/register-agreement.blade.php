@@ -80,7 +80,7 @@ $(function(){
   // })
 
   $(".act-store-agreement").on('click', function(){
-    AUTH.ajaxroute('post', 
+    ROUTE.ajaxroute('post', 
     {route: 'auth.register.agreement', data:$('form[name=regist_agree_form]').serializeObject()}, 
     function(resp) {
       if(resp.error) {

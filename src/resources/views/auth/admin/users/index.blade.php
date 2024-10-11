@@ -155,7 +155,7 @@ $(function(){
     var user_id = $(this).parents('tr').attr('user-attr-id');
     var active = $(this).val();
 
-    AUTH.ajaxroute('put', 
+    ROUTE.ajaxroute('put', 
     {route: 'auth.admin.active.update', segments: [user_id, active]}, 
     function(resp) {
       if(resp.error) {

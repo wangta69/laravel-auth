@@ -4,9 +4,6 @@ namespace App\Http\Controllers\Auth\Admin;
 
 use Illuminate\Http\Request;
 
-use Validator;
-use DB;
-
 use App\Models\Auth\User\User;
 use App\Models\Auth\Role\Role;
 use App\Http\Controllers\Auth\Traits\Admin\User as tUser;
@@ -30,7 +27,6 @@ class UserController extends Controller
   public function index(Request $request)
   {
     $users = $this->_index($request);
-
     $users = $users->withTrashed()->orderBy('id', 'desc')->paginate(20)->appends(request()->query());
 
     return view('auth.admin.users.index', [
@@ -52,32 +48,7 @@ class UserController extends Controller
    * 회원 생성
    */
   public function store(Request $request){
-    $request->mobile = str_replace('-','', $request->mobile);
-    $validator = Validator::make($request->all(), [
-      'email' => ['required', 'string', 'email', 'unique:users'],
-      'name' => ['required', 'string', 'min:2', 'max:10'], // , 'unique:users'
-      'password' => ['required', 'string', 'min:8', 'confirmed'],
-      'mobile' => ['required', 'unique:users'],
-    ]);
-
-    if ($validator->fails()) return redirect()->back()->withInput()->withErrors($validator->errors());
-
-    $user = new User;
-    $user->email = $request->get('email');
-    $user->name = $request->get('name');
-    $user->active = $request->get('active', 0);
-    $user->password = \Hash::make($request->password);
-
-    $user->save();
-    // $user->notify(new CountChanged('add', 'users'));
-    //roles
-    if ($request->has('roles')) {
-      $user->roles()->detach();
-
-      if ($request->get('roles')) {
-        $user->roles()->attach($request->get('roles'));
-      }
-    }
+    $this->_store($request);
 
     return redirect()->intended(route('auth.admin.users'));
   }

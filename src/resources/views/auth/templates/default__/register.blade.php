@@ -97,7 +97,7 @@ $(function(){
     if (!email) {
       return showToaster({title: '알림', message: '이메일을 입력해주세요'});
     }
-    AUTH.ajaxroute('get', 
+    ROUTE.ajaxroute('get', 
     {route: 'auth.validation.email', segments:[email]}, 
     function(resp) {
       if(resp.error) {

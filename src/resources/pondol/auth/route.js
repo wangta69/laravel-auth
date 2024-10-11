@@ -21,12 +21,12 @@ $.fn.serializeObject = function() {
   return result
 }
 
-var AUTH = {
+var ROUTE = {
   routetostring: function(route, callback) {
     var routedata = $.param( route);
 
     $.ajax({
-      url: '/auth/route-url',
+      url: '/route-url',
       type: 'GET',
       data: routedata,
       success: function(url) {
@@ -43,9 +43,9 @@ var AUTH = {
       params.data = params.data || {};
       
       $.ajax({
-        url: '/auth/route-url',
+        url: '/route-url',
         type: 'GET',
-        data: $.param({route: params.params, segments: params.segments}),
+        data: $.param({route: params.route, segments: params.segments}),
         success: function(url) {
           params.data._token = csrf_token;
           $.ajax({
@@ -55,6 +55,16 @@ var AUTH = {
             success: function(resp) {
               onprocessing = false;
               callback(resp);
+            },
+            error : function(xhr, ajaxSettings, thrownError) 
+            {
+              console.log('xhr:', xhr);
+              console.log('ajaxSettings:', ajaxSettings);
+              console.log('thrownError:', thrownError);
+            },
+            complete : function()
+            {
+              onprocessing = false;
             }
           });
         }

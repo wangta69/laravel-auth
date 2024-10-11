@@ -101,7 +101,7 @@ function checkUserForm() {
 $(function(){
   $(".act-update-user").on('click', function(){
     updateContentsField();
-    AUTH.ajaxroute('put', 
+    ROUTE.ajaxroute('put', 
     {route: 'auth.admin.config.update', data:$("form[name='user-form']").serializeObject()}, 
     function(resp) {
       if(resp.error) {
