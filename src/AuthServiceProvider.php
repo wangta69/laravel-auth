@@ -58,24 +58,22 @@ class AuthServiceProvider extends ServiceProvider { //  implements DeferrablePro
       // __DIR__.'/resources/views/bbs/components' => resource_path('views/bbs/components'),
       // __DIR__.'/resources/views/bbs/templates' => resource_path('views/bbs/templates'),
       __DIR__.'/resources/views/auth' => resource_path('views/auth'),
-      __DIR__.'/routes/auth-admin.php' => base_path('/routes/auth-admin.php'),
-      __DIR__.'/routes/auth.php' => base_path('/routes/auth.php'),
+      __DIR__.'/routes/' => base_path('/routes'),
       // models;
       __DIR__.'/Models/Auth/' => app_path('Models/Auth'),
       // controllers;
       __DIR__.'/Http/Controllers/Auth/' => app_path('Http/Controllers/Auth'),
 
-      // Event and so on;
-      // __DIR__.'/Events/' => app_path('Events'),
-      // __DIR__.'/Listeners/' => app_path('Listeners'),
-      // __DIR__.'/Jobs/' => app_path('Jobs'),
+      __DIR__.'/Http/Middleware/' => app_path('Http/Middleware'),
 
-      // __DIR__.'/Mail/' => app_path('Mail'),
-      __DIR__.'/Notifications/' => app_path('Notifications')
+      __DIR__.'/database/migrations', database_path('migrations'),
+
+     __DIR__.'/Notifications/' => app_path('Notifications')
     ]);
-
 
     $router->aliasMiddleware('role', \App\Http\Middleware\CheckRole::class);
 		$router->pushMiddlewareToGroup('admin', 'role:administrator');
+    $kernel = app(\Illuminate\Contracts\Http\Kernel::class);
+    $kernel->pushMiddleware(\App\Http\Middleware\VerifyEmail::class);
   }
 }

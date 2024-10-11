@@ -81,7 +81,7 @@ $(function(){
 
   $(".act-store-agreement").on('click', function(){
     AUTH.ajaxroute('post', 
-    {'name': 'auth.register.agreement'}, $('form[name=regist_agree_form]').serializeObject(), 
+    {route: 'auth.register.agreement', data: $('form[name=regist_agree_form]').serializeObject()}, 
     function(resp) {
       if(resp.error) {
         showToaster({title: '알림', message: resp.error});

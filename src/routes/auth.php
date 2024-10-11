@@ -9,7 +9,8 @@ Route::group(['namespace' => 'App\Http\Controllers\Auth', 'middleware' => ['web'
   // Route::get('route-url', 'Services\ServiceController@routeUrl');
   Route::get('auth/route-url', function (Request $request) {
     try {
-      return route($request->name, $request->params);
+      \Log::info($request->all());
+      return route($request->route, $request->segments);
     } catch (\Exception $e) {
    
     }
@@ -27,7 +28,7 @@ Route::group(['namespace' => 'App\Http\Controllers\Auth', 'middleware' => ['web'
   Route::get('login', 'AuthenticatedSessionController@create')->name('login')->middleware('guest');
   Route::post('login', 'AuthenticatedSessionController@store')->middleware('guest');
   Route::get('logout', 'AuthenticatedSessionController@destroy')->name('logout')->middleware('auth');
-  Route::get('validation/email/{email}', 'CommonController@validationEmail')->name('validation.email');
+  Route::get('auth/validation/email/{email}', 'CommonController@validationEmail')->name('validation.email');
 
 
 
@@ -56,7 +57,6 @@ Route::group(['namespace' => 'App\Http\Controllers\Auth', 'middleware' => ['web'
 
 
   Route::get('verify-email', 'EmailVerificationPromptController@__invoke')->name('verification.notice')->middleware('auth');
-  // Route::get('verify-email/{id}/{hash}', 'VerifyEmailController@__invoke')->name('verification.verify');
   Route::get('verify-email/{id}/{hash}', 'VerifyEmailController@__invoke')->middleware(['auth', 'signed', 'throttle:6,1'])->name('verification.verify');
   Route::post('email/verification-notification', 'EmailVerificationNotificationController@store')->middleware('auth', 'throttle:6,1')->name('verification.send');
 

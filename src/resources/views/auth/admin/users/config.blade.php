@@ -102,8 +102,7 @@ $(function(){
   $(".act-update-user").on('click', function(){
     updateContentsField();
     AUTH.ajaxroute('put', 
-    {'name': 'auth.admin.config.update'}, 
-    $("form[name='user-form']").serializeObject(), 
+    {route: 'auth.admin.config.update', data:$("form[name='user-form']").serializeObject()}, 
     function(resp) {
       if(resp.error) {
         showToaster({title: '알림', message: resp.error});

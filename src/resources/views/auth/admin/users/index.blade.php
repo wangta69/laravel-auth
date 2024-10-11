@@ -67,77 +67,75 @@
 <div class="card mt-1">
   <div class="card-body">
     <table class="table table-borderless table-striped listTable">
-        <col width="*">
-        <col width="*">
-        <col width="*">
-        <col width="*">
-        <col width="*">
-        <col width="*">
-        <thead>
-            <tr>
-                <th class="text-center">
-                    @sortablelink('id',  'Id',['page' => $users->currentPage()])
-                </th>
-                <th class="text-center">
-                    @sortablelink('email',  '이메일', ['page' => $users->currentPage()])
-                </th>
-                <th class="text-center">
-                    @sortablelink('name',  '회원명',['page' => $users->currentPage()])
-                </th>
+      <col width="*">
+      <col width="*">
+      <col width="*">
+      <col width="*">
+      <col width="*">
+      <col width="*">
+      <thead>
+        <tr>
+          <th class="text-center">
+            @sortablelink('id',  'Id',['page' => $users->currentPage()])
+          </th>
+          <th class="text-center">
+            @sortablelink('email',  '이메일', ['page' => $users->currentPage()])
+          </th>
+          <th class="text-center">
+            @sortablelink('name',  '회원명',['page' => $users->currentPage()])
+          </th>
+          <th class="text-center">
+            @sortablelink('point',  '포인트', ['page' => $users->currentPage()])
+          </th>
+          <th class="text-center">
+            @sortablelink('logined_at',  '최근 방문일',['page' => $users->currentPage()])
+          </th>
+          <th class="text-center">
+            가입일
+          </th>
+          <th class="text-center">
+            @sortablelink('active',  '상태', ['page' => $users->currentPage()])
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        @forelse($users as $user)
+        <tr user-attr-id="{{ $user->id }}">
+          <td class="text-center">{{ $user->id }}</td>
+          <td class="text-center">{{ $user->email }}</a></td>
+          <td class="text-center">{{ $user->name }} <a onclick="win_user('{{ route('auth.admin.user', $user->id) }}')"><i class="fas fa-search"></i></a></td>
 
-                <th class="text-center">
-                    @sortablelink('point',  '포인트', ['page' => $users->currentPage()])
-                </th>
-                <th class="text-center">
-                    @sortablelink('logined_at',  '최근 방문일',['page' => $users->currentPage()])
-                </th>
-                <th class="text-center">
-                    가입일
-                </th>
-                <th class="text-center">
-                    @sortablelink('active',  '상태', ['page' => $users->currentPage()])
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($users as $user)
-            <tr user-attr-id="{{ $user->id }}">
-                <td class="text-center">{{ $user->id }}</td>
-                <td class="text-center">{{ $user->email }}</a></td>
-                <td class="text-center">{{ $user->name }} <a onclick="win_user('{{ route('auth.admin.user', $user->id) }}')"><i class="fas fa-search"></i></a></td>
 
+          <td class="text-right">{{ number_format($user->point) }}</td>
+          <td class="text-center">@if ($user->logined_at) {{ date("Y-m-d H:i", strtotime($user->logined_at)) }} @endif</td>
+          <td class="text-center">{{ date("Y-m-d H:i", strtotime($user->created_at)) }}</td>
 
-                <td class="text-right">{{ number_format($user->point) }}</td>
-                <td class="text-center">@if ($user->logined_at) {{ date("Y-m-d H:i", strtotime($user->logined_at)) }} @endif</td>
-                <td class="text-center">{{ date("Y-m-d H:i", strtotime($user->created_at)) }}</td>
+          <td class="text-center" style="cursor:pointer;" >
+            <select class="form-select act-change-active" style="width: 100px;">
+              <option value="0" @if ($user->active == '0') selected @endif>대기중</option>
+              <option value="1" @if ($user->active == '1') selected @endif>인가됨</option>
+              <option value="2" @if ($user->active == '2') selected @endif>차단됨</option>
+              <option value="8" @if ($user->active == '8') selected @endif>탈퇴 신청</option>
+              <option value="9" @if ($user->active == '9') selected @endif>탈퇴</option>
+            </select>
+            @if($user->deleted_at)
+                {{ $user->deleted_at }}
+            @endif
+          </td>
 
-                <td class="text-center" style="cursor:pointer;" >
-     
-                    <select class="form-select" style="width: 100px;">
-                        <option value="0" @if ($user->active == '0') selected @endif>대기중</option>
-                        <option value="1" @if ($user->active == '1') selected @endif>인가됨</option>
-                        <option value="2" @if ($user->active == '2') selected @endif>차단됨</option>
-                        <option value="8" @if ($user->active == '8') selected @endif>탈퇴 신청</option>
-                        <option value="9" @if ($user->active == '9') selected @endif>탈퇴</option>
-                    </select>
-                    @if($user->deleted_at)
-                        {{ $user->deleted_at }}
-                    @endif
-                </td>
+          <!-- <td class="text-center">
+              <a href="/admin/user/login/{{ $user->id }}"><i class="fas fa-sign-in-alt" style="cursor: pointer;" alt="sign in" title="sign in"></i></a>
+          </td> -->
 
-                <!-- <td class="text-center">
-                    <a href="/admin/user/login/{{ $user->id }}"><i class="fas fa-sign-in-alt" style="cursor: pointer;" alt="sign in" title="sign in"></i></a>
-                </td> -->
-
-            </tr>
-            @empty
-            <tr>
-                <td colspan="12" class="text-center">
-                    디스플레이할 데이타가 없습니다.
-                </td>
-            </tr>
-            @endforelse
-        </tbody>
+        </tr>
+        @empty
+        <tr>
+          <td colspan="7" class="text-center">
+            디스플레이할 데이타가 없습니다.
+          </td>
+        </tr>
+        @endforelse
+      </tbody>
     </table>
   </div><!-- .card-body -->
   <div  class="card-footer">
@@ -152,6 +150,21 @@
 @section('scripts')
 @parent
 <script>
-var csrf_token = $("meta[name=csrf-token]" ).attr("content");
+$(function(){
+  $('.act-change-active').on('change', function(){
+    var user_id = $(this).parents('tr').attr('user-attr-id');
+    var active = $(this).val();
+
+    AUTH.ajaxroute('put', 
+    {route: 'auth.admin.active.update', segments: [user_id, active]}, 
+    function(resp) {
+      if(resp.error) {
+        showToaster({title: '알림', message: resp.error});
+      } else {
+        showToaster({title: '알림', message: '처리되었습니다.', alert: false});
+      }
+    })
+  })
+})
 </script>
 @endsection

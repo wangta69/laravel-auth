@@ -42,10 +42,10 @@ class InstallCommand extends Command
 
     $this->info(" Install Pondol's Auth ");
 
-    copy(__DIR__.'/../Http/Middleware/CheckRole.php', app_path('Http/Middleware/CheckRole.php'));
+    // copy(__DIR__.'/../Http/Middleware/CheckRole.php', app_path('Http/Middleware/CheckRole.php'));
 
-     // migration
-     (new Filesystem)->copyDirectory(__DIR__.'/../database/migrations', database_path('migrations'));
+    //  // migration
+    //  (new Filesystem)->copyDirectory(__DIR__.'/../database/migrations', database_path('migrations'));
 
     $this->replaceInFile("'model' => App\Models\User::class,", "'model' => App\Models\Auth\User\User::class,", config_path('auth.php'));
     // $this->setconfig();

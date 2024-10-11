@@ -69,14 +69,28 @@ class AuthenticatedSessionController extends Controller
       'password' => ['required', 'string'],
     ]);
 
-    if ($validator->fails()) return redirect()->back()
+    if ($validator->fails()) {
+      return redirect()->back()
       ->withErrors($validator->errors())
       ->withInput($request->except('password'));
+    }
+
 
     $this->authenticate($request);
     $request->session()->regenerate();
 
     $user = \Auth::user();
+
+    if($user->active == 0 && config('auth-pondol.activate') != 'email') {
+      // 이메일의 경우 로그인 후 인증받아야 함
+      auth()->logout();  //logout
+      $request->session()->invalidate();
+      $request->session()->regenerateToken();
+
+      return redirect()->back()
+      ->withErrors(['active'=>'인증대기중입니다.'])
+      ->withInput($request->except('password'));
+    }
     $user->logined_at = date("Y-m-d H:i:s");
     $user->save();
     $this->storeToLog($user);

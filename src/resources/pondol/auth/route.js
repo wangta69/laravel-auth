@@ -33,29 +33,32 @@ var AUTH = {
         callback({error: false, url});
       }
     });
-  },
-  ajaxroute: function(type, route, data, callback) {
-    var routedata = $.param( route);
-    onprocessing = true;
-
-    console.log('ajaxroute >> csrf_token >>', csrf_token);
-    console.log('ajaxroute >> data >>', data);
-    $.ajax({
-      url: '/auth/route-url',
-      type: 'GET',
-      data: routedata,
-      success: function(url) {
-        data._token = csrf_token;
-        $.ajax({
-          url: url,
-          type: type,
-          data: data,
-          success: function(resp) {
-            onprocessing = false;
-            callback(resp);
-          }
-        });
-      }
-    });
+  }, 
+  ajaxroute: function(type, params, callback) {
+    // {route: '', segments: [], data: {}}
+    // var routedata = $.param( route);
+    if (onprocessing === false) {
+      onprocessing = true;
+      params.segments = params.segments || [];
+      params.data = params.data || {};
+      
+      $.ajax({
+        url: '/auth/route-url',
+        type: 'GET',
+        data: $.param({route: params.params, segments: params.segments}),
+        success: function(url) {
+          params.data._token = csrf_token;
+          $.ajax({
+            url: url,
+            type: type,
+            data: params.data,
+            success: function(resp) {
+              onprocessing = false;
+              callback(resp);
+            }
+          });
+        }
+      });
+    }
   }
 };

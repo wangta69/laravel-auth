@@ -15,7 +15,7 @@ Route::group(['prefix' => 'auth/admin', 'as' => 'auth.admin.', 'namespace' => 'A
     // Route::get('user/join', 'UserController@join')->name('user.join-list');
     Route::get('user/{user}/edit', 'UserController@edit')->name('user.edit');
     Route::put('user/{user}', 'UserController@update');
-    Route::put('user/{user_id}/active/{active}', 'UserController@updateActive'); // ->name('users.update.active')
+    Route::put('user/{user_id}/active/{active}', 'UserController@updateActive')->name('active.update'); // 
     Route::get('user/{user_id}/active/{active}', 'UserController@updateActive'); // for test
     Route::delete('user/{user}', 'UserController@destroy')->name('user.destroy');
     Route::get('user/login/{user}', 'UserController@login')->name('user.login'); // 현재 회원으로 로그인
