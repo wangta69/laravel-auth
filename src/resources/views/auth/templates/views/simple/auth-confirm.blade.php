@@ -1,4 +1,4 @@
-@extends('auth.app')
+@extends('market.templates.layouts.'.config('market.template.layout.theme').'.front')
 @section('content')
 
 <div class="container">
@@ -50,12 +50,12 @@
                     </div>
                     </form>
                 </div>
-                @if($f) <!--f == auth.mypage.order -->
+                @if($f) <!--f == market.mypage.order -->
                 <h3>비회원 주문 확인</h3>
                 <div class="card-body">
                     * 주문번호를 입력하세요
 
-                    <form method="get" action="{{ route('mypage.order') }}" style="width: 100%;">
+                    <form method="get" action="{{ route('market.mypage.order') }}" style="width: 100%;">
                     <div class="">
                     <div>
                     <label>주문번호</label>

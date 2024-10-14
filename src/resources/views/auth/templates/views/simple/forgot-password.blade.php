@@ -1,4 +1,4 @@
-@extends('auth.app')
+@extends('market.templates.layouts.'.config('market.template.layout.theme').'.front')
 @section('title', '로그인')
 @section('content')
 <div class="container body">
@@ -9,7 +9,7 @@
           <p class="mini-title">{{ Config::get('app.name') }}</p>
           <h3 class="title">패스워드 찾기</h3>
         </div>
-        <form action="{{ route('password.email') }}" method="POST">
+        <form action="{{ route('market.password.email') }}" method="POST">
           @csrf
           <div class="card-body">
             

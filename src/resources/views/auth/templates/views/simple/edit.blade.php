@@ -1,4 +1,4 @@
-@extends('auth.app')
+@extends('market.templates.'.config('market.template').'.layouts.blank')
 @section('content')
 
 
@@ -34,6 +34,11 @@
   </form>
 
 </div>
+
+
+
+
+
 @endsection
 
 @section ('styles')

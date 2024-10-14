@@ -1,4 +1,4 @@
-@extends('auth.app')
+@extends('layouts.front')
 @section('title', 'Sign in')
 
 @section('body_class','login')
