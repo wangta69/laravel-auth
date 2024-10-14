@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth\Traits\Admin;
+namespace App\Traits\Auth\Admin;
 
 use Validator;
 

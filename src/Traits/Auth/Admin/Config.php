@@ -1,7 +1,5 @@
 <?php
-
-namespace App\Http\Controllers\Auth\Traits\Admin;
-
+namespace App\Traits\Auth\Admin;
 use App\Models\Auth\User\UserConfig;
 
 trait Config
@@ -43,7 +41,13 @@ trait Config
     UserConfig::where('key', 'termsOfUse')->update(['value'=>$request->termsOfUse]);
     UserConfig::where('key', 'privacyPolicy')->update(['value'=>$request->privacyPolicy]);
 
-    configSet('auth-pondol', ['activate' => $request->activate, 'template.user'=>$request->t_user, 'template.mail'=>$request->t_mail]); //  
+    configSet('auth-pondol', [
+      'activate' => $request->activate, 
+      'template.user'=>$request->t_user, 
+      'template.mail'=>$request->t_mail,
+      'point.register'=>$request->input('r_point', 0),
+      'point.login'=>$request->input('l_point', 0),
+    ]); //  
     return (object)['error'=>false];
   }
 

@@ -13,10 +13,9 @@
 </div>
 
 <div class="card">
-   <!-- <form name="user-form" method="POST" action="{{ route('market.admin.config.user') }}" onsubmit="return checkUserForm();">
-    @csrf
-    @method('PUT') -->
   <form name="user-form">
+    @csrf
+    @method('PUT')
     <div class="card-body">
       <div class="input-group">
         <label for='name' class='col-sm-2 col-form-label'>회원 활성</label>

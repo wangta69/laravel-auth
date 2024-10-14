@@ -40,7 +40,7 @@ class InstallCommand extends Command
   public function handle()
   {
 
-    $this->info(" Install Pondol's Laravel Auth ");
+    $this->info("# Install Pondol's Laravel Auth ");
 
     // copy(__DIR__.'/../Http/Middleware/CheckRole.php', app_path('Http/Middleware/CheckRole.php'));
 

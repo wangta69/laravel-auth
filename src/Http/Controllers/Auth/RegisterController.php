@@ -26,7 +26,7 @@ use App\Models\Auth\User\UserConfig;
 
 use App\Http\Controllers\Controller;
 
-use App\Http\Controllers\Auth\Traits\Register;
+use App\Traits\Auth\Register;
 
 class RegisterController extends Controller
 {
@@ -221,7 +221,7 @@ class RegisterController extends Controller
       DB::commit();
 
       event(new Registered($user));
-      $user->notify(new sendEmailRegisteredNotification);
+      // $user->notify(new sendEmailRegisteredNotification);
       Auth::login($user);
       // return redirect('/register/success');
       if(config('auth-pondol.activate') == "email") {

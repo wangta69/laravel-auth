@@ -18,7 +18,7 @@ use App\Providers\RouteServiceProvider;
 // use App\Http\Controllers\Services\ConfigService;
 use App\Http\Controllers\Controller;
 
-use App\Http\Controllers\Auth\Traits\Login;
+use App\Traits\Auth\Login;
 use App\Events\Registered as MarketRegistered;
 
 class AuthenticatedSessionController extends Controller

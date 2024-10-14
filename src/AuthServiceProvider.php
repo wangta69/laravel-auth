@@ -21,9 +21,11 @@ class AuthServiceProvider extends ServiceProvider { //  implements DeferrablePro
         InstallCommand::class,
       ]);
     }
-    if(file_exists( app_path('/Listeners/UserEventSubscriber.php')  )) {
-      Event::subscribe(\App\Listeners\UserEventSubscriber::class);
-    }
+    // \Log::info('AuthServiceProvider register 1');
+    // if(file_exists( app_path('/Listeners/UserEventSubscriber.php')  )) {
+    //   Event::subscribe(\App\Listeners\UserEventSubscriber::class);
+    //   \Log::info('AuthServiceProvider register 2');
+    // }
   }
 
   /**
@@ -34,6 +36,13 @@ class AuthServiceProvider extends ServiceProvider { //  implements DeferrablePro
     //public function boot(\Illuminate\Routing\Router $router)
   public function boot(\Illuminate\Routing\Router $router)
   {
+
+    
+    if(file_exists( app_path('/Listeners/UserEventSubscriber.php')  )) {
+      \Log::info('AuthServiceProvider boot1111 =========================');
+      Event::subscribe(\App\Listeners\UserEventSubscriber::class);
+    }
+
     // $this->loadRoutesFrom(__DIR__.'/routes/web.php');
     // $this->loadViewsFrom(__DIR__.'/resources/views', 'auth');
 
@@ -63,12 +72,11 @@ class AuthServiceProvider extends ServiceProvider { //  implements DeferrablePro
       __DIR__.'/Models/Auth/' => app_path('Models/Auth'),
       // controllers;
       __DIR__.'/Http/Controllers/Auth/' => app_path('Http/Controllers/Auth'),
-
       __DIR__.'/Http/Middleware/' => app_path('Http/Middleware'),
-
-      __DIR__.'/database/migrations', database_path('migrations'),
-
-     __DIR__.'/Notifications/' => app_path('Notifications')
+      __DIR__.'/Traits/' => app_path('Traits'),
+      __DIR__.'/database/migrations/' => database_path('migrations'),
+      __DIR__.'/Notifications/' => app_path('Notifications'),
+      __DIR__.'/Listeners/' => app_path('Listeners')
     ]);
 
     $router->aliasMiddleware('role', \App\Http\Middleware\CheckRole::class);

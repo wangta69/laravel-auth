@@ -7,12 +7,15 @@ use Illuminate\Auth\Events\Logout;
 use Illuminate\Auth\Events\Verified;
 // use App\Events\Registered;
 use Illuminate\Auth\Events\Registered;
+// use Illuminate\Auth\Events\Registered;
 
-use App\Jobs\JobRegisteredMail;
-
+use Illuminate\Events\Dispatcher;
+use App\Notifications\sendEmailRegisteredNotification;
+use App\Traits\Point;
 class UserEventSubscriber
 {
 
+  use Point;
   public function __construct()
   {
   }
@@ -20,21 +23,29 @@ class UserEventSubscriber
     /**
      * Handle user login events.
      */
-    public function handleUserLogin($event) {}
+    public function handleUserLogin(Login $event) {
+      \Log::info('============== handleUserLogin');
+      \Log::info(json_encode($event));
+      $this->_login($event->user); // 로그인 포인트
+    }
  
     /**
      * Handle user logout events.
      */
-    public function handleUserLogout($event) {}
-    public function handleUserVerified($event) {}
+    public function handleUserLogout(Logout $event) {
+      \Log::info('============== handleUserLogout');
+      \Log::info(json_encode($event));
+    }
+    public function handleUserVerified(Verified $event) {
+      \Log::info('============== handleUserVerified');
+      \Log::info(json_encode($event));
+    }
 
-    public function handleUserRegister($event) {
-      // $this->mailSvc->registerMail($event->user);
-      // $data = new \stdClass;
-      // $data->user = $event->user;
-      // $data->subject = $event->user->name.'님의 회원가입정보입니다.';
-      // $data->message = null;
-      // dispatch(new JobRegisteredMail($data));
+    public function handleUserRegister(Registered $event) {
+      \Log::info('============== handleUserRegister');
+      \Log::info(json_encode($event));
+      $this->_register($event->user); // 회원가입 포인트
+      $event->user->notify(new sendEmailRegisteredNotification);
     }
  
     /**
@@ -43,8 +54,22 @@ class UserEventSubscriber
      * @param  \Illuminate\Events\Dispatcher  $events
      * @return array
      */
-    public function subscribe($events)
+    public function subscribe(Dispatcher $events)
     {
+
+      \Log::info('UserEventSubscriber subscribe');
+      \Log::info(json_encode($events));
+
+      // $events->listen(
+      //   Login::class,
+      //   [UserEventSubscriber::class, 'handleUserLogin']
+      // );
+
+      // $events->listen(
+      //   Logout::class,
+      //   [UserEventSubscriber::class, 'handleUserLogout']
+      // );
+
       return [
         Login::class => 'handleUserLogin',
         Logout::class => 'handleUserLogout',

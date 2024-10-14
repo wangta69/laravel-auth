@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Auth\User\User;
 use App\Models\Auth\Role\Role;
-use App\Http\Controllers\Auth\Traits\Admin\User as tUser;
+use App\Traits\Auth\Admin\User as tUser;
 use App\Http\Controllers\Controller;
 
 class UserController extends Controller

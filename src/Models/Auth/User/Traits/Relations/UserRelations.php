@@ -33,7 +33,7 @@ trait UserRelations
 
   public function points()
   {
-    return $this->hasMany('App\Models\Auth\UserPoint');
+    return $this->hasMany('App\Models\Auth\User\UserPoint');
   }
 
   public function curPoint()

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 
 use Illuminate\Auth\Events\Lockout;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
@@ -13,7 +14,7 @@ use Validator;
 // use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
-use App\Http\Controllers\Auth\Traits\AuthenticatedSession;
+use App\Traits\Auth\AuthenticatedSession;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -76,14 +77,14 @@ class AuthenticatedSessionController extends Controller
     }
 
 
-    $this->authenticate($request);
-    $request->session()->regenerate();
+    $this->authenticate($request);    //authenticate 시  자동으로 Login event 발생 event(new Login(config('auth.defaults.guard'), $user, ''));
+    // $request->session()->regenerate();
 
     $user = \Auth::user();
 
     if($user->active == 0 && config('auth-pondol.activate') != 'email') {
       // 이메일의 경우 로그인 후 인증받아야 함
-      auth()->logout();  //logout
+      auth()->logout();  // logout
       $request->session()->invalidate();
       $request->session()->regenerateToken();
 
@@ -91,6 +92,7 @@ class AuthenticatedSessionController extends Controller
       ->withErrors(['active'=>'인증대기중입니다.'])
       ->withInput($request->except('password'));
     }
+
     $user->logined_at = date("Y-m-d H:i:s");
     $user->save();
     $this->storeToLog($user);
