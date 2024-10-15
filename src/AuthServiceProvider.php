@@ -37,9 +37,7 @@ class AuthServiceProvider extends ServiceProvider { //  implements DeferrablePro
   public function boot(\Illuminate\Routing\Router $router)
   {
 
-    
     if(file_exists( app_path('/Listeners/UserEventSubscriber.php')  )) {
-      \Log::info('AuthServiceProvider boot1111 =========================');
       Event::subscribe(\App\Listeners\UserEventSubscriber::class);
     }
 

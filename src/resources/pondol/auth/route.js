@@ -22,13 +22,12 @@ $.fn.serializeObject = function() {
 }
 
 var ROUTE = {
-  routetostring: function(route, callback) {
-    var routedata = $.param( route);
+  routetostring: function(params, callback) {
 
     $.ajax({
       url: '/route-url',
       type: 'GET',
-      data: routedata,
+      data: $.param({route: params.route, segments: params.segments}),
       success: function(url) {
         callback({error: false, url});
       }

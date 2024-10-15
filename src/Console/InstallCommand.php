@@ -22,7 +22,8 @@ class InstallCommand extends Command
    *
    * @var string
    */
-  protected $signature = 'pondol:install-auth';
+  // protected $signature = 'pondol:install-auth';
+  protected $signature = 'pondol:install-auth {type=full}'; // full, simple, skip, only
 
   /**
    * The console command description.
@@ -39,13 +40,18 @@ class InstallCommand extends Command
 
   public function handle()
   {
+    // $composer = $this->argument('composer');
+    $type = $this->argument('type');
 
-    $this->info("# Install Pondol's Laravel Auth ");
+    $this->installLaravelAuth($type);
+  }
 
-    // copy(__DIR__.'/../Http/Middleware/CheckRole.php', app_path('Http/Middleware/CheckRole.php'));
+  /**
+   * @params String $type full : editor 도 인스톨
+   */
 
-    //  // migration
-    //  (new Filesystem)->copyDirectory(__DIR__.'/../database/migrations', database_path('migrations'));
+  private function installLaravelAuth()
+  {
 
     $this->replaceInFile("'model' => App\Models\User::class,", "'model' => App\Models\Auth\User\User::class,", config_path('auth.php'));
     // $this->setconfig();
@@ -55,11 +61,10 @@ class InstallCommand extends Command
       '--provider' => 'Pondol\Auth\AuthServiceProvider'
     ]);
 
-    // editor
-    \Artisan::call('vendor:publish',  [
-      '--force'=> true,
-      '--provider' => 'Pondol\Editor\EditorServiceProvider'
-    ]);
+    if($type === 'full') {
+      // editor
+      $this->call('pondol:install-editor');
+    }
 
     if(!Schema::hasTable('jobs')) {
       \Artisan::call('queue:table'); // job table  생성 (11 은 php artisan make:queue-table) 명령을 사용하는데 호환성 테스트 필요
@@ -87,10 +92,8 @@ class InstallCommand extends Command
       }
     }
 
-   
+    $this->info("The pondol's laravel auth installed successfully.");
   }
-
-
 
   private function replaceInFile($search, $replace, $path)
   {

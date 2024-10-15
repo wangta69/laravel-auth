@@ -19,13 +19,13 @@ class User extends Authenticatable implements JWTSubject
 {
 
   use HasApiTokens, 
-      HasFactory, 
-      Notifiable,
-      SoftDeletes,
-      Sortable,
-      UserScopes,
-      Rolable,
-      UserRelations;
+    HasFactory, 
+    Notifiable,
+    SoftDeletes,
+    Sortable,
+    UserScopes,
+    Rolable,
+    UserRelations;
 
 
   public $sortable = ['id', 'email', 'name', 'active', 'logined_at', 'created_at'];

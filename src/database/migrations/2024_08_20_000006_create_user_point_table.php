@@ -17,7 +17,7 @@ class  CreateUserPointTable extends Migration
       Schema::create('user_points', function(BluePrint $table) {
         $table->id();
         $table->bigInteger('user_id')->index()->unsigned();
-        $table->bigInteger('point')->default(0)->unsigned();
+        $table->bigInteger('point')->default(0);
         $table->bigInteger('cur_sum')->default(0)->unsigned()->comment('users.point + users.hold_point 와 동일한 값이 되어야 함');
         $table->string('item', '20')->comment('이벤트, 구매포인트');
         $table->string('sub_item', '20')->nullable()->comment('item의 세부정, buy, event..');

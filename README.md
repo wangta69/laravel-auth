@@ -2,7 +2,7 @@
 
 ## Installation
 ```
-composer require wangta69/laravel_auth
+composer require wangta69/laravel-auth
 php artisan pondol:install-auth
 ```
 ```
