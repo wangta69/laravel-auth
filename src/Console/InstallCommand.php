@@ -1,13 +1,9 @@
 <?php
-
 namespace Pondol\Auth\Console;
 
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Hash;
-use App\Models\Auth\User\User;
-use App\Models\Auth\Role\Role;
 
 class InstallCommand extends Command
 {
@@ -18,7 +14,6 @@ class InstallCommand extends Command
    *
    * @var string
    */
-  // protected $signature = 'pondol:install-auth';
   protected $signature = 'pondol:install-auth {type=full}'; // full, simple, skip, only
 
   /**
@@ -75,23 +70,4 @@ class InstallCommand extends Command
   {
     file_put_contents($path, str_replace($search, $replace, file_get_contents($path)));
   }
-
-  // private function setconfig($key, $data) {
-  //   if(is_array($data)) {
-  //     foreach($data as $k => $v) {
-  //       config()->set('auth.'.$key.'.'.$k, $v);
-  //     }
-  //   } else {
-  //     config()->set('auth.'.$key, $data);
-  //   }
-    
-
-  //   $text = '<?php return ' . var_export(config('auth'), true) . ';';
-
-  //   // print_r($text);
-  //   file_put_contents(config_path('auth.php'), $text);
-
-  //   // \Artisan::call('config:cache'); // 만약 production mode이고 config를 cache 하여 사용하면
-  // }
-
 }
