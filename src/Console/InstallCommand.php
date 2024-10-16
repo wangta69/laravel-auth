@@ -8,10 +8,6 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Auth\User\User;
 use App\Models\Auth\Role\Role;
-// use Illuminate\Filesystem\Filesystem;
-// use Illuminate\Support\Str;
-// use Symfony\Component\Process\PhpExecutableFinder;
-// use Symfony\Component\Process\Process;
 
 class InstallCommand extends Command
 {
@@ -50,49 +46,29 @@ class InstallCommand extends Command
    * @params String $type full : editor 도 인스톨
    */
 
-  private function installLaravelAuth()
+  private function installLaravelAuth($type)
   {
 
-    $this->replaceInFile("'model' => App\Models\User::class,", "'model' => App\Models\Auth\User\User::class,", config_path('auth.php'));
-    // $this->setconfig();
-   
     \Artisan::call('vendor:publish',  [
       '--force'=> true,
       '--provider' => 'Pondol\Auth\AuthServiceProvider'
     ]);
 
-    if($type === 'full') {
-      // editor
-      $this->call('pondol:install-editor');
+    if ($type === 'simple' || $type == 'full') {
+      $this->simpleCase();
+      if ($type == 'full') {
+        $this->call('pondol:install-editor');
+      }
     }
+    \Artisan::call('migrate');
+    $this->info("The pondol's laravel auth installed successfully.");
+  }
 
+  private function simpleCase() {
+    $this->replaceInFile("'model' => App\Models\User::class,", "'model' => App\Models\Auth\User\User::class,", config_path('auth.php'));
     if(!Schema::hasTable('jobs')) {
       \Artisan::call('queue:table'); // job table  생성 (11 은 php artisan make:queue-table) 명령을 사용하는데 호환성 테스트 필요
     }
-
-    \Artisan::call('migrate');
-    
-    if ($this->confirm('Do you want to create administrator account?')) {
-    
-      $user_name = $this->ask('Name for administrator?'); 
-      $user_email = $this->ask('Email for administrator?'); 
-      $user_password = $this->ask('Password for administrator?'); 
-      
-      $count = User::where('email', $user_email)->count();
-      if(!$count) {
-        $user = User::create([
-          'name' => $user_name,
-          'email' => $user_email,
-          'password' => Hash::make($user_password),
-        ]);
-
-        $user->active = 1;
-        $user->save();
-        $user->roles()->attach(Role::firstOrCreate(['name' => 'administrator']));
-      }
-    }
-
-    $this->info("The pondol's laravel auth installed successfully.");
   }
 
   private function replaceInFile($search, $replace, $path)

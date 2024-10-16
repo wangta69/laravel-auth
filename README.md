@@ -5,9 +5,11 @@
 composer require wangta69/laravel-auth
 php artisan pondol:install-auth
 ```
+## Crate user
 ```
-you want to create administrator account? (yes/no) [no]: // 초기세팅시 yes 로 입력하고 관리자용 이메일 및 패스워드 설정
+php artisan pondol:create-auth
 ```
+
 ## 제공 기능
 - role 기능
 - social login 기능

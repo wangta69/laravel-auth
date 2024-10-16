@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Event;
 
 use Pondol\Auth\Console\InstallCommand;
+use Pondol\Auth\Console\CreateCommand;
 // use App\Listeners\UserEventSubscriber;
 
 class AuthServiceProvider extends ServiceProvider { //  implements DeferrableProvider
@@ -19,6 +20,7 @@ class AuthServiceProvider extends ServiceProvider { //  implements DeferrablePro
     if ($this->app->runningInConsole()) {
       $this->commands([
         InstallCommand::class,
+        CreateCommand::class,
       ]);
     }
     // \Log::info('AuthServiceProvider register 1');
