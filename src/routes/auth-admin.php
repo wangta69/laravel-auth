@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 
-Route::group(['prefix' => 'auth/admin', 'as' => 'auth.admin.', 'namespace' => 'App\Http\Controllers\Auth\Admin', 'middleware' => 'admin'], function () {
+Route::group(['prefix' => 'auth/admin', 'as' => 'auth.admin.', 'namespace' => 'App\Http\Controllers\Auth\Admin', 'middleware' => ['web', 'admin']], function () {
 
     // 회원관리
     Route::get('/', 'DashboardController@index')->name('dashboard');

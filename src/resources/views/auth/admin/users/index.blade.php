@@ -26,10 +26,10 @@
    
             <div class="input-group">
               <select class="form-select" name="sk">
-                <option value="users.email" @if( request()->get('sk') == 'users.email')) selected="selected" @endif >이메일</option>
-                <option value="users.name" @if( request()->get('sk') == 'users.name')) selected="selected" @endif >이름</option>
-                <option value="users.id" @if( request()->get('sk') == 'users.id')) selected="selected" @endif >아이디</option>
-                <option value="users.mobile" @if( request()->get('sk') == 'users.mobile')) selected="selected" @endif >핸드폰</option>
+                <option value="users.email" @if( request()->get('sk') == 'users.email') selected="selected" @endif >이메일</option>
+                <option value="users.name" @if( request()->get('sk') == 'users.name') selected="selected" @endif >이름</option>
+                <option value="users.id" @if( request()->get('sk') == 'users.id') selected="selected" @endif >아이디</option>
+                <option value="users.mobile" @if( request()->get('sk') == 'users.mobile') selected="selected" @endif >핸드폰</option>
               </select>
               <input type="text" name="sv" value="{{ request()->sv}}" placeholder="검색어를 입력해주세요." class="form-control">
               <button class="btn btn-success btn-serch-keyword">검색</button>

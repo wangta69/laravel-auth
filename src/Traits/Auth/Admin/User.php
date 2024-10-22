@@ -40,7 +40,7 @@ trait User
         $to_date = date("Y-m-d");
       }
       $users = $users->where(function ($q) use($from_date, $to_date) {
-        $q->whereRaw("DATE(users.created_at) >= '".$from_date."' AND DATE(users.created_at)<= '".$to_date."'" );
+        $q->whereRaw("users.created_at >= '".$from_date." 00:00:00' AND users.created_at <= '".$to_date." 23:59:59'" );
       });
     }
 

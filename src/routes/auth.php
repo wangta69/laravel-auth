@@ -12,14 +12,9 @@ Route::get('route-url', function (Request $request) {
   }
 });
 
+// Route::get('login', 'App\Http\Controllers\Auth\AuthenticatedSessionController@create')->name('login');
+
 Route::group(['namespace' => 'App\Http\Controllers\Auth', 'middleware' => ['web']], function () { // 'as' => 'auth.', 
-  // Route::get('/', function() {})->name('main');
-  // Route::get('route-url', 'Services\ServiceController@routeUrl');
-
-
-
-  // route-url
-
   // Auth
   Route::get('register', 'RegisterController@create')->name('register')->middleware('guest');
   Route::post('register', 'RegisterController@store')->middleware('guest');

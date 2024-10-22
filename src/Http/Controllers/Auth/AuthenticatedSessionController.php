@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 
-use Illuminate\Auth\Events\Lockout;
-use Illuminate\Auth\Events\Login;
+
+
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Str;
+
+
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 use Validator;
 // use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use App\Http\Controllers\Controller;
@@ -46,6 +45,8 @@ class AuthenticatedSessionController extends Controller
   public function __construct()
   {
     // $this->middleware('guest')->except('logout');
+    \Log::info('AuthenticatedSessionController __construc');
+    \Log::info(url()->previous());
   }
 
 
@@ -56,8 +57,8 @@ class AuthenticatedSessionController extends Controller
    */
   public function create(Request $request)
   {
-    $f = $request->f; // f 가  auth.mypage.order 이면 주문내역 확인 이므로 비회원인 경우 주문내역으로 바록가게 하고 없으면 일반적 로그인이므로 비회원 주문확인을 삭제한다.
-    // return view('auth.'.config('auth.template.auth.theme').'.login', ['f'=>$f]);
+    $f = $request->f; // f 가  auth.mypage.order 이면 주문내역 확인 이므로 비회원인 경우 주문내역으로 바록가게 하고 없으면 일반적 로그인이므로 비회원 주문확인을 삭제한다.   
+    session()->put('url.intended',url()->previous());
     return view('auth.templates.views.'.config('auth-pondol.template.user').'.login', ['f'=>$f]);
   }
 
@@ -82,6 +83,7 @@ class AuthenticatedSessionController extends Controller
 
     $user = \Auth::user();
 
+  
     if($user->active == 0 && config('auth-pondol.activate') != 'email') {
       // 이메일의 경우 로그인 후 인증받아야 함
       auth()->logout();  // logout
@@ -96,67 +98,11 @@ class AuthenticatedSessionController extends Controller
     $user->logined_at = date("Y-m-d H:i:s");
     $user->save();
     $this->storeToLog($user);
+ 
 
     return redirect()->intended(RouteServiceProvider::HOME);
   }
 
-  /**
-   * The user has been authenticated.
-   *
-   * @param  \Illuminate\Http\Request $request
-   * @param  mixed $user
-   * @return mixed
-   */
-  protected function authenticate($request)
-  {
-    $this->ensureIsNotRateLimited($request);
-
-    if (! Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
-        RateLimiter::hit($this->throttleKey($request));
-
-        throw ValidationException::withMessages([
-          'email' => trans('auth.failed'),
-        ]);
-    }
-
-    RateLimiter::clear($this->throttleKey($request));
-  }
-
-  /**
-   * Ensure the login request is not rate limited.
-   *
-   * @return void
-   *
-   * @throws \Illuminate\Validation\ValidationException
-   */
-  private function ensureIsNotRateLimited($request)
-  {
-    if (! RateLimiter::tooManyAttempts($this->throttleKey($request), 5)) {
-      return;
-    }
-
-    event(new Lockout($request));
-
-    $seconds = RateLimiter::availableIn($this->throttleKey($request));
-
-    throw ValidationException::withMessages([
-        'email' => trans('auth.throttle', [
-            'seconds' => $seconds,
-            'minutes' => ceil($seconds / 60),
-        ]),
-    ]);
-  }
-  /**
-   * Get the rate limiting throttle key for the request.
-   *
-   * @return string
-   */
-  public function throttleKey($request)
-  {
-    return Str::lower($request->input('email')).'|'.$request->ip();
-  }
-
-  
 
    /**
      * Destroy an authenticated session.
@@ -166,12 +112,8 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request)
     {
-      Auth::guard('web')->logout();
-
-      $request->session()->invalidate();
-
-      $request->session()->regenerateToken();
-
+      $this->_destroy($request);
+      // session()->forget('url.intented');
       return redirect('/');
     }
 }

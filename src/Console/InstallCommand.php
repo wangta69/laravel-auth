@@ -14,7 +14,7 @@ class InstallCommand extends Command
    *
    * @var string
    */
-  protected $signature = 'pondol:install-auth {type=full}'; // full, simple, skip, only
+  protected $signature = 'pondol:install-auth {type=full}'; // full, simple, only
 
   /**
    * The console command description.
@@ -43,6 +43,8 @@ class InstallCommand extends Command
 
   private function installLaravelAuth($type)
   {
+
+    // $this->info("installing Laravel Auth. type: ".$type);
 
     \Artisan::call('vendor:publish',  [
       '--force'=> true,

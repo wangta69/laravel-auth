@@ -1,7 +1,90 @@
 <?php
 namespace App\Traits\Auth;
 
+use Illuminate\Auth\Events\Lockout;
+use Illuminate\Auth\Events\Login;
+
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+
 trait AuthenticatedSession {
+
+
+
+/**
+     * Destroy an authenticated session.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    protected function _destroy($request)
+    {
+      Auth::guard('web')->logout();
+
+      $request->session()->invalidate();
+
+      $request->session()->regenerateToken();
+    }
+
+
+    /**
+   * The user has been authenticated.
+   *
+   * @param  \Illuminate\Http\Request $request
+   * @param  mixed $user
+   * @return mixed
+   */
+  protected function authenticate($request)
+  {
+    $this->ensureIsNotRateLimited($request);
+
+    if (! Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
+        RateLimiter::hit($this->throttleKey($request));
+
+        throw ValidationException::withMessages([
+          'email' => trans('auth.failed'),
+        ]);
+    }
+
+    RateLimiter::clear($this->throttleKey($request));
+  }
+
+  /**
+   * Ensure the login request is not rate limited.
+   *
+   * @return void
+   *
+   * @throws \Illuminate\Validation\ValidationException
+   */
+  protected function ensureIsNotRateLimited($request)
+  {
+    if (! RateLimiter::tooManyAttempts($this->throttleKey($request), 5)) {
+      return;
+    }
+
+    event(new Lockout($request));
+
+    $seconds = RateLimiter::availableIn($this->throttleKey($request));
+
+    throw ValidationException::withMessages([
+      'email' => trans('auth.throttle', [
+        'seconds' => $seconds,
+        'minutes' => ceil($seconds / 60),
+      ]),
+    ]);
+  }
+
+    /**
+   * Get the rate limiting throttle key for the request.
+   *
+   * @return string
+   */
+  protected function throttleKey($request)
+  {
+    return Str::lower($request->input('email')).'|'.$request->ip();
+  }
 
   private function storeToLog($user) {
     $http_referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER']:"";

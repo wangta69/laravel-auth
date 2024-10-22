@@ -47,20 +47,20 @@ class AuthServiceProvider extends ServiceProvider { //  implements DeferrablePro
     // $this->loadViewsFrom(__DIR__.'/resources/views', 'auth');
 
     if(file_exists( base_path('/routes/auth-admin.php')  )) {
-      Route::middleware(['web'])->group(function () {
+      // Route::middleware(['web'])->group(function () {
         $this->loadRoutesFrom(base_path('/routes/auth-admin.php'));
-      });
+      // });
     }
     if(file_exists( base_path('/routes/auth.php')  )) {
-      Route::middleware(['web'])->group(function () {
+      // Route::middleware(['web'])->group(function () {
         $this->loadRoutesFrom(base_path('/routes/auth.php'));
-      });
+      // });
     }
 
 
     $this->publishes([
       __DIR__.'/resources/pondol/auth/route.js' => resource_path('pondol/route.js'),
-      __DIR__.'/resources/pondol/auth/' => public_path('pondol/auth'),
+      __DIR__.'/resources/pondol/' => public_path('pondol'),
       // copy config
       __DIR__.'/config/auth-pondol.php' => config_path('auth-pondol.php'),
       // // copy resource 파일

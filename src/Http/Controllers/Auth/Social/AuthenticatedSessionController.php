@@ -18,13 +18,13 @@ use App\Providers\RouteServiceProvider;
 // use App\Http\Controllers\Services\ConfigService;
 use App\Http\Controllers\Controller;
 
-use App\Traits\Auth\Login;
+use App\Traits\Auth\AuthenticatedSession;
 use App\Events\Registered as MarketRegistered;
 
 class AuthenticatedSessionController extends Controller
 {
 
-  use Login;
+  use AuthenticatedSession;
 
   public function __construct() // ConfigService $configSvc
   {
