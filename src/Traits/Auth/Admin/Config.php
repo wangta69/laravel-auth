@@ -1,6 +1,6 @@
 <?php
-namespace App\Traits\Auth\Admin;
-use App\Models\Auth\User\UserConfig;
+namespace Pondol\Auth\Traits\Auth\Admin;
+use Pondol\Auth\Models\User\UserConfig;
 
 trait Config
 {
@@ -17,7 +17,7 @@ trait Config
   public function _index($request)
   {
 
-    $user = config('auth-pondol');
+    $user = config('pondol-auth');
     $termsOfUse = UserConfig::where('key', 'termsOfUse')->first();
     $privacyPolicy = UserConfig::where('key', 'privacyPolicy')->first();
 
@@ -41,7 +41,7 @@ trait Config
     UserConfig::where('key', 'termsOfUse')->update(['value'=>$request->termsOfUse]);
     UserConfig::where('key', 'privacyPolicy')->update(['value'=>$request->privacyPolicy]);
 
-    configSet('auth-pondol', [
+    configSet('pondol-auth', [
       'activate' => $request->activate, 
       'template.user'=>$request->t_user, 
       'template.mail'=>$request->t_mail,

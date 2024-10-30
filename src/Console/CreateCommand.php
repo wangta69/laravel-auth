@@ -4,8 +4,8 @@ namespace Pondol\Auth\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Auth\User\User;
-use App\Models\Auth\Role\Role;
+use Pondol\Auth\Models\User\User;
+use Pondol\Auth\Models\Role\Role;
 
 
 class CreateCommand extends Command

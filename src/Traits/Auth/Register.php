@@ -1,5 +1,5 @@
 <?php
-namespace App\Traits\Auth;
+namespace Pondol\Auth\Traits\Auth;
 
 trait Register {
 

@@ -1,5 +1,5 @@
 <?php
-namespace App\Traits\Auth;
+namespace Pondol\Auth\Traits\Auth;
 
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Auth\Events\Login;
@@ -92,7 +92,7 @@ trait AuthenticatedSession {
     $http_user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT']:"";
     $remote_addr = $this->getRealIpAddr();
 
-    $log = new \App\Models\Auth\User\UserLog;
+    $log = new \Pondol\Auth\Models\User\UserLog;
     $log->user_id = $user->id;
     $log->http_referer = $http_referer;
     $log->http_origin = $http_origin;

@@ -50,15 +50,11 @@
         </div>
         <div class="col-10">
           <x-editor-components
-            template="tinymce" 
             name="termsOfUse" 
             id="termsOfUse" 
             :value=$termsOfUse 
             :attr="['class'=>'form-control']"
             type="start" />
-            {{--
-            @include ('editor::tinymce.editor', ['name'=>'termsOfUse', 'id'=>'termsOfUse', 'value'=>$termsOfUse, 'attr'=>['class'=>'form-control']])
-            --}}
         </div>
       </div>
 
@@ -70,15 +66,11 @@
         <div class="col-10">
        
         <x-editor-components 
-         template="tinymce"
           name="privacyPolicy" 
           id="privacyPolicy" 
           :value=$privacyPolicy 
           :attr="['class'=>'form-control']"
           type="end"/>
-          {{--
-          @include ('editor::tinymce.editor', ['name'=>'privacyPolicy', 'id'=>'privacyPolicy', 'value'=>$privacyPolicy, 'attr'=>['class'=>'form-control']])
-          --}}
         </div>
 
       </div>

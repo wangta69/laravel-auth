@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Notifications;
+namespace Pondol\Auth\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -47,7 +47,7 @@ class sendEmailRegisteredNotification extends Notification  implements ShouldQue
     //   ->line('Thank you for using our application!');
 
     return (new MailMessage)->subject('['.config('app.name').'] 회원가입안내 메일')->view(
-      'auth.templates.mail.'.config('auth-pondol.template.mail').'.register',
+      'auth.templates.mail.'.config('pondol-auth.template.mail').'.register',
       [
         'notifiable' => $notifiable
       ]);

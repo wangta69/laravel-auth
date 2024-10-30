@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Traits\Auth\Admin;
+namespace Pondol\Auth\Traits\Auth\Admin;
 
 use Validator;
 
-use App\Models\Auth\User\User as mUser;
+use Pondol\Auth\Models\User\User as mUser;
 
 trait User 
 {
@@ -23,7 +23,6 @@ trait User
     $to_date = $request->to_date;
     $active = $request->active;
 
-    // $users = app('App\Models\Auth\User\User')
     $users = mUser::select(
       'users.id', 'users.email', 'users.name', 'users.active', 'users.point', 'users.logined_at', 'users.created_at', 'users.deleted_at'
     );
@@ -175,7 +174,7 @@ trait User
     if ($active != 9) {
       $user->deleted_at = null;
     } else {
-      $deactivate = \App\Models\Auth\User\UserDeactivate::where('user_id', $user_id)->first();
+      $deactivate = \Pondol\Auth\Models\User\UserDeactivate::where('user_id', $user_id)->first();
       $deactivate->delete();
     }
 

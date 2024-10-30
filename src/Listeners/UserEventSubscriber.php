@@ -1,6 +1,6 @@
 <?php
  
-namespace App\Listeners;
+namespace Pondol\Auth\Listeners;
  
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
@@ -10,8 +10,8 @@ use Illuminate\Auth\Events\Registered;
 // use Illuminate\Auth\Events\Registered;
 
 use Illuminate\Events\Dispatcher;
-use App\Notifications\sendEmailRegisteredNotification;
-use App\Traits\Point;
+use Pondol\Auth\Notifications\sendEmailRegisteredNotification;
+use Pondol\Auth\Traits\Point;
 class UserEventSubscriber
 {
 
@@ -48,16 +48,6 @@ class UserEventSubscriber
      */
     public function subscribe(Dispatcher $events)
     {
-      // $events->listen(
-      //   Login::class,
-      //   [UserEventSubscriber::class, 'handleUserLogin']
-      // );
-
-      // $events->listen(
-      //   Logout::class,
-      //   [UserEventSubscriber::class, 'handleUserLogout']
-      // );
-
       return [
         Login::class => 'handleUserLogin',
         Logout::class => 'handleUserLogout',

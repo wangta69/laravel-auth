@@ -3,7 +3,6 @@ namespace Pondol\Auth\Console;
 
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Console\Command;
-use Illuminate\Filesystem\Filesystem;
 
 class InstallCommand extends Command
 {
@@ -44,8 +43,6 @@ class InstallCommand extends Command
   private function installLaravelAuth($type)
   {
 
-    // $this->info("installing Laravel Auth. type: ".$type);
-
     \Artisan::call('vendor:publish',  [
       '--force'=> true,
       '--provider' => 'Pondol\Auth\AuthServiceProvider'
@@ -59,17 +56,13 @@ class InstallCommand extends Command
     }
     \Artisan::call('migrate');
     $this->info("The pondol's laravel auth installed successfully.");
+    $this->comment('To create account, please execute the "php artisan pondol:create-auth" command.');
   }
 
   private function simpleCase() {
-    $this->replaceInFile("'model' => App\Models\User::class,", "'model' => App\Models\Auth\User\User::class,", config_path('auth.php'));
+    replaceInFile("'model' => App\Models\User::class,", "'model' => Pondol\Auth\Models\User\User::class,", config_path('auth.php'));
     if(!Schema::hasTable('jobs')) {
       \Artisan::call('queue:table'); // job table  생성 (11 은 php artisan make:queue-table) 명령을 사용하는데 호환성 테스트 필요
     }
-  }
-
-  private function replaceInFile($search, $replace, $path)
-  {
-    file_put_contents($path, str_replace($search, $replace, file_get_contents($path)));
   }
 }

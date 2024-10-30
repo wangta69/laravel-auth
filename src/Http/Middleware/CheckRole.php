@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Middleware;
+namespace Pondol\Auth\Http\Middleware;
 use Closure;
 class CheckRole
 {

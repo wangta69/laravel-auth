@@ -6,6 +6,7 @@ composer require wangta69/laravel-auth
 php artisan pondol:install-auth
 ```
 ## Crate user
+> 세팅이후 관리자용 계정을 세팅합니다.
 ```
 php artisan pondol:create-auth
 ```

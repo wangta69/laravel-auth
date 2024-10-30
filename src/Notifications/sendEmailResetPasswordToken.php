@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Notifications;
+namespace Pondol\Auth\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -51,7 +51,7 @@ class sendEmailResetPasswordToken extends Notification  implements ShouldQueue
     //   ->line('Thank you for using our application!');
     $actionUrl  = route('password.reset', [$token]);
     return (new MailMessage)->subject('['.config('app.name').'] 비밀번호 초기화')->view(
-      'auth.templates.mail.'.config('auth-pondol.template.mail').'.resetpassword',
+      'auth.templates.mail.'.config('pondol-auth.template.mail').'.resetpassword',
       [
         'actionUrl' => $actionUrl,
         'notifiable' => $notifiable

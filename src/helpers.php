@@ -12,3 +12,10 @@ if (!function_exists('configSet')) {
     // \Artisan::call('config:cache'); // 만약 production mode이고 config를 cache 하여 사용하면
   }
 }
+
+if (!function_exists('replaceInFile')) {
+  function replaceInFile($search, $replace, $path)
+  {
+    file_put_contents($path, str_replace($search, $replace, file_get_contents($path)));
+  }
+}

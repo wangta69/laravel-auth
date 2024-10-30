@@ -1,7 +1,7 @@
 <?php
-namespace App\Traits;
+namespace Pondol\Auth\Traits;
 
-use App\Models\Auth\User\UserPoint;
+use Pondol\Auth\Models\User\UserPoint;
 
 trait Point
 {
@@ -36,14 +36,14 @@ trait Point
   }
 
   public function _register($user) {
-    $point = config('auth-pondol.point.register');
+    $point = config('pondol-auth.point.register');
     if($point) {
       $this->_insertPoint($user, $point, 'register', null, $user->id);
     }
   }
 
   public function _login($user) {
-    $point = config('auth-pondol.point.login');
+    $point = config('pondol-auth.point.login');
     if($point) {
       $this->_insertPoint($user, $point, 'login', null, $user->id);
     }
