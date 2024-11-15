@@ -51,11 +51,11 @@ class AuthServiceProvider extends ServiceProvider { //  implements DeferrablePro
     $this->loadAuthRoutes();
 
     $this->publishes([
-      __DIR__.'/resources/pondol/auth/route.js' => resource_path('pondol/route.js'),
-      __DIR__.'/resources/pondol/' => public_path('pondol'),
-
-      __DIR__.'/resources/views/auth' => resource_path('views/auth'),
+      __DIR__.'/resources/views/templates' => resource_path('views/auth/templates'),
+      __DIR__.'/resources/pondol' => public_path('pondol'),
     ]);
+
+    $this->loadViewsFrom(__DIR__.'/resources/views', 'pondol-auth');
 
     $router->aliasMiddleware('role', CheckRole::class);
 		$router->pushMiddlewareToGroup('admin', 'role:administrator');

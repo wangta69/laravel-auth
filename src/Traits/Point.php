@@ -8,10 +8,9 @@ trait Point
   /**
    * 입금및 게임시 처리 (별도의 hold_point를 처리하지 않는다.)
    * @param Object $user
-   * @param String $item : admin |
-   * \App\Services\PointService::insertPoint($user, $point, 'gameCrypto', 'win', $player->id);
-   * \App\Services\PointService::insertPoint($user, $point, 'gameFx', 'win', $player->id);
-   * \App\Services\PointService::insertPoint($user, $amount, 'deposit', $symbol, $deposit->id);
+   * @param String $item : 포인트 지불 flag(admino, order, event)
+   * @param String $sub_item : $item 보다 디테일하게 처리, 가령 event 일경우 어떤 이벤트인지
+   * @param  Integer $rel_item: 참조테이블의 ID
    */
   public function _insertPoint($user, $point, $item = null, $sub_item = null, $rel_item = null) {
 
@@ -35,6 +34,7 @@ trait Point
     return;
   }
 
+  // 회원가입 포인트
   public function _register($user) {
     $point = config('pondol-auth.point.register');
     if($point) {
@@ -42,12 +42,11 @@ trait Point
     }
   }
 
+  // 회원 로그인 포인트
   public function _login($user) {
     $point = config('pondol-auth.point.login');
     if($point) {
       $this->_insertPoint($user, $point, 'login', null, $user->id);
     }
   }
-
-
 }

@@ -24,7 +24,7 @@ class ConfigController extends Controller
   {
 
     $result = $this->_index($request);
-    return view('auth.admin.users.config', $result);
+    return view('pondol-auth::admin.users.config', $result);
   }
 
   public function update(Request $request) {

@@ -29,7 +29,7 @@ class UserController extends Controller
     $users = $this->_index($request);
     $users = $users->withTrashed()->orderBy('id', 'desc')->paginate(20)->appends(request()->query());
 
-    return view('auth.admin.users.index', [
+    return view('pondol-auth::admin.users.index', [
       'users' => $users
     ]);
   }
@@ -39,7 +39,7 @@ class UserController extends Controller
    */
   public function create()
   {
-    return view('auth.admin.users.create', [
+    return view('pondol-auth::admin.users.create', [
       'roles' => Role::get(),
     ]);
   }
@@ -63,7 +63,7 @@ class UserController extends Controller
   public function show($user)
   {
     $user = $this->_show($user);
-    return view('auth.admin.users.show', [
+    return view('pondol-auth::admin.users.show', [
       'user' => $user,
     ]);
   }
@@ -77,7 +77,7 @@ class UserController extends Controller
   public function edit(User $user)
   {
     // 총레벨
-    return view('auth.admin.users.edit', [
+    return view('pondol-auth::admin.users.edit', [
       'user' => $user,
       'roles' => Role::get(),
     ]);

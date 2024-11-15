@@ -52,6 +52,7 @@ class InstallCommand extends Command
       $this->simpleCase();
       if ($type == 'full') {
         $this->call('pondol:install-editor');
+        $this->call('pondol:install-common');
       }
     }
     \Artisan::call('migrate');

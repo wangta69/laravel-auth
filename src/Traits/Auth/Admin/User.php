@@ -3,7 +3,7 @@
 namespace Pondol\Auth\Traits\Auth\Admin;
 
 use Validator;
-
+use Carbon\Carbon;
 use Pondol\Auth\Models\User\User as mUser;
 
 trait User 
@@ -38,9 +38,13 @@ trait User
       if (!$to_date) {
         $to_date = date("Y-m-d");
       }
-      $users = $users->where(function ($q) use($from_date, $to_date) {
-        $q->whereRaw("users.created_at >= '".$from_date." 00:00:00' AND users.created_at <= '".$to_date." 23:59:59'" );
-      });
+
+      $from_date = Carbon::createFromFormat('Y-m-d', $from_date);
+      $to_date = Carbon::createFromFormat('Y-m-d', $to_date);
+      $user =  $users->whereBetween('users.created_at', [$from_date->startOfDay(), $to_date->endOfDay()]);
+      // $users = $users->where(function ($q) use($from_date, $to_date) {
+      //   $q->whereRaw("users.created_at >= '".$from_date." 00:00:00' AND users.created_at <= '".$to_date." 23:59:59'" );
+      // });
     }
 
     if($active) {

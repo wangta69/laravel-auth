@@ -19,7 +19,9 @@
       "laravel/socialite": "^5",
       "laravel/ui": "*",
       "tymon/jwt-auth": "^1",
-      "wangta69/laravel-editor": "^8"
+      "wangta69/laravel-editor": "^8",
+      "wangta69/laravel-components": "^1.0",
+      "wangta69/laravel-pondol": "^0.0"
     },
     "autoload": {
       "files": [

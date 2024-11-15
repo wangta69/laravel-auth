@@ -2,13 +2,10 @@
 
 namespace Pondol\Auth\Http\Controllers;
 
-
 use Illuminate\Support\Facades\Auth;
-
-
 use Illuminate\Http\Request;
+
 use Validator;
-// use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Pondol\Auth\Traits\Auth\AuthenticatedSession;
@@ -17,8 +14,6 @@ class AuthenticatedSessionController extends Controller
 {
 
   use AuthenticatedSession;
-  // use AuthenticatesUsers;
-
   /**
    * Where to redirect users after login.
    *
@@ -27,14 +22,6 @@ class AuthenticatedSessionController extends Controller
   // protected $redirectTo = RouteServiceProvider::ADMIN;
   // protected $redirectTo = '/';
 
-  // protected function redirectTo()
-  // {
-  //   if (auth()->user()->role == 'administrator') {
-  //     return '/admin';
-  //   }
-  //   return '/admin1';
-  // }
-
   /**
    * Create a new controller instance.
    *
@@ -42,13 +29,7 @@ class AuthenticatedSessionController extends Controller
    */
   public function __construct()
   {
-    // $this->middleware('guest')->except('logout');
-    \Log::info('AuthenticatedSessionController __construc');
-    \Log::info(url()->previous());
   }
-
-
-
 
   /**
    * 로그인 폼 출력
@@ -75,9 +56,7 @@ class AuthenticatedSessionController extends Controller
       ->withInput($request->except('password'));
     }
 
-
     $this->authenticate($request);    //authenticate 시  자동으로 Login event 발생 event(new Login(config('auth.defaults.guard'), $user, ''));
-    // $request->session()->regenerate();
 
     $user = \Auth::user();
 
@@ -103,15 +82,15 @@ class AuthenticatedSessionController extends Controller
 
 
    /**
-     * Destroy an authenticated session.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function destroy(Request $request)
-    {
-      $this->_destroy($request);
-      // session()->forget('url.intented');
-      return redirect('/');
-    }
+   * Destroy an authenticated session.
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @return \Illuminate\Http\RedirectResponse
+   */
+  public function destroy(Request $request)
+  {
+    $this->_destroy($request);
+    // session()->forget('url.intented');
+    return redirect('/');
+  }
 }
