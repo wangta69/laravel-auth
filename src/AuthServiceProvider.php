@@ -9,6 +9,7 @@ use Pondol\Auth\Console\InstallCommand;
 use Pondol\Auth\Console\CreateCommand;
 use Pondol\Auth\Listeners\UserEventSubscriber;
 use Pondol\Auth\Http\Middleware\CheckRole;
+use Pondol\Auth\Http\Middleware\VerifyEmail;
 
 class AuthServiceProvider extends ServiceProvider { //  implements DeferrableProvider
   /**
@@ -60,7 +61,7 @@ class AuthServiceProvider extends ServiceProvider { //  implements DeferrablePro
     $router->aliasMiddleware('role', CheckRole::class);
 		$router->pushMiddlewareToGroup('admin', 'role:administrator');
     $kernel = app(\Illuminate\Contracts\Http\Kernel::class);
-    $kernel->pushMiddleware(\App\Http\Middleware\VerifyEmail::class);
+    $kernel->pushMiddleware(VerifyEmail::class);
   }
 
 
