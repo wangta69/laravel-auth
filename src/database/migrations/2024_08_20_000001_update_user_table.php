@@ -93,5 +93,7 @@ class  UpdateUserTable extends Migration
       $table->string('password')->change();
       //password field nullable (for social login)
     });
+    
+      
   }
 }

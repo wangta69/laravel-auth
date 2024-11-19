@@ -15,7 +15,6 @@
 
             <form method="POST" action="{{ route('login') }}" style="width: 100%;">
                 @csrf
-            <div class="">
             <div class="form-floating mb-3">
               <input class="form-control" id="inputEmail" type="email" name="email"  value="{{ old('email') }}" placeholder="name@example.com">
               <label for="inputEmail">Email address</label>
