@@ -204,14 +204,14 @@ class RegisterController extends Controller
 
       if (isset($request->mobile)) {
         $user->mobile = $request->mobile;
-        $user->save();
       }
 
       // $usercfg = $this->configSvc->get('user');
       if(config('pondol-auth.activate') == "auto") {
         $user->active = 1;
-        $user->save();
       }
+
+      $user->save();
 
       // 추가 (기본 role 적용)
       // if (config('pondol-auth.roles.default_role')) {

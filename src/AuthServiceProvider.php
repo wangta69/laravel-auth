@@ -5,6 +5,8 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Event;
 
+use SocialiteProviders\Manager\SocialiteWasCalled;
+
 use Pondol\Auth\Console\InstallCommand;
 use Pondol\Auth\Console\CreateCommand;
 use Pondol\Auth\Listeners\UserEventSubscriber;
@@ -43,6 +45,44 @@ class AuthServiceProvider extends ServiceProvider { //  implements DeferrablePro
     $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
 
     Event::subscribe(UserEventSubscriber::class);
+    Event::listen(
+      SocialiteWasCalled::class,
+      ['\SocialiteProviders\\Naver\\NaverExtendSocialite', 'handle'],
+    );
+
+    Event::listen(
+      SocialiteWasCalled::class,
+      ['\SocialiteProviders\\Kakao\\KakaoExtendSocialite', 'handle']
+    );
+
+    // Event::listen(
+    //   SocialiteWasCalled::class,
+    //   ['\SocialiteProviders\\Naver\\NaverExtendSocialite@handle', '\SocialiteProviders\\Kakao\\KakaoExtendSocialite@handle']
+    // );
+
+
+    // SocialiteWasCalled::subscribe('SocialiteProviders\\Naver\\NaverExtendSocialite@handle');
+    // SocialiteWasCalled::subscribe('SocialiteProviders\\Kakao\\KakaoExtendSocialite@handle');
+    // $this->app->bind(SocialiteWasCalled::class, [
+    //   'SocialiteProviders\\Naver\\NaverExtendSocialite@handle',
+    //   'SocialiteProviders\\Kakao\\KakaoExtendSocialite@handle',
+    //   ]);
+
+    // $this->app->register(SocialiteWasCalled::class) => [];
+
+    // Event::subscribe(SocialiteWasCalled::class);
+    // \SocialiteProviders\Manager\SocialiteWasCalled::class => [
+    //   // add your listeners (aka providers) here
+    //   'SocialiteProviders\\Naver\\NaverExtendSocialite@handle',
+    //   'SocialiteProviders\\Kakao\\KakaoExtendSocialite@handle',
+    // ],
+
+  //   \SocialiteProviders\Manager\SocialiteWasCalled::class => [
+  //     // add your listeners (aka providers) here
+  //     // 'SocialiteProviders\\Naver\\NaverExtendSocialite@handle',
+  //     // 'SocialiteProviders\\Kakao\\KakaoExtendSocialite@handle',
+  // ],
+
 
     $this->commands([
       InstallCommand::class,

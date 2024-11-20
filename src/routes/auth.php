@@ -1,7 +1,4 @@
 <?php
-
-// Route::group(['namespace' => 'App\Http\Controllers\Auth', 'middleware' => ['web']], function () { // 'as' => 'auth.', 
-// });
 Route::get('register', 'RegisterController@create')->name('register')->middleware('guest');
 Route::post('register', 'RegisterController@store')->middleware('guest');
 Route::get('register/agreement', 'RegisterController@agreement')->name('register.agreement')->middleware('guest');
@@ -24,13 +21,19 @@ Route::get('cancel-account/success', 'DestroyController@success')->name('cancel.
 
 // 로그인창 가져오기위한 라우터
 Route::get('/auth/social/{provider}/redirect', 'Social\AuthenticatedSessionController@redirectToProvider');
-
 // 로그인 인증후 데이터를 제공해주는 라우터
 Route::get('/auth/social/{provider}/callback', 'Social\AuthenticatedSessionController@handleProviderCallback');
-Route::get('/auth/social/{provider}/login', 'Social\LoginAppController@handleProviderAppCallback');
-Route::get('/auth/social/{provider}/logout', 'Social\LoginAppController@logout');
+// Route::get('/auth/social/{provider}/login', 'Social\LoginAppController@handleProviderAppCallback');
+// Route::get('/auth/social/{provider}/logout', 'Social\LoginAppController@logout');
 
 
 Route::get('verify-email', 'EmailVerificationPromptController@__invoke')->name('verification.notice')->middleware('auth');
 Route::get('verify-email/{id}/{hash}', 'VerifyEmailController@__invoke')->middleware(['auth', 'signed', 'throttle:6,1'])->name('verification.verify');
 Route::post('email/verification-notification', 'EmailVerificationNotificationController@store')->middleware('auth', 'throttle:6,1')->name('verification.send');
+
+
+Route::get('/user', 'UserController@profile')->name('user.profile')->middleware('auth');
+Route::get('/user/edit', 'UserController@edit')->name('user.edit')->middleware('auth');
+Route::put('/user/edit', 'UserController@update')->middleware('auth');
+Route::get('/user/password', 'UserController@changePassword')->name('user.change-password')->middleware('auth');
+Route::put('/user/password', 'UserController@updatePassword')->middleware('auth');

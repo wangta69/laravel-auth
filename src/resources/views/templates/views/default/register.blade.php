@@ -14,6 +14,8 @@
               <div class="mt-1">
                 <a href='/auth/social/github/redirect' class="btn btn-light">Github</a>
                 <a href='/auth/social/google/redirect' class="btn btn-light">Google</a>
+                <a href='/auth/social/naver/redirect' class="btn btn-light">Naver</a>
+                <a href='/auth/social/kakao/redirect' class="btn btn-light">KaKao</a>
               </div>
               
               <hr class="hr" />

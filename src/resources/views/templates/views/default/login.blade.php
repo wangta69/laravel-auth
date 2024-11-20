@@ -10,9 +10,14 @@
             <h3 class="title">로그인</h3>
           </div>
           <div class="card-body">
-            <a href='/auth/social/github/redirect' class="btn">github</a>
-            <a href='/auth/social/google/redirect' class="btn">구글 로그인</a>
-
+            <h4>Social Login</h4>
+            <a href='/auth/social/github/redirect' class="btn btn-info">Github</a>
+            <a href='/auth/social/google/redirect' class="btn btn-info">Google</a>
+            <a href='/auth/social/naver/redirect' class="btn btn-info">Naver</a>
+            <a href='/auth/social/kakao/redirect' class="btn btn-info">KaKao</a>
+          </div>
+          <div class="card-body">
+            <h4>Login with email</h4>
             <form method="POST" action="{{ route('login') }}" style="width: 100%;">
                 @csrf
             <div class="form-floating mb-3">

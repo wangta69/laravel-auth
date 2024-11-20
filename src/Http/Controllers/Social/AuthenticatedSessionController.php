@@ -10,25 +10,26 @@ use JWTAuth;
 
 use Laravel\Socialite\Facades\Socialite;
 
+
 use Pondol\Auth\Models\Role\Role;
 use Pondol\Auth\Models\User\User;
 use Pondol\Auth\Models\User\SocialAccount;
 
 use App\Providers\RouteServiceProvider;
-// use App\Http\Controllers\Services\ConfigService;
 use App\Http\Controllers\Controller;
 
 use Pondol\Auth\Traits\Auth\AuthenticatedSession;
-use App\Events\Registered as MarketRegistered;
 
+
+// https://vuxy.tistory.com/entry/Laravel-8-%EC%86%8C%EC%85%9C%EB%A1%9C%EA%B7%B8%EC%9D%B8Laravel-Socialite-1
 class AuthenticatedSessionController extends Controller
 {
 
   use AuthenticatedSession;
 
-  public function __construct() // ConfigService $configSvc
+  public function __construct() 
   {
-    // $this->configSvc = $configSvc;
+
   }
   // 1. redirectToProvider() 구글에 로그인요청
   public function redirectToProvider($provider)
@@ -42,22 +43,22 @@ class AuthenticatedSessionController extends Controller
         return Socialite::driver('google')->with(['access_type'=>'offline', 'prompt'=>'consent' ])->redirect();
         // return Socialite::driver('google')->with(['access_type'=>'offline', 'prompt'=>'consent' ])->redirect();
         break;
+      default:
+        return Socialite::driver($provider)->redirect();
+        break;
     }
   }
 
-// 2. handleProviderCallback () 로그인한 후에 이미 만들어진 아이디인지 확인후 처리
+  // 2. handleProviderCallback () 로그인한 후에 이미 만들어진 아이디인지 확인후 처리
   public function handleProviderCallback($provider)
   {
-    switch($provider) {
-      case 'github': case 'google':
-        //구글에서 로그인확인후 정보 제공
-        $socialUser = Socialite::driver($provider)->stateless()->user();
-        break;
-    }
+    $socialUser = Socialite::driver($provider)->stateless()->user();
 
-   
+
     // 유저가 이미 회원인지 확인하는 메서드입니다.
     $result = $this->findOrCreateUser($provider, $socialUser);
+
+
     $user = $result['user'];
     $type = $result['type'];
 
@@ -68,7 +69,6 @@ class AuthenticatedSessionController extends Controller
 
   //토큰을 활용하기위해 로컬에 저장해도 되고 세션에 저장하거나 쿠키에 저장해서 활용할 수 있겠습니다.
     if($type=="register") {
-      event(new MarketRegistered($user));
       return redirect()->route('register.success');
     } else { // login
       return redirect()->intended(RouteServiceProvider::HOME);
@@ -82,9 +82,9 @@ class AuthenticatedSessionController extends Controller
   */
   private function findOrCreateUser($provider, $socialUser){
 
-    $user = User::where('name', $socialUser->getName())
-      ->where('email', $socialUser->getEmail())
+    $user = User::where('email', $socialUser->getEmail())
       ->first();
+
     $type = 'login';
     if(!$user) {
       $type = 'register';
@@ -92,16 +92,14 @@ class AuthenticatedSessionController extends Controller
       $user->name = $socialUser->getName();
       $user->email = $socialUser->getEmail();
 
-      $usercfg = $this->configSvc->get('user');
-      if($usercfg['active'] == "auto") {
+      if(config('pondol-auth.activate') == "auto") {
         $user->active = 1;
       }
+
+      $user->save();
   
       // 추가 (기본 role 적용)
-      if (config('auth.roles.default_role')) {
-        $user->roles()->attach(Role::firstOrCreate(['name' => config('auth.roles.default_role')]));
-      }
-
+      $user->roles()->attach(Role::firstOrCreate(['name' =>config('pondol-auth.roles.default_role')]));
       event(new Registered($user));
     }
 
@@ -136,6 +134,4 @@ class AuthenticatedSessionController extends Controller
       ]);
     }
   }
-
-
 }

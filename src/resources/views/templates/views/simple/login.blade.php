@@ -10,8 +10,10 @@
             <h3 class="title">로그인</h3>
           </div>
           <div class="card-body">
-            <a href='/auth/social/github/redirect' class="btn">github</a>
-            <a href='/auth/social/google/redirect' class="btn">구글 로그인</a>
+            <a href='/auth/social/github/redirect' class="btn btn-light">Github</a>
+            <a href='/auth/social/google/redirect' class="btn btn-light">Google</a>
+            <a href='/auth/social/naver/redirect' class="btn btn-light">Naver</a>
+            <a href='/auth/social/kakao/redirect' class="btn btn-light">KaKao</a>
 
             <form method="POST" action="{{ route('market.login') }}" style="width: 100%;">
                 @csrf
