@@ -1,10 +1,10 @@
-@section('title', '회원가입')
+@section('title', 'Email verification')
 <x-pondol-common::app-bare header="pondol-auth::partials.front-header">
   <section>
     <div class="container">
       <div class="row justify-content-center">
-        <div class="col-lg-6">
-          <h2 class="title">회원가입</h2>
+        <div class="col-md-8">
+          <h2 class="title">Email verification</h2>
 
           <div class="card">
             <div class="card-body">
@@ -17,25 +17,19 @@
                 {{ __('A new verification link has been sent to the email address you provided during registration.') }}
               </div>
               @endif
-
-              <div class="mt-4 flex items-center justify-between">
+            </div> <!-- .card-body -->
+            <div class="card-footer d-flex justify-content-end">
                 <form method="POST" action="{{ route('verification.send') }}">
                   @csrf
-
-                  <div>
-                    <button class="btn btn-info">
+                    <button class="btn btn-info me-1">
                       {{ __('Resend Verification Email') }}
                     </button>
-                  </div>
                 </form>
 
-                <form method="POST" action="{{ route('logout') }}">
-                  @csrf
+                <a href="{{ route('logout') }}" class="btn btn-primary">
+                  {{ __('Log Out') }}
+                </a>
 
-                  <button type="submit" class="btn btn-primary">
-                    {{ __('Log Out') }}
-                  </button>
-                </form>
               </div>
             </div> <!-- .card-body -->
           </div><!-- .card -->

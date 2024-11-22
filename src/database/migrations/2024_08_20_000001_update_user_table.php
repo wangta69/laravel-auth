@@ -28,7 +28,7 @@ class  UpdateUserTable extends Migration
 
         if (!Schema::hasColumn('users', 'point')) {
           Schema::table('users', function (Blueprint $table) {
-            $table->integer('point')->nullable()->default(0)->after('remember_token');
+            $table->integer('point')->unsigned()->nullable()->default(0)->after('remember_token');
           });
         } else {
           // Schema::table('users', function (Blueprint $table) {
@@ -38,7 +38,7 @@ class  UpdateUserTable extends Migration
 
         if (!Schema::hasColumn('users', 'active')) {
           Schema::table('users', function (Blueprint $table) {
-            $table->tinyInteger('active')->nullable()->default(0)->after('remember_token')->comment('1: active, 0: not active');
+            $table->tinyInteger('active')->unsigned()->nullable()->default(0)->after('remember_token')->comment('0: not active, 1: active, 2:prohibit  9:roll out ');
           });
         } else {
           // Schema::table('users', function (Blueprint $table) {

@@ -15,7 +15,7 @@ use Pondol\Auth\Models\User\Traits\Relations\UserRelations;
 use Kyslik\ColumnSortable\Sortable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable implements JWTSubject
+class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 {
 
   use HasApiTokens, 

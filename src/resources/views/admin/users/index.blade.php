@@ -113,7 +113,6 @@
               <option value="0" @if ($user->active == '0') selected @endif>대기중</option>
               <option value="1" @if ($user->active == '1') selected @endif>인가됨</option>
               <option value="2" @if ($user->active == '2') selected @endif>차단됨</option>
-              <option value="8" @if ($user->active == '8') selected @endif>탈퇴 신청</option>
               <option value="9" @if ($user->active == '9') selected @endif>탈퇴</option>
             </select>
             @if($user->deleted_at)

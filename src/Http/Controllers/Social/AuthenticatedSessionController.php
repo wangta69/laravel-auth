@@ -18,7 +18,7 @@ use Pondol\Auth\Models\User\SocialAccount;
 use App\Providers\RouteServiceProvider;
 use App\Http\Controllers\Controller;
 
-use Pondol\Auth\Traits\Auth\AuthenticatedSession;
+use Pondol\Auth\Traits\AuthenticatedSession;
 
 
 // https://vuxy.tistory.com/entry/Laravel-8-%EC%86%8C%EC%85%9C%EB%A1%9C%EA%B7%B8%EC%9D%B8Laravel-Socialite-1
@@ -92,7 +92,7 @@ class AuthenticatedSessionController extends Controller
       $user->name = $socialUser->getName();
       $user->email = $socialUser->getEmail();
 
-      if(config('pondol-auth.activate') == "auto") {
+      if(config('pondol-auth.activate') == "auto" || config('pondol-auth.activate') == "email") { // social login은 이메일을 인증 받은 것으로 간주한다.
         $user->active = 1;
       }
 

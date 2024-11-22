@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use Pondol\Auth\Models\User\User;
 use Pondol\Auth\Models\Role\Role;
-use Pondol\Auth\Traits\Auth\Admin\User as tUser;
+use Pondol\Auth\Traits\Admin\User as tUser;
 use App\Http\Controllers\Controller;
 
 class UserController extends Controller

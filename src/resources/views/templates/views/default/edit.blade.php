@@ -1,30 +1,53 @@
+@section('title', '정보변경')
 <x-pondol-common::app-bare header="pondol-auth::partials.front-header">
+<section>
   <div class="container">
-    <form method="POST" action="{{ route('register') }}" style="width: 100%;">
-      @csrf
-      <div class="input-group mt-1">
-        <div class="form-floating flex-grow-1">
-          <input type="text" class="form-control" name="email" value="{{ old('email') }}" id="name" placeholder="name@example.com">
-          <label for='name' class='col-sm-2 control-label'>Email address</label>
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <h2 class="title">정보변경</h2>
+        <form method="POST" action="{{ route('user.edit') }}" style="width: 100%;">
+        @method('PUT')  
+        @csrf
           
-        </div>
-        <button class="btn btn-warning"><i class="fa fa-envelope"></i></button>
-      </div>
+          <div class="card mt-5">
+            <div class="card-body">
+            정보변경
+              <hr class="hr" />
 
-      <div class="input-group mt-1">
-        <div class="form-floating flex-grow-1">
-          <input type="text" class="form-control" name="password" value="{{ old('email') }}" id="password" placeholder="name@example.com">
-          <label for='password' class='col-sm-2 control-label'>Password</label>
-          
-        </div>
-        <button class="btn btn-warning"><i class="fa fa-lock"></i></button>
-      </div>
 
-      <div class="btnHome">
-        <button type="button" name="button" class="btn">
-            확인
-        </button>
-      </div>
-    </form>
-  </div>
-  </x-pondol-common::app-bare>
+              <div class="form-floating mt-1">
+                <input type="text" name="email" id="inputEmail" value="{{ old('email', $user->email) }}" readonly disabled class="form-control"/>
+                <label for="inputEmail">Email address</label>
+              </div>
+
+              <div class="form-floating mt-1">
+                <input type="text" id="inputName" name="name" value="{{ old('name', $user->name) }}" class="form-control"/>
+                <label for="inputName">Your name</label>
+              </div>
+              <hr class="hr" />
+              <div class="form-floating mt-1">
+                <input type="password" id="inputPassword" name="password" value="" class="form-control"/>
+                <label for="inputPassword">Please enter your current password</label>
+              </div>
+
+            </div><!-- .card-body -->
+            <x-pondol::validation-fail.first />
+            <div class="card-footer text-end">
+              <button type="submit" class="btn btn-primary">
+                변경하기
+              </button>
+            </div><!-- .card-footer -->
+          </form>
+        </div><!-- .card -->
+      </div><!-- col-lg-6-->
+    </div><!-- row justify-content-center -->
+  </div><!-- .container -->
+</section>
+@section ('styles')
+@parent
+<style>
+  .input-group-text { width: 45px}
+</style>
+@endsection
+
+</x-pondol-common::app-bare>

@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Validator;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
-use Pondol\Auth\Traits\Auth\AuthenticatedSession;
+use Pondol\Auth\Traits\AuthenticatedSession;
 
 class AuthenticatedSessionController extends Controller
 {

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class  CreateUserConfigTable extends Migration
+class  UpdateUserAggrement extends Migration
 {
   /**
    * Run the migrations.
@@ -13,16 +13,10 @@ class  CreateUserConfigTable extends Migration
    */
   public function up()
   {
-    if (!Schema::hasTable('user_configs')) {
-      Schema::create('user_configs', function(BluePrint $table) {
-        $table->string('key', '20');
-        $table->text('value');
-      });
+    if (Schema::hasTable('json_key_values')) {
 
-
-      DB::table('user_configs')->insert(
-          [
-            ['key' => 'termsOfUse','value' => '<b>제1조 목적</b><br>
+      DB::table('json_key_values')->updateOrInsert(
+        ['key' => 'user.aggrement.term-of-use'],['value' => '<b>제1조 목적1</b><br>
   <br>
   본 이용약관은 “사이트명”(이하 "사이트")의 서비스의 이용조건과 운영에 관한 제반 사항 규정을 목적으로 합니다.<br>
   <br><b>
@@ -144,8 +138,11 @@ class  CreateUserConfigTable extends Migration
   <br><b>
   부칙</b><br>
   <br>
-  이 약관은 &lt;사이트 개설일&gt;부터 시행합니다.'],
-            ['key' => 'privacyPolicy','value' => '<strong>1. 개인정보 수집목적 및 이용목적</strong><br>
+  이 약관은 &lt;사이트 개설일&gt;부터 시행합니다.']
+  );
+
+   DB::table('json_key_values')->updateOrInsert(
+        ['key' => 'user.aggrement.privacy-policy'],['value' => '<strong>1. 개인정보 수집목적 및 이용목적1</strong><br>
   <br>
   (1) 홈페이지 회원 가입 및 관리<br>
   회원 가입 의사 확인, 회원제 서비스 제공에 따른 본인 식별․인증, 회원자격 유지․관리, 제한적 본인확인제 시행에 따른 본인확인, 서비스 부정 이용 방지, 만 14세 미만 아동의 개인정보 처리시 법정대리인의 동의 여부 확인, 각종 고지․통지, 고충 처리 등의 목적<br>
@@ -161,7 +158,6 @@ class  CreateUserConfigTable extends Migration
   <br>
   <strong>3. 개인정보 보유 및 이용기간</strong><br>
   <strong>회원탈퇴 시까지</strong> (단, 관계 법령에 보존 근거가 있는 경우 해당 기간 시까지 보유, 개인정보처리방침에서 확인 가능)']
-          ]
         );
         
  
@@ -174,9 +170,6 @@ class  CreateUserConfigTable extends Migration
    * @return void
    */
   public function down()
-  {
-      
-    Schema::dropIfExists('user_configs');
-      
+  {   
   }
 }

@@ -10,8 +10,10 @@ use SocialiteProviders\Manager\SocialiteWasCalled;
 use Pondol\Auth\Console\InstallCommand;
 use Pondol\Auth\Console\CreateCommand;
 use Pondol\Auth\Listeners\UserEventSubscriber;
-use Pondol\Auth\Http\Middleware\CheckRole;
 use Pondol\Auth\Http\Middleware\VerifyEmail;
+use Pondol\Auth\Http\Middleware\CheckRole;
+
+use Pondol\Auth\Http\Middleware\BypassVerify;
 
 class AuthServiceProvider extends ServiceProvider { //  implements DeferrableProvider
   /**
@@ -33,9 +35,12 @@ class AuthServiceProvider extends ServiceProvider { //  implements DeferrablePro
   {
 
     // Publish config file and merge
-    $this->publishes([
-      __DIR__ . '/config/pondol-auth.php' => config_path('pondol-auth.php'),
-    ], 'config');
+    if (!config()->has('pondol-auth')) {
+      $this->publishes([
+        __DIR__ . '/config/pondol-auth.php' => config_path('pondol-auth.php'),
+      ], 'config');  
+    } 
+      
     $this->mergeConfigFrom(
       __DIR__ . '/config/pondol-auth.php',
       'pondol-auth'
@@ -55,35 +60,6 @@ class AuthServiceProvider extends ServiceProvider { //  implements DeferrablePro
       ['\SocialiteProviders\\Kakao\\KakaoExtendSocialite', 'handle']
     );
 
-    // Event::listen(
-    //   SocialiteWasCalled::class,
-    //   ['\SocialiteProviders\\Naver\\NaverExtendSocialite@handle', '\SocialiteProviders\\Kakao\\KakaoExtendSocialite@handle']
-    // );
-
-
-    // SocialiteWasCalled::subscribe('SocialiteProviders\\Naver\\NaverExtendSocialite@handle');
-    // SocialiteWasCalled::subscribe('SocialiteProviders\\Kakao\\KakaoExtendSocialite@handle');
-    // $this->app->bind(SocialiteWasCalled::class, [
-    //   'SocialiteProviders\\Naver\\NaverExtendSocialite@handle',
-    //   'SocialiteProviders\\Kakao\\KakaoExtendSocialite@handle',
-    //   ]);
-
-    // $this->app->register(SocialiteWasCalled::class) => [];
-
-    // Event::subscribe(SocialiteWasCalled::class);
-    // \SocialiteProviders\Manager\SocialiteWasCalled::class => [
-    //   // add your listeners (aka providers) here
-    //   'SocialiteProviders\\Naver\\NaverExtendSocialite@handle',
-    //   'SocialiteProviders\\Kakao\\KakaoExtendSocialite@handle',
-    // ],
-
-  //   \SocialiteProviders\Manager\SocialiteWasCalled::class => [
-  //     // add your listeners (aka providers) here
-  //     // 'SocialiteProviders\\Naver\\NaverExtendSocialite@handle',
-  //     // 'SocialiteProviders\\Kakao\\KakaoExtendSocialite@handle',
-  // ],
-
-
     $this->commands([
       InstallCommand::class,
       CreateCommand::class,
@@ -99,17 +75,18 @@ class AuthServiceProvider extends ServiceProvider { //  implements DeferrablePro
     $this->loadViewsFrom(__DIR__.'/resources/views', 'pondol-auth');
 
     $router->aliasMiddleware('role', CheckRole::class);
+    $router->aliasMiddleware('bypassverify', BypassVerify::class);
+
+    $router->pushMiddlewareToGroup('web', VerifyEmail::class);
 		$router->pushMiddlewareToGroup('admin', 'role:administrator');
-    $kernel = app(\Illuminate\Contracts\Http\Kernel::class);
-    $kernel->pushMiddleware(VerifyEmail::class);
+
+    // $kernel = app(\Illuminate\Contracts\Http\Kernel::class);
+    // $kernel->pushMiddleware(VerifyEmail::class);
   }
 
 
   private function loadAuthRoutes()
   {
-
-    $this->loadRoutesFrom(__DIR__ . '/routes/route-url.php');
-
     $config = config('pondol-auth.route_auth');
     Route::prefix($config['prefix'])
       ->as($config['as'])

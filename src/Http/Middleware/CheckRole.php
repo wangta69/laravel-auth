@@ -4,7 +4,7 @@ use Closure;
 class CheckRole
 {
   public function handle($request, Closure $next, $role)
-  {
+  {   
     if (!$request->user()) {
       return redirect('login');
     }

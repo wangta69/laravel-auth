@@ -16,4 +16,6 @@ Route::get('user/login/{user}', 'UserController@login')->name('user.login'); // 
 
 Route::get('config', 'ConfigController@index')->name('config'); // 관리
 Route::put('config', 'ConfigController@update')->name('config.update'); 
-
+Route::get('config/agreement/terms-of-use', 'ConfigController@termsofuse')->name('config.agreement.termsofuse'); // 관리
+Route::get('config/agreement/privacy-policy', 'ConfigController@privacypolicy')->name('config.agreement.privacypolicy'); 
+Route::put('config/agreement', 'ConfigController@updateAgreement')->name('config.agreement');

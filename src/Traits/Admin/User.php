@@ -1,6 +1,6 @@
 <?php
 
-namespace Pondol\Auth\Traits\Auth\Admin;
+namespace Pondol\Auth\Traits\Admin;
 
 use Validator;
 use Carbon\Carbon;

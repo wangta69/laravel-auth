@@ -1,6 +1,6 @@
 <?php
 return [
-  'activate'=>'email',
+  'activate'=>'auto',
   'template'=>['user'=>'default','mail'=>'default'],
   'roles' => [
     'default_role' => 'user'

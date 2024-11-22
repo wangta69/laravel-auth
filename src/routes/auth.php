@@ -6,7 +6,7 @@ Route::post('register/agreement', 'RegisterController@agreementstore')->middlewa
 Route::get('register/success', 'RegisterController@success')->name('register.success');
 Route::get('login', 'AuthenticatedSessionController@create')->name('login')->middleware('guest');
 Route::post('login', 'AuthenticatedSessionController@store')->middleware('guest');
-Route::get('logout', 'AuthenticatedSessionController@destroy')->name('logout')->middleware('auth');
+Route::get('logout', 'AuthenticatedSessionController@destroy')->name('logout')->middleware(['auth', 'bypassverify']);
 Route::get('auth/validation/email/{email}', 'CommonController@validationEmail')->name('validation.email');
 
 Route::get('forgot-password', 'PasswordResetLinkController@create')->name('password.request');
@@ -27,12 +27,12 @@ Route::get('/auth/social/{provider}/callback', 'Social\AuthenticatedSessionContr
 // Route::get('/auth/social/{provider}/logout', 'Social\LoginAppController@logout');
 
 
-Route::get('verify-email', 'EmailVerificationPromptController@__invoke')->name('verification.notice')->middleware('auth');
-Route::get('verify-email/{id}/{hash}', 'VerifyEmailController@__invoke')->middleware(['auth', 'signed', 'throttle:6,1'])->name('verification.verify');
-Route::post('email/verification-notification', 'EmailVerificationNotificationController@store')->middleware('auth', 'throttle:6,1')->name('verification.send');
+Route::get('verify-email', 'EmailVerificationPromptController@__invoke')->name('verification.notice')->middleware(['auth', 'bypassverify']);
+Route::get('verify-email/{id}/{hash}', 'VerifyEmailController@__invoke')->middleware(['auth', 'signed', 'bypassverify', 'throttle:6,1'])->name('verification.verify');
+Route::post('email/verification-notification', 'EmailVerificationNotificationController@store')->middleware('auth', 'bypassverify', 'throttle:6,1')->name('verification.send');
 
 
-Route::get('/user', 'UserController@profile')->name('user.profile')->middleware('auth');
+Route::get('/user', 'UserController@profile')->name('user.profile')->middleware(['auth']); // , 'verified'
 Route::get('/user/edit', 'UserController@edit')->name('user.edit')->middleware('auth');
 Route::put('/user/edit', 'UserController@update')->middleware('auth');
 Route::get('/user/password', 'UserController@changePassword')->name('user.change-password')->middleware('auth');

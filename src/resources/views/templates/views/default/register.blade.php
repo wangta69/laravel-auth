@@ -3,7 +3,7 @@
 <section>
   <div class="container">
     <div class="row justify-content-center">
-      <div class="col-lg-6">
+      <div class="col-md-8">
         <h2 class="title">회원가입</h2>
 
         <div class="card mt-5">

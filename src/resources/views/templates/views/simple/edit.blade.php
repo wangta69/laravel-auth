@@ -3,8 +3,9 @@
 <div class="container">
 
 
-  <form method="POST" action="{{ route('register') }}" style="width: 100%;">
-    @csrf
+  <form method="POST" action="{{ route('user.edit') }}" style="width: 100%;">
+      @method('PUT')  
+      @csrf
     <div class="input-group mt-1">
       <div class="form-floating flex-grow-1">
         <input type="text" class="form-control" name="email" value="{{ old('email') }}" id="name" placeholder="name@example.com">

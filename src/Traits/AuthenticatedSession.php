@@ -1,5 +1,5 @@
 <?php
-namespace Pondol\Auth\Traits\Auth;
+namespace Pondol\Auth\Traits;
 
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Auth\Events\Login;

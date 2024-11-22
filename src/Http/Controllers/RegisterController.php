@@ -19,14 +19,15 @@ use DB;
 
 
 use Pondol\Auth\Notifications\sendEmailRegisteredNotification;
+use Pondol\Auth\Notifications\sendEmailVerificationNotification;
 
 use Pondol\Auth\Models\Role\Role;
 use Pondol\Auth\Models\User\User;
-use Pondol\Auth\Models\User\UserConfig;
 
 use App\Http\Controllers\Controller;
 
-use Pondol\Auth\Traits\Auth\Register;
+use Pondol\Auth\Traits\Register;
+use Pondol\Common\Facades\JsonKeyValue;
 
 class RegisterController extends Controller
 {
@@ -123,22 +124,22 @@ class RegisterController extends Controller
     //     'agreements' => $request->session()->get('agreement')
     //   ]);
     // } else {
-      $termsOfUse = UserConfig::where('key', 'termsOfUse')->first();
-      $privacyPolicy = UserConfig::where('key', 'privacyPolicy')->first();
+      $termsOfUse = JsonKeyValue::get('user.aggrement.term-of-use');
+      $privacyPolicy = JsonKeyValue::get('user.aggrement.privacy-policy');
       return view('auth.templates.views.'.config('pondol-auth.template.user').'.register', [
-        'termsOfUse' => $termsOfUse->value,
-        'privacyPolicy' => $privacyPolicy->value,
+        'termsOfUse' => $termsOfUse,
+        'privacyPolicy' => $privacyPolicy,
         'agreements' => $request->session()->get('agreement')
       ]);
     // }
   }
 
   public function agreement(Request $request) {
-    $termsOfUse = UserConfig::where('key', 'termsOfUse')->first();
-    $privacyPolicy = UserConfig::where('key', 'privacyPolicy')->first();
+    $termsOfUse = JsonKeyValue::get('user.aggrement.term-of-use');
+    $privacyPolicy = JsonKeyValue::get('user.aggrement.privacy-policy');
     return view('auth.templates.views.'.config('pondol-auth.template.user').'.register-agreement', [
-      'termsOfUse' => $termsOfUse->value,
-      'privacyPolicy' => $privacyPolicy->value
+      'termsOfUse' => $termsOfUse,
+      'privacyPolicy' => $privacyPolicy
     ]);
   }
 
@@ -221,10 +222,10 @@ class RegisterController extends Controller
       DB::commit();
 
       event(new Registered($user));
-      // $user->notify(new sendEmailRegisteredNotification);
       Auth::login($user);
-      // return redirect('/register/success');
+
       if(config('pondol-auth.activate') == "email") {
+        $user->notify(new sendEmailVerificationNotification);
         return redirect()->route('verification.notice');
       } else {
         return redirect()->route('register.success');

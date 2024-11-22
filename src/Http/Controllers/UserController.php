@@ -28,7 +28,7 @@ class UserController extends Controller
 
   public function edit(Request $request){
     $user = $request->user();
-    return view('auth.templates.views.'.config('pondol-auth.template.user').'.edit-profile', compact('user'));
+    return view('auth.templates.views.'.config('pondol-auth.template.user').'.edit', compact('user'));
   }
 
   /**
