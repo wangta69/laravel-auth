@@ -1,5 +1,8 @@
 @section('title', '이용약관 설정')
-<x-pondol-auth::admin :path="['환경설정', '이용약관 설정']">
+<x-dynamic-component 
+  :component="config('pondol-auth.component.admin.layout')" 
+  :path="['환경설정', '이용약관 설정']"> 
+
 <div class="p-3 mb-4 bg-light rounded-3">
   <h2 class="fw-bold">이용약관 설정</h2>
 
@@ -50,4 +53,4 @@ $(function(){
 })
 </script>
 @endsection
-</x-pondol-auth::admin>
+</x-dynamic-component>

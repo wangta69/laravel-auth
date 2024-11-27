@@ -3,7 +3,7 @@ $path = isset($path) ? $path : [];
 @endphp
 <x-pondol-common::app>
   <div class="wrapper">
-    <x-pondol-auth::navigation />
+    <x-dynamic-component :component="config('pondol-auth.component.admin.lnb')" />
     <div class="container">
       @if(count($path))
       <x-pondol-common::partials.main-top-navigation :path="$path"/>

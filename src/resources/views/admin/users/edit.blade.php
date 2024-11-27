@@ -37,7 +37,8 @@
           <label class="form-label">연락처</label>
         </div>
         <div class="col-4">
-        {{addHypenToMobile($user->mobile)}}
+          <input type="text" name="mobile" value="{{addHypenToMobile($user->mobile)}}" class="form-control" autocomplete="off">
+        {{-- addHypenToMobile($user->mobile) --}}
         </div>
       </div>
       <div class="row mt-1">

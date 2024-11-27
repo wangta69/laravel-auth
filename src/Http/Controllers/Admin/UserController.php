@@ -48,9 +48,12 @@ class UserController extends Controller
    * 회원 생성
    */
   public function store(Request $request){
-    $this->_store($request);
-
-    return redirect()->intended(route('auth.admin.users'));
+    $result = $this->_store($request);
+    if($result->error) {
+      return redirect()->back()->withInput()->withErrors($result->validator->errors());
+    } else {
+      return redirect()->intended(route('auth.admin.users'));
+    }
   }
 
 

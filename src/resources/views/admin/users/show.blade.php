@@ -82,5 +82,4 @@
   </div>
 
 </div>
-
-    </x-pondol-auth::blank>
+</x-pondol-auth::blank>

@@ -12,9 +12,12 @@
           <i class="fa-solid fa-user"></i>
           회원관리
       </a>
-      <ul class="collapse list-unstyled {{ request()->routeIs(['auth.admin.users*']) ? 'show' : '' }}" id="member-sub-menu">
+      <ul class="collapse list-unstyled {{ request()->routeIs(['auth.admin.user*']) ? 'show' : '' }}" id="member-sub-menu">
         <li class="{{ request()->routeIs(['auth.admin.users*']) ? 'current-page' : '' }}">
           <a href="{{ route('auth.admin.users') }}">회원</a>
+        </li>
+        <li class="{{ request()->routeIs(['auth.admin.user.create*']) ? 'current-page' : '' }}">
+          <a href="{{ route('auth.admin.user.create') }}">회원등록</a>
         </li>
       </ul>
     </li>

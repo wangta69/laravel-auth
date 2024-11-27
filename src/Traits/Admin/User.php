@@ -22,6 +22,8 @@ trait User
     $from_date = $request->from_date;
     $to_date = $request->to_date;
     $active = $request->active;
+    $check_rollout = $request->check_rollout;
+
 
     $users = mUser::select(
       'users.id', 'users.email', 'users.name', 'users.active', 'users.point', 'users.logined_at', 'users.created_at', 'users.deleted_at'
@@ -42,9 +44,13 @@ trait User
       $from_date = Carbon::createFromFormat('Y-m-d', $from_date);
       $to_date = Carbon::createFromFormat('Y-m-d', $to_date);
       $user =  $users->whereBetween('users.created_at', [$from_date->startOfDay(), $to_date->endOfDay()]);
-      // $users = $users->where(function ($q) use($from_date, $to_date) {
-      //   $q->whereRaw("users.created_at >= '".$from_date." 00:00:00' AND users.created_at <= '".$to_date." 23:59:59'" );
-      // });
+    }
+
+    // 탈퇴자 출력
+    if($check_rollout) {
+      $users->whereNotNull('deleted_at');
+    } else {
+      $users->whereNull('deleted_at');
     }
 
     if($active) {
@@ -96,6 +102,7 @@ trait User
 
 
     $user->name = $request->get('name');
+    $user->mobile = $request->get('mobile');
 
     if ($request->has('password') && trim($request->password)) {
       $user->password = \Hash::make($request->password);
@@ -123,35 +130,42 @@ trait User
    * 회원 생성
    */
   public function _store($request){
-      $request->mobile = str_replace('-','', $request->mobile);
-      $validator = Validator::make($request->all(), [
-        'email' => ['required', 'string', 'email', 'unique:users'],
-        'name' => ['required', 'string', 'min:2', 'max:10'], // , 'unique:users'
-        'password' => ['required', 'string', 'min:8', 'confirmed'],
-    //    'security_password' => ['required', 'numeric', 'digits:4', 'confirmed'],
-        'mobile' => ['required', 'unique:users'],
-      ]);
+    $result = new \stdClass();
+    
+    $request->mobile = str_replace('-','', $request->mobile);
+    $validator = Validator::make($request->all(), [
+      'email' => ['required', 'string', 'email', 'unique:users'],
+      'name' => ['required', 'string', 'min:2', 'max:10'], // , 'unique:users'
+      'password' => ['required', 'string', 'min:8', 'confirmed'],
+  //    'security_password' => ['required', 'numeric', 'digits:4', 'confirmed'],
+      // 'mobile' => ['required', 'unique:users'],
+    ]);
 
-      if ($validator->fails()) return redirect()->back()->withInput()->withErrors($validator->errors());
+    if ($validator->fails()) {
+      $result->error = 'validation';
+      $result->validator = $validator;
+      return $result;
+    }
+    $user = new mUser;
+    $user->email = $request->get('email');
+    $user->name = $request->get('name');
+    $user->mobile = $request->get('mobile');
+    $user->active = $request->get('active', 0);
+    $user->password = \Hash::make($request->password);
 
-      $user = new mUser;
-      $user->email = $request->get('email');
-      $user->name = $request->get('name');
-      $user->active = $request->get('active', 0);
-      $user->password = \Hash::make($request->password);
 
-      $user->save();
-      // $user->notify(new CountChanged('add', 'users'));
-      //roles
-      if ($request->has('roles')) {
-        $user->roles()->detach();
+    $user->save();
+    // $user->notify(new CountChanged('add', 'users'));
+    //roles
+    if ($request->has('roles')) {
+      $user->roles()->detach();
 
-        if ($request->get('roles')) {
-          $user->roles()->attach($request->get('roles'));
-        }
+      if ($request->get('roles')) {
+        $user->roles()->attach($request->get('roles'));
       }
-
-      return;
+    }
+    $result->error = false;
+    return $result;
   }
 
 
@@ -177,9 +191,6 @@ trait User
 
     if ($active != 9) {
       $user->deleted_at = null;
-    } else {
-      $deactivate = \Pondol\Auth\Models\User\UserDeactivate::where('user_id', $user_id)->first();
-      $deactivate->delete();
     }
 
     $user->active = $active;

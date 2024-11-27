@@ -1,9 +1,9 @@
 <?php
 // 회원관리
-Route::get('/', 'DashboardController@index')->name('dashboard');
+Route::get('user/dashboard', 'DashboardController@index')->name('dashboard');
 Route::get('users', 'UserController@index')->name('users');
-// Route::get('user/create', 'UserController@create')->name('user.create');
-// Route::post('user/create', 'UserController@store');
+Route::get('user/create', 'UserController@create')->name('user.create');
+Route::post('user/create', 'UserController@store');
 
 Route::get('user/{user}', 'UserController@show')->name('user');
 // Route::get('user/join', 'UserController@join')->name('user.join-list');

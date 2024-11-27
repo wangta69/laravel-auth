@@ -1,5 +1,7 @@
 @section('title', '대쉬보드')
-<x-pondol-auth::admin :path="['대쉬보드']">
+<x-dynamic-component 
+  :component="config('pondol-auth.component.admin.layout')" 
+  :path="['대쉬보드']"> 
 <div class="row">
   <div class="col-6">
     <div class="card">
@@ -43,4 +45,4 @@
   @parent
   
 @endsection
-</x-pondol-auth::admin>
+</x-dynamic-component>

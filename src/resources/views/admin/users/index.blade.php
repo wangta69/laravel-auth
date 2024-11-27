@@ -1,11 +1,14 @@
-@section('title', '회원정보')
-<x-pondol-auth::admin :path="['회원', '회원정보']">
+@section('title', '회원')
+<x-dynamic-component 
+  :component="config('pondol-auth.component.admin.layout')" 
+  :path="['회원관리', '회원']"> 
+
 <div class="p-3 mb-4 bg-light rounded-3">
-  <h2 class="fw-bold">회원정보</h2>
+  <h2 class="fw-bold">회원</h2>
 
   <div class="card">
     <div class="card-body">
-      <div>회원정보 확인 및 수정이 가능합니다.</div>
+      <div>회원 확인 및 수정이 가능합니다.</div>
     </div><!-- .card-body -->
   </div><!-- .card -->
 </div>
@@ -18,7 +21,8 @@
 
         <div class="col-6">
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="active[]" value="9" @if (is_array(request()->active) && in_array("9", request()->active)) checked @endif>
+            {{-- <input class="form-check-input" type="checkbox" name="active[]" value="9" @if (is_array(request()->active) && in_array("9", request()->active)) checked @endif> --}}
+            <input class="form-check-input" type="checkbox" name="check_rollout" value="1" @if (request()->check_rollout == '1') checked @endif>
               <label class="form-check-label">탈퇴</label>
             </div>
    
@@ -161,5 +165,4 @@ $(function(){
 })
 </script>
 @endsection
-
-</x-pondol-auth::admin>
+</x-dynamic-component>

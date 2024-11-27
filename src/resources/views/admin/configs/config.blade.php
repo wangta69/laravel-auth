@@ -1,7 +1,9 @@
-@section('title', '일반환경설정')
-<x-pondol-auth::admin :path="['환경설정', '회원가입 설정']">
+@section('title', '회원 환경 설정')
+<x-dynamic-component 
+  :component="config('pondol-auth.component.admin.layout')" 
+  :path="['환경설정', '회원 환경 설정']"> 
 <div class="p-3 mb-4 bg-light rounded-3">
-  <h2 class="fw-bold">일반환경설정</h2>
+  <h2 class="fw-bold">회원 환경 설정</h2>
 
   <div class="card">
     <div class="card-body">
@@ -23,14 +25,14 @@
           <option value="admin" @if($user['activate'] == "admin") selected @endif>관리자 별도 인증</option>
         </select>
       </div>
-      <div class="input-group mt-1">
+      <!-- <div class="input-group mt-1">
         <label class="col-form-label col-4 col-xl-2">가입단계</label>
         <select class="form-select" name="step">
           @foreach($templates['user'] as $v)
           <option value="{{$v}}" @if($v == $user['template']['user']) selected @endif>{{$v}}</option>
           @endforeach
         </select>
-      </div>
+      </div> -->
       <div class="input-group mt-1">
         <label class="col-form-label col-4 col-xl-2">User template</label>
         <select class="form-select" name="t_user">
@@ -49,14 +51,14 @@
         </select>
       </div>
 
-      <div class="input-group mt-1">
+      <!-- <div class="input-group mt-1">
         <label class="col-form-label col-4 col-xl-2">2차인증</label>
         <select class="form-select" name="second">
           @foreach($templates['mail'] as $v)
           <option value="{{$v}}" @if($v == $user['template']['mail']) selected @endif>{{$v}}</option>
           @endforeach
         </select>
-      </div>
+      </div> -->
       <div class="input-group mt-1">
         <label class="col-form-label col-4 col-xl-2">회원가입 포인트</label>
         <input type="number" name="r_point" value=""  class="form-control">
@@ -92,4 +94,4 @@ $(function(){
 })
 </script>
 @endsection
-</x-pondol-auth::admin>
+</x-dynamic-component>

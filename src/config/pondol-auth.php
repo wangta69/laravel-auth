@@ -18,5 +18,6 @@ return [
     'prefix'=>'auth/admin',
     'as'=>'auth.admin.',
     'middleware'=>['web', 'admin'],
-  ]
+  ],
+  'component' => ['admin'=>['layout'=>'pondol-auth::admin', 'lnb'=>'pondol-auth::navigation']],
 ];

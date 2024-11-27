@@ -1,5 +1,8 @@
 @section('title', '개인정보 수집 및 허용')
-<x-pondol-auth::admin :path="['환경설정', '개인정보 수집 및 허용']">
+<x-dynamic-component 
+  :component="config('pondol-auth.component.admin.layout')" 
+  :path="['환경설정', '개인정보 수집 및 허용']"> 
+
 <div class="p-3 mb-4 bg-light rounded-3">
   <h2 class="fw-bold">개인정보 수집 및 허용 설정</h2>
 
@@ -54,4 +57,4 @@ $(function(){
 })
 </script>
 @endsection
-</x-pondol-auth::admin>
+</x-dynamic-component>
