@@ -4,9 +4,11 @@ namespace Pondol\Auth\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+
 use Validator;
 
 use App\Http\Controllers\Controller;
+use Pondol\Auth\Models\User\User;
 
 class UserController extends Controller
 {
@@ -22,7 +24,15 @@ class UserController extends Controller
 
 
   public function profile(Request $request){
+
+    
+
     $user = $request->user();
+
+    // $tmp = User::where('email', $user->email)->first();
+    // $createToken = $tmp->createToken('nomalAdmin')->plainTextToken;
+    // print_r($createToken);
+    // $k = $request->user()->generateTwoFactorCode();
     return view('auth.templates.views.'.config('pondol-auth.template.user').'.profile', compact('user'));
   }
 

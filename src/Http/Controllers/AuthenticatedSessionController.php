@@ -19,8 +19,6 @@ class AuthenticatedSessionController extends Controller
    *
    * @var string
    */
-  // protected $redirectTo = RouteServiceProvider::ADMIN;
-  // protected $redirectTo = '/';
 
   /**
    * Create a new controller instance.
@@ -70,6 +68,13 @@ class AuthenticatedSessionController extends Controller
       return redirect()->back()
       ->withErrors(['active'=>'인증대기중입니다.'])
       ->withInput($request->except('password'));
+    }
+
+    // 2fa 관련 처리
+    if ($user->google2fa_secret) { // google2fa_secret 가 세팅된 상태라면
+      \Auth::logout(); // 로그아웃 시킨다.
+      $request->session()->put('2fa:user:id', $user->id); // 현재값은 세션에 넣어 둔다.
+      return redirect()->route('2fa.validate'); // 2fa를 입력하는 창으로 이동 시킨다. (아래 getValidateToken() 호출)
     }
 
     $user->logined_at = date("Y-m-d H:i:s");

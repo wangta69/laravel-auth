@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 use Pondol\Auth\Models\User\User;
 use Pondol\Auth\Models\Role\Role;
-
+use Carbon\Carbon;
 
 class CreateCommand extends Command
 {
@@ -47,7 +47,7 @@ class CreateCommand extends Command
         'email' => $email,
         'password' => Hash::make($password),
       ]);
-
+      $user->email_verified_at = Carbon::now();
       $user->active = 1;
       $user->save();
       $user->roles()->attach(Role::firstOrCreate(['name' => $role]));
