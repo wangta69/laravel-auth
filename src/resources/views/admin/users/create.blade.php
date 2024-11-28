@@ -18,7 +18,9 @@
     <div class="card-header">
       회원 등록
     </div>
-    {{ Form::open(['route'=>['auth.admin.user.create'],'method' => 'post','class'=>'form-horizontal form-label-left']) }}
+
+    <form method="POST" action="{{ route('auth.admin.user.create') }}" enctype="multipart/form-data">
+    @csrf 
     <div class="card-body card-block">
       <div class="row form-group">
         <div class="col col-md-2 formInnerBox">
@@ -92,7 +94,7 @@
         </div>
         <div class="col-md-4">
           @foreach($roles as $key=>$role)
-            <input type="radio" id="roles-{{ $key}}" name="roles[]" value="{{ $role->id }}"> <label for="roles-{{ $key}}">{{ $role->display }}</label>
+            <input type="radio" id="roles-{{ $key}}" name="roles[]" value="{{ $role->id }}"> <label for="roles-{{ $key}}">{{ $role->name }}</label>
           @endforeach
         </div>
       </div>
@@ -105,7 +107,7 @@
         <i class="fa fa-check-circle"></i> 저장
       </button>
     </div>
-    {{ Form::close() }}
+</form>
   </div>
 </div>
 </x-dynamic-component>

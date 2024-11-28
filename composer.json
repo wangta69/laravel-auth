@@ -23,9 +23,9 @@
       "socialiteproviders/kakao": "^4.2",
       "socialiteproviders/naver": "^4.1",
       "tymon/jwt-auth": "^1",
-      "wangta69/laravel-editor": "^8",
-      "wangta69/laravel-components": "^1.0",
-      "wangta69/laravel-pondol": "^0.0"
+      "wangta69/laravel-editor": "*",
+      "wangta69/laravel-components": "*",
+      "wangta69/laravel-pondol": "*"
     },
     "autoload": {
      "psr-4": {
