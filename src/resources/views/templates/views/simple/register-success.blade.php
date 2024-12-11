@@ -10,8 +10,8 @@
             회원가입이 정상적으로 처리되었습니다.
           </div> <!-- .card-bod -->
           <div class="card-footer">
-            <a class="btn btn-primary" href="{{ route('market.main') }}">Home</a>
-            <a class="btn btn-primary" href="{{ route('market.login') }}">Login</a>
+            <a class="btn btn-primary" href="/">Home</a>
+            <a class="btn btn-primary" href="{{ route('login') }}">Login</a>
           </div><!-- .card-footer -->
         </div> <!-- .card -->
       </div><!-- . class="col-lg-6" -->

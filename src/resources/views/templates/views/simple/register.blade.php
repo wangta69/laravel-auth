@@ -7,7 +7,7 @@
         <h2 class="title">회원가입</h2>
 
         <div class="card">
-          <form method="POST" action="{{ route('market.register') }}" style="width: 100%;">
+          <form method="POST" action="{{ route('register') }}" style="width: 100%;">
             @csrf
             <div class="card-body">
               <div class="form-check">
@@ -128,7 +128,7 @@ $(function(){
       return showToaster({title: '알림', message: '이메일을 입력해주세요'});
     }
     ROUTE.ajaxroute('get', 
-    {route: 'market.validation.email', segments:[email]},
+    {route: 'validation.email', segments:[email]},
     function(resp) {
       if(resp.error) {
         showToaster({title: '알림', message: resp.error});

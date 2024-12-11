@@ -47,6 +47,7 @@
                 <input type="password" name="password_confirmation" placeholder="비밀번호 확인" class="form-control"/>
               </div>
             </div><!-- .card-body -->
+            <x-pondol::validation-fail.first />
             <div class="card-footer text-end">
               <button type="submit" class="btn btn-primary">
                 회원가입
@@ -69,11 +70,11 @@
 @parent
 <script>
 $(function(){
-
+{{-- 
   @if ($errors->any())
   showToaster({title: '알림', message: '{{$errors->first()}}'});
   @endif
-
+  --}}
 
   $("#check-all").on('click', function(){
     var checked = $(this).is(":checked");

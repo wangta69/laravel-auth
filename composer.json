@@ -2,7 +2,7 @@
     "name": "wangta69/laravel-auth",
     "description": "Auth for Laravel(라라벨용 회원관리 프로그램)",
     "keywords": ["laravel", "user", "auth" , "라라벨", "member"],
-    "homepage": "https://www.onstory.fun/doc/programming/laravel/package.laravel-auth",
+    "homepage": "https://www.onstory.fun/packages/laravel-auth",
     "license": "MIT",
     "authors": [
       {

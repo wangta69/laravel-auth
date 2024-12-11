@@ -1,6 +1,5 @@
-@extends('market.templates.layouts.'.config('pondol-market.template.layout.theme').'.front')
 @section('title', '회원가입 > 약관동의')
-@section('content')
+<x-pondol-common::app-bare header="pondol-auth::partials.front-header">
 <section>
   <div class="container body mt-5">
     <div class="row justify-content-center">
@@ -81,7 +80,7 @@ $(function(){
 
   $(".act-store-agreement").on('click', function(){
     ROUTE.ajaxroute('post', 
-    {route: 'market.register.agreement', data: $('form[name=regist_agree_form]').serializeObject()}, 
+    {route: 'register.agreement', data: $('form[name=regist_agree_form]').serializeObject()}, 
     function(resp) {
       if(resp.error) {
         showToaster({title: '알림', message: resp.error});

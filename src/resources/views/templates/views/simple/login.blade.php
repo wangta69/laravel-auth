@@ -15,7 +15,7 @@
             <a href='/auth/social/naver/redirect' class="btn btn-light">Naver</a>
             <a href='/auth/social/kakao/redirect' class="btn btn-light">KaKao</a>
 
-            <form method="POST" action="{{ route('market.login') }}" style="width: 100%;">
+            <form method="POST" action="{{ route('login') }}" style="width: 100%;">
                 @csrf
             <div class="">
             <div class="form-floating mb-3">
@@ -35,14 +35,14 @@
               <label class="form-check-label" for="inputRememberPassword">Remember Password</label>
             </div>
             <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
-              <a class="small" href="{{ route('market.password.request') }}">Forgot Password?</a>
+              <a class="small" href="{{ route('password.request') }}">Forgot Password?</a>
 
               <button type="submit" class="btn btn-primary">로그인</button>
               <x-pondol::validation-fail.custom />
             </div>
             </form>
           </div>
-          @if($f) <!--f == market.mypage.order -->
+          @if($f) 
           <h3>비회원 주문 확인</h3>
           <div class="card-body">
               * 주문번호를 입력하세요

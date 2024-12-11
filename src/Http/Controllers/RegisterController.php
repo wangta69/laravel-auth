@@ -9,7 +9,8 @@ use App\Providers\RouteServiceProvider;
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
-use Illuminate\Auth\Events\Registered;
+// use Illuminate\Auth\Events\Registered;
+use Pondol\Auth\Events\Registered;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +19,7 @@ use Illuminate\Validation\Rules;
 use DB;
 
 
-use Pondol\Auth\Notifications\sendEmailRegisteredNotification;
+// use Pondol\Auth\Notifications\sendEmailRegisteredNotification;
 use Pondol\Auth\Notifications\sendEmailVerificationNotification;
 
 use Pondol\Auth\Models\Role\Role;
@@ -191,7 +192,12 @@ class RegisterController extends Controller
     });
 
     if ($validator->fails()) {
-      return redirect()->back()->withInput()->withErrors($validator->errors());
+      if($request->ajax()){
+        return response()->json(['error'=>$validator->errors()->first()], 203);//500, 203
+      } else {
+        return redirect()->back()->withInput()->withErrors($validator->errors());
+      }
+      
     }
     
     DB::beginTransaction();
@@ -216,25 +222,28 @@ class RegisterController extends Controller
 
       // 추가 (기본 role 적용)
       // if (config('pondol-auth.roles.default_role')) {
-        $user->roles()->attach(Role::firstOrCreate(['name' =>config('pondol-auth.roles.default_role')]));
+      $user->roles()->attach(Role::firstOrCreate(['name' =>config('pondol-auth.roles.default_role')]));
       // }
-
       DB::commit();
 
       event(new Registered($user));
       Auth::login($user);
-
+      
       if(config('pondol-auth.activate') == "email") {
         $user->notify(new sendEmailVerificationNotification);
         return redirect()->route('verification.notice');
       } else {
         return redirect()->route('register.success');
       }
-      
+
     } catch (\Exception $e) {
       DB::rollback();
-      return redirect()->back()->withInput()->withErrors(['dberror'=>'DataBase Occur']);
-      // return redirect()->withInput()->back()->with(['error'=>'DataBase Occur']);
+      print_r($e->getMessage());
+      if($request->ajax()){
+        return response()->json(['error'=>$e->getMessage()], 203);//500, 203
+      } else {
+        return redirect()->back()->withInput()->withErrors(['register'=>$e->getMessage()]);
+      }
     }
   }
 

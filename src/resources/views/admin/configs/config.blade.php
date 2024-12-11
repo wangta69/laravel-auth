@@ -61,11 +61,11 @@
       </div> -->
       <div class="input-group mt-1">
         <label class="col-form-label col-4 col-xl-2">회원가입 포인트</label>
-        <input type="number" name="r_point" value=""  class="form-control">
+        <input type="number" name="r_point" value="{{$user['point']['register']}}"  class="form-control">
       </div>
       <div class="input-group mt-1">
         <label class="col-form-label col-4 col-xl-2">로그인 지급 포인트</label>
-        <input type="number" name="l_point" value=""  class="form-control">
+        <input type="number" name="l_point" value="{{$user['point']['login']}}"  class="form-control">
       </div>
     </div> <!-- .card-body -->
 

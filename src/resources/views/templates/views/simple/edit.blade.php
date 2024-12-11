@@ -1,4 +1,3 @@
-@extends('market.templates.'.config('market.template').'.layouts.blank')
 <x-pondol-common::app-bare header="pondol-auth::partials.front-header">
 <div class="container">
 
