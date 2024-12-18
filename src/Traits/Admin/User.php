@@ -43,7 +43,7 @@ trait User
 
       $from_date = Carbon::createFromFormat('Y-m-d', $from_date);
       $to_date = Carbon::createFromFormat('Y-m-d', $to_date);
-      $user =  $users->whereBetween('users.created_at', [$from_date->startOfDay(), $to_date->endOfDay()]);
+      $users =  $users->whereBetween('users.created_at', [$from_date->startOfDay(), $to_date->endOfDay()]);
     }
 
     // 탈퇴자 출력
