@@ -8,10 +8,13 @@ use Illuminate\Auth\Events\Verified;
 // use App\Events\Registered;
 // use Illuminate\Auth\Events\Registered;
 use Pondol\Auth\Events\Registered;
+use Pondol\Auth\Events\ResetPasswordToken;
 // use Illuminate\Auth\Events\Registered;
 
 use Illuminate\Events\Dispatcher;
 use Pondol\Auth\Notifications\sendEmailRegisteredNotification;
+use Pondol\Auth\Notifications\sendEmailResetPasswordToken;
+
 use Pondol\Auth\Traits\Point;
 class UserEventSubscriber
 {
@@ -40,6 +43,10 @@ class UserEventSubscriber
       $this->_register($event->user); // 회원가입 포인트
       $event->user->notify(new sendEmailRegisteredNotification);
     }
+
+    public function handleUserResetPasswordToken(ResetPasswordToken $event) {
+      $event->user->notify(new sendEmailResetPasswordToken);
+    }
  
     /**
      * Register the listeners for the subscriber.
@@ -54,6 +61,7 @@ class UserEventSubscriber
         Logout::class => 'handleUserLogout',
         Registered::class => 'handleUserRegister',
         Verified::class => 'handleUserVerified',
+        ResetPasswordToken::class => 'handleUserResetPasswordToken',
       ];
     }
 }

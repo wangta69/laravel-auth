@@ -54,6 +54,7 @@ class sendEmailResetPasswordToken extends Notification  implements ShouldQueue
       'auth.templates.mail.'.config('pondol-auth.template.mail').'.resetpassword',
       [
         'actionUrl' => $actionUrl,
+        'token' => $token,
         'notifiable' => $notifiable
       ]);
   }

@@ -14,7 +14,8 @@ use Illuminate\Support\Str;
 
 use Pondol\Auth\Models\User\User;
 
-use Pondol\Auth\Notifications\sendEmailResetPasswordToken;
+// use Pondol\Auth\Notifications\sendEmailResetPasswordToken;
+use Pondol\Auth\Events\ResetPasswordToken;
 // use App\Services\LocaleService;
 
 class PasswordResetLinkController extends Controller
@@ -70,7 +71,8 @@ class PasswordResetLinkController extends Controller
     }
 
 
-    $user->notify(new sendEmailResetPasswordToken);
+    // $user->notify(new sendEmailResetPasswordToken);
+    event(new ResetPasswordToken($user));
     return back()->with(['status' => '등록된 이메일로 비밀번호 초기화 링크를 전송하였습니다.']);
     // return $status === Password::RESET_LINK_SENT
     // ? back()->with(['status' => __($status)])

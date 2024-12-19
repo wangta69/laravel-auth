@@ -9,10 +9,10 @@ Route::post('login', 'AuthenticatedSessionController@store')->middleware('guest'
 Route::get('logout', 'AuthenticatedSessionController@destroy')->name('logout')->middleware(['auth', 'bypassverify']);
 Route::get('auth/validation/email/{email}', 'CommonController@validationEmail')->name('validation.email');
 
-Route::get('forgot-password', 'PasswordResetLinkController@create')->name('password.request');
-Route::post('forgot-password', 'PasswordResetLinkController@store')->name('password.email');
-Route::get('reset-password/{token}', 'NewPasswordController@create')->name('password.reset');
-Route::post('reset-password', 'NewPasswordController@store')->name('password.update');
+Route::get('forgot-password', 'PasswordResetLinkController@create')->name('password.request')->middleware('guest');
+Route::post('forgot-password', 'PasswordResetLinkController@store')->name('password.email')->middleware('guest');
+Route::get('reset-password/{token}', 'NewPasswordController@create')->name('password.reset')->middleware('guest');
+Route::post('reset-password', 'NewPasswordController@store')->name('password.update')->middleware('guest');
 
 
 Route::get('cancel-account', 'DestroyController@delete')->name('cancel.account')->middleware('auth');

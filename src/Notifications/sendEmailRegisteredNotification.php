@@ -40,17 +40,9 @@ class sendEmailRegisteredNotification extends Notification  implements ShouldQue
    */
   public function toMail($notifiable)
   {
-    // return (new MailMessage)
-    //   ->greeting('Hello!')
-    //   ->line('One of your invoices has been paid!')
-    //   ->action('View Invoice', $actionUrl)
-    //   ->line('Thank you for using our application!');
-
+    
     return (new MailMessage)->subject('['.config('app.name').'] 회원가입안내 메일')->view(
-      'auth.templates.mail.'.config('pondol-auth.template.mail').'.register',
-      [
-        'notifiable' => $notifiable
-      ]);
+      'auth.templates.mail.'.config('pondol-auth.template.mail').'.register', compact('notifiable'));
 
   }
 
