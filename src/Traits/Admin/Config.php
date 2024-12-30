@@ -6,7 +6,7 @@ trait Config
 {
   public function getConfig()
   {
-    $user = config('pondol-auth');
+    $user = JsonKeyValue::getAsArray('auth');
 
     // auth
     $templates = [];
@@ -23,13 +23,16 @@ trait Config
   }
   
   public function _update($request) {
-    set_config('pondol-auth', [
+    $config = [
       'activate' => $request->activate, 
-      'template.user'=>$request->t_user, 
-      'template.mail'=>$request->t_mail,
-      'point.register'=>$request->input('r_point', 0),
-      'point.login'=>$request->input('l_point', 0),
-    ]); //  
+      'template'=>['user'=>$request->t_user, 'mail'=>$request->t_mail],
+      'point'=>['register'=>$request->input('r_point', 0), 'login'=>$request->input('l_point', 0)]
+    ];
+
+
+    
+    JsonKeyValue::update('auth', $config);
+
     return (object)['error'=>false];
   }
 

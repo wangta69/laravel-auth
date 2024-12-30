@@ -14,12 +14,11 @@ use Laravel\Socialite\Facades\Socialite;
 use Pondol\Auth\Models\Role\Role;
 use Pondol\Auth\Models\User\User;
 use Pondol\Auth\Models\User\SocialAccount;
+use Pondol\Common\Facades\JsonKeyValue;
+use Pondol\Auth\Traits\AuthenticatedSession;
 
 use App\Providers\RouteServiceProvider;
 use App\Http\Controllers\Controller;
-
-use Pondol\Auth\Traits\AuthenticatedSession;
-
 
 // https://vuxy.tistory.com/entry/Laravel-8-%EC%86%8C%EC%85%9C%EB%A1%9C%EA%B7%B8%EC%9D%B8Laravel-Socialite-1
 class AuthenticatedSessionController extends Controller
@@ -82,6 +81,8 @@ class AuthenticatedSessionController extends Controller
   */
   private function findOrCreateUser($provider, $socialUser){
 
+    $auth_cfg = JsonKeyValue::getAsJson('auth');
+
     $user = User::where('email', $socialUser->getEmail())
       ->first();
 
@@ -92,7 +93,7 @@ class AuthenticatedSessionController extends Controller
       $user->name = $socialUser->getName();
       $user->email = $socialUser->getEmail();
 
-      if(config('pondol-auth.activate') == "auto" || config('pondol-auth.activate') == "email") { // social login은 이메일을 인증 받은 것으로 간주한다.
+      if($auth_cfg->activate == "auto" || $auth_cfg->activate == "email") { // social login은 이메일을 인증 받은 것으로 간주한다.
         $user->active = 1;
       }
 

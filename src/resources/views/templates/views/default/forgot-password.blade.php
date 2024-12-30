@@ -26,6 +26,7 @@
 
               
             </div><!-- .card-body -->
+            
             <div class="card-footer text-end">
               <button type="submit" class="btn btn-primary">
                   이메일로 패스워드 초기화 하기

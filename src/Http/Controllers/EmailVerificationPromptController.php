@@ -19,6 +19,6 @@ class EmailVerificationPromptController extends Controller
 
     return $request->user()->hasVerifiedEmail()
       ? redirect()->intended(RouteServiceProvider::HOME)
-      : view('auth.templates.views.'.config('pondol-auth.template.user').'.verify-email');
+      : view(auth_theme('user').'.verify-email');
   }
 }

@@ -2,6 +2,7 @@
 namespace Pondol\Auth\Traits;
 
 use Pondol\Auth\Models\User\UserPoint;
+use Pondol\Common\Facades\JsonKeyValue;
 
 trait Point
 {
@@ -13,6 +14,7 @@ trait Point
    * @param  Integer $rel_item: 참조테이블의 ID
    */
   public function _insertPoint($user, $point, $item = null, $sub_item = null, $rel_item = null) {
+    
 
     if(!$point) {
       return;
@@ -36,7 +38,8 @@ trait Point
 
   // 회원가입 포인트
   public function _register($user) {
-    $point = config('pondol-auth.point.register');
+    $auth_cfg = JsonKeyValue::getAsJson('auth');
+    $point = $auth_cfg->point->register;
     if($point) {
       $this->_insertPoint($user, $point, 'register', null, $user->id);
     }
@@ -44,7 +47,7 @@ trait Point
 
   // 회원 로그인 포인트
   public function _login($user) {
-    $point = config('pondol-auth.point.login');
+    $point = $auth_cfg->point->login;
     if($point) {
       $this->_insertPoint($user, $point, 'login', null, $user->id);
     }

@@ -1,17 +1,10 @@
 <?php
-
 namespace Pondol\Auth\Http\Controllers;
-
 
 use App\Providers\RouteServiceProvider;
 
-// use Illuminate\Foundation\Auth\RegistersUsers;
-
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
-// use Illuminate\Auth\Events\Registered;
-use Pondol\Auth\Events\Registered;
-
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -21,14 +14,12 @@ use DB;
 
 // use Pondol\Auth\Notifications\sendEmailRegisteredNotification;
 use Pondol\Auth\Notifications\sendEmailVerificationNotification;
-
 use Pondol\Auth\Models\Role\Role;
 use Pondol\Auth\Models\User\User;
-
-use App\Http\Controllers\Controller;
-
 use Pondol\Auth\Traits\Register;
+use Pondol\Auth\Events\Registered;
 use Pondol\Common\Facades\JsonKeyValue;
+use App\Http\Controllers\Controller;
 
 class RegisterController extends Controller
 {
@@ -115,19 +106,19 @@ class RegisterController extends Controller
    */
   public function create(Request $request) {
 
-    if (\View::exists($view = 'auth.templates.views.'.config('pondol-auth.template.user').'.register-agreement') 
+    if (\View::exists($view = auth_theme('user').'.register-agreement') 
         && !$request->session()->has('agreement')) {
       return redirect()->route('register.agreement');
     }
 
     // if ($request->session()->has('agreement')) {
-    //   return view('auth.templates.views.'.config('pondol-auth.template.user').'.register', [
+    //   return view(auth_theme('user').'.register', [
     //     'agreements' => $request->session()->get('agreement')
     //   ]);
     // } else {
       $termsOfUse = JsonKeyValue::get('user.aggrement.term-of-use');
       $privacyPolicy = JsonKeyValue::get('user.aggrement.privacy-policy');
-      return view('auth.templates.views.'.config('pondol-auth.template.user').'.register', [
+      return view(auth_theme('user').'.register', [
         'termsOfUse' => $termsOfUse,
         'privacyPolicy' => $privacyPolicy,
         'agreements' => $request->session()->get('agreement')
@@ -138,7 +129,7 @@ class RegisterController extends Controller
   public function agreement(Request $request) {
     $termsOfUse = JsonKeyValue::get('user.aggrement.term-of-use');
     $privacyPolicy = JsonKeyValue::get('user.aggrement.privacy-policy');
-    return view('auth.templates.views.'.config('pondol-auth.template.user').'.register-agreement', [
+    return view(auth_theme('user').'.register-agreement', [
       'termsOfUse' => $termsOfUse,
       'privacyPolicy' => $privacyPolicy
     ]);
@@ -175,6 +166,8 @@ class RegisterController extends Controller
   public function store(Request $request)
   {
 
+    $auth_cfg = JsonKeyValue::getAsJson('auth');
+
     if (isset($request->mobile)) {
       $mobile = str_replace('-', '', $request->mobile);
       $request->merge(['mobile' => $mobile]);
@@ -182,7 +175,7 @@ class RegisterController extends Controller
 
     $validator = $this->validator($request->all());
 
-    $agreement = \View::exists($view = 'auth.templates.views.'.config('pondol-auth.template.user').'.register-agreement') ? true : false; 
+    $agreement = \View::exists($view = auth_theme('user').'.register-agreement') ? true : false; 
 
     $validator->sometimes('aggree_terms_of_use', 'required', function () use ($agreement) {
       return $agreement;
@@ -190,6 +183,8 @@ class RegisterController extends Controller
     $validator->sometimes('privacy_policy', 'required', function () use ($agreement) {
       return $agreement;
     });
+
+
 
     if ($validator->fails()) {
       if($request->ajax()){
@@ -214,14 +209,14 @@ class RegisterController extends Controller
       }
 
       // $usercfg = $this->configSvc->get('user');
-      if(config('pondol-auth.activate') == "auto") {
+      if($auth_cfg->activate == "auto") {
         $user->active = 1;
       }
 
       $user->save();
 
       // 추가 (기본 role 적용)
-      // if (config('pondol-auth.roles.default_role')) {
+
       $user->roles()->attach(Role::firstOrCreate(['name' =>config('pondol-auth.roles.default_role')]));
       // }
       DB::commit();
@@ -229,7 +224,7 @@ class RegisterController extends Controller
       event(new Registered($user));
       Auth::login($user);
       
-      if(config('pondol-auth.activate') == "email") {
+      if($auth_cfg->activate == "email") {
         $user->notify(new sendEmailVerificationNotification);
         return redirect()->route('verification.notice');
       } else {
@@ -253,7 +248,7 @@ class RegisterController extends Controller
    * 완료후 이동 페이지
    */
   public function success(Request $request) {
-    return view('auth.templates.views.'.config('pondol-auth.template.user').'.register-success', [
+    return view(auth_theme('user').'.register-success', [
     ]);
   }
 }

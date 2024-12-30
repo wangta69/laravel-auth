@@ -47,7 +47,7 @@ class sendEmailReset2fa extends Notification  implements ShouldQueue
 
     $actionUrl  = route('2fa.reset', [$token]);
     return (new MailMessage)->subject('['.config('app.name').'] 2FA Reset')->view(
-      'auth.templates.mail.'.config('pondol-auth.template.mail').'.reset2fa',
+      auth_theme('mail').'.reset2fa',
       [
         'actionUrl' => $actionUrl,
         'notifiable' => $notifiable

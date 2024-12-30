@@ -20,7 +20,7 @@ class DestroyController extends Controller
   }
 
   public function delete(Request $request){
-    return view('auth.templates.views.'.config('pondol-auth.template.user').'.cancel-account');
+    return view(auth_theme('user').'.cancel-account');
   }
 
   /**
@@ -52,7 +52,7 @@ class DestroyController extends Controller
   }
 
   public function success() {
-    return view('auth.templates.views.'.config('pondol-auth.template.user').'.cancel-account-success');
+    return view(auth_theme('user').'.cancel-account-success');
   }
 
 }

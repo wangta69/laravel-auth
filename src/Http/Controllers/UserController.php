@@ -33,12 +33,12 @@ class UserController extends Controller
     // $createToken = $tmp->createToken('nomalAdmin')->plainTextToken;
     // print_r($createToken);
     // $k = $request->user()->generateTwoFactorCode();
-    return view('auth.templates.views.'.config('pondol-auth.template.user').'.profile', compact('user'));
+    return view(auth_theme('user').'.profile', compact('user'));
   }
 
   public function edit(Request $request){
     $user = $request->user();
-    return view('auth.templates.views.'.config('pondol-auth.template.user').'.edit', compact('user'));
+    return view(auth_theme('user').'.edit', compact('user'));
   }
 
   /**
@@ -73,7 +73,7 @@ class UserController extends Controller
    */
   public function changePassword(Request $request){
     $user = $request->user();
-    return view('auth.templates.views.'.config('pondol-auth.template.user').'.edit-password', compact('user'));
+    return view(auth_theme('user').'.edit-password', compact('user'));
   }
 
   /**

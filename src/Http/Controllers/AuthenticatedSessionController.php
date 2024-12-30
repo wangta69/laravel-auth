@@ -6,9 +6,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 use Validator;
-use App\Http\Controllers\Controller;
+
 use App\Providers\RouteServiceProvider;
 use Pondol\Auth\Traits\AuthenticatedSession;
+use Pondol\Common\Facades\JsonKeyValue;
+
+use App\Http\Controllers\Controller;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -36,7 +39,7 @@ class AuthenticatedSessionController extends Controller
   {
     $f = $request->f; // f 가  auth.mypage.order 이면 주문내역 확인 이므로 비회원인 경우 주문내역으로 바록가게 하고 없으면 일반적 로그인이므로 비회원 주문확인을 삭제한다.   
     session()->put('url.intended',url()->previous());
-    return view('auth.templates.views.'.config('pondol-auth.template.user').'.login', ['f'=>$f]);
+    return view(auth_theme('user').'.login', ['f'=>$f]);
   }
 
   /** @POST
@@ -58,8 +61,8 @@ class AuthenticatedSessionController extends Controller
 
     $user = \Auth::user();
 
-  
-    if($user->active == 0 && config('pondol-auth.activate') != 'email') {
+    $auth_cfg = JsonKeyValue::getAsJson('auth');
+    if($user->active == 0 && $auth_cfg->activate != 'email') {
       // 이메일의 경우 로그인 후 인증받아야 함
       auth()->logout();  // logout
       $request->session()->invalidate();

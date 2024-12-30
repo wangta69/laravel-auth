@@ -1,5 +1,6 @@
 # 라라벨용 회원관리프로그램
-
+## 공식문서 
+[Doc](https://www.onstory.fun/packages/laravel-auth)
 ## Installation
 ```
 composer require wangta69/laravel-auth

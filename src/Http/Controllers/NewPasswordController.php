@@ -21,7 +21,7 @@ class NewPasswordController extends Controller
   public function create(Request $request)
   {
     // return view('auth.reset-password', ['request' => $request]);
-    return view('auth.templates.views.'.config('pondol-auth.template.user').'.reset-password', compact('request'));
+    return view(auth_theme('user').'.reset-password', compact('request'));
   }
 
   /**

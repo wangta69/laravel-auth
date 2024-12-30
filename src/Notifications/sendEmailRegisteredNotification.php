@@ -42,7 +42,7 @@ class sendEmailRegisteredNotification extends Notification  implements ShouldQue
   {
     
     return (new MailMessage)->subject('['.config('app.name').'] 회원가입안내 메일')->view(
-      'auth.templates.mail.'.config('pondol-auth.template.mail').'.register', compact('notifiable'));
+      auth_theme('mail').'.register', compact('notifiable'));
 
   }
 

@@ -2,10 +2,12 @@
 
 namespace Pondol\Auth\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
+
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Pondol\Common\Facades\JsonKeyValue;
+use App\Providers\RouteServiceProvider;
+use App\Http\Controllers\Controller;
 
 class VerifyEmailController extends Controller
 {
@@ -17,6 +19,9 @@ class VerifyEmailController extends Controller
    */
   public function __invoke(EmailVerificationRequest $request)
   {
+
+    $auth_cfg = JsonKeyValue::getAsJson('auth');
+
     if ($request->user()->hasVerifiedEmail()) {
       return redirect()->intended(RouteServiceProvider::HOME.'?verified=1');
     }
@@ -24,7 +29,7 @@ class VerifyEmailController extends Controller
     if ($request->user()->markEmailAsVerified()) {
       event(new Verified($request->user()));
 
-      if(config('pondol-auth.activate') == "email") {
+      if($auth_cfg->activate == "email") {
         $request->user()->active = 1;
         $request->user()->save();
       }

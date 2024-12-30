@@ -34,7 +34,7 @@ class Google2FAPasswordResetLinkController extends Controller
 
   protected function create() {
     // return view('pages/ko/auth/password_reset');
-    return view('auth.templates.views.'.config('pondol-auth.template.user').'.google2fa.email-reset-link');
+    return view(auth_theme('user').'.google2fa.email-reset-link');
   }
 
   public function store(Request $request)
@@ -76,7 +76,7 @@ class Google2FAPasswordResetLinkController extends Controller
   }
 
   public function reset2faForm(Request $request) {
-    return view('auth.templates.views.'.config('pondol-auth.template.user').'.google2fa.forgot-2fa', compact('request'));
+    return view(auth_theme('user').'.google2fa.forgot-2fa', compact('request'));
   }
 
   public function resetsfa(Request $request) {

@@ -39,7 +39,7 @@ class PasswordResetLinkController extends Controller
 
   protected function create() {
     // return view('pages/ko/auth/password_reset');
-    return view('auth.templates.views.'.config('pondol-auth.template.user').'.forgot-password');
+    return view(auth_theme('user').'.forgot-password');
   }
 
   public function store(Request $request)

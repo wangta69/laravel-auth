@@ -11,7 +11,7 @@
         "homepage": "https://www.onstory.fun"
       }
     ],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "require": {
       "php": ">=7.0.0",
       "bacon/bacon-qr-code": "^2.0",

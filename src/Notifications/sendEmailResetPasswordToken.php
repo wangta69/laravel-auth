@@ -51,7 +51,7 @@ class sendEmailResetPasswordToken extends Notification  implements ShouldQueue
     //   ->line('Thank you for using our application!');
     $actionUrl  = route('password.reset', [$token]);
     return (new MailMessage)->subject('['.config('app.name').'] 비밀번호 초기화')->view(
-      'auth.templates.mail.'.config('pondol-auth.template.mail').'.resetpassword',
+      auth_theme('mail').'.resetpassword',
       [
         'actionUrl' => $actionUrl,
         'token' => $token,

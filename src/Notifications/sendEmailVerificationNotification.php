@@ -54,7 +54,7 @@ class sendEmailVerificationNotification extends Notification  implements ShouldQ
     //   ->line('Thank you for using our application!');
 
     return (new MailMessage)->subject('Verify your account')->view(
-      'auth.templates.mail.'.config('pondol-auth.template.mail').'.verify',
+      auth_theme('mail').'.verify',
       [
         'notifiable' => $notifiable,
         'actionUrl' => $actionUrl,

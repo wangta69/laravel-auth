@@ -15,8 +15,8 @@ class  UpdateUserAggrement extends Migration
   {
     if (Schema::hasTable('json_key_values')) {
 
-      DB::table('json_key_values')->updateOrInsert(
-        ['key' => 'user.aggrement.term-of-use'],['v' => '<b>제1조 목적1</b><br>
+      DB::table('json_key_values')->insertOrIgnore(
+        ['key' => 'user.aggrement.term-of-use','v' => '<b>제1조 목적</b><br>
   <br>
   본 이용약관은 “사이트명”(이하 "사이트")의 서비스의 이용조건과 운영에 관한 제반 사항 규정을 목적으로 합니다.<br>
   <br><b>
@@ -141,8 +141,8 @@ class  UpdateUserAggrement extends Migration
   이 약관은 &lt;사이트 개설일&gt;부터 시행합니다.']
   );
 
-   DB::table('json_key_values')->updateOrInsert(
-        ['key' => 'user.aggrement.privacy-policy'],['v' => '<strong>1. 개인정보 수집목적 및 이용목적1</strong><br>
+   DB::table('json_key_values')->insertOrIgnore(
+        ['key' => 'user.aggrement.privacy-policy', 'v' => '<strong>1. 개인정보 수집목적 및 이용목적</strong><br>
   <br>
   (1) 홈페이지 회원 가입 및 관리<br>
   회원 가입 의사 확인, 회원제 서비스 제공에 따른 본인 식별․인증, 회원자격 유지․관리, 제한적 본인확인제 시행에 따른 본인확인, 서비스 부정 이용 방지, 만 14세 미만 아동의 개인정보 처리시 법정대리인의 동의 여부 확인, 각종 고지․통지, 고충 처리 등의 목적<br>

@@ -24,7 +24,7 @@ class Google2FAController extends Controller
 
 	public function setting(Request $request)
 	{
-		return view('auth.templates.views.'.config('pondol-auth.template.user').'.google2fa.welcome');
+		return view(auth_theme('user').'.google2fa.welcome');
 	}
 
 
@@ -55,7 +55,7 @@ class Google2FAController extends Controller
 			200
 		);
 
-		return view('auth.templates.views.'.config('pondol-auth.template.user').'.google2fa.enableTwoFactor', ['image' => $imageDataUri,
+		return view(auth_theme('user').'.google2fa.enableTwoFactor', ['image' => $imageDataUri,
 			'secret' => $secret]);
 
 	}
@@ -72,7 +72,7 @@ class Google2FAController extends Controller
 		//make secret column blank
 		$user->google2fa_secret = null;
 		$user->save();
-		return view('auth.templates.views.'.config('pondol-auth.template.user').'.google2fa.welcome');
+		return view(auth_theme('user').'.google2fa.welcome');
 	}
 
 	/**
@@ -90,7 +90,7 @@ class Google2FAController extends Controller
 	public function getValidateToken()
 	{
 		if (session('2fa:user:id')) {
-			return view('auth.templates.views.'.config('pondol-auth.template.user').'.google2fa.validate');
+			return view(auth_theme('user').'.google2fa.validate');
 		}
 		return redirect('login');
 	}
