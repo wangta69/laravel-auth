@@ -47,6 +47,7 @@ trait Point
 
   // 회원 로그인 포인트
   public function _login($user) {
+    $auth_cfg = JsonKeyValue::getAsJson('auth');
     $point = $auth_cfg->point->login;
     if($point) {
       $this->_insertPoint($user, $point, 'login', null, $user->id);
