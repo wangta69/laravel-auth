@@ -28,7 +28,9 @@
       "wangta69/laravel-pondol": "*"
     },
     "autoload": {
-     "psr-4": {
+      "files": [
+        "src/helpers.php"
+      ],"psr-4": {
         "Pondol\\Auth\\": "src/"
       }
     },
