@@ -22,7 +22,7 @@
       "pragmarx/google2fa-laravel": "^2.2",
       "socialiteproviders/kakao": "^4.2",
       "socialiteproviders/naver": "^4.1",
-      "tymon/jwt-auth": "^1.1",
+      "tymon/jwt-auth": "^2",
       "wangta69/laravel-editor": "*",
       "wangta69/laravel-components": "*",
       "wangta69/laravel-pondol": "*"
