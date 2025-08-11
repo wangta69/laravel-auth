@@ -13,5 +13,5 @@ return [
     'as'=>'auth.admin.',
     'middleware'=>['web', 'admin'],
   ],
-  'component' => ['admin'=>['layout'=>'pondol-auth::admin', 'lnb'=>'pondol-auth::navigation']],
+  'component' => ['admin'=>['layout'=>'pondol-common::common-admin', 'lnb'=>'pondol-auth::lnb-partial']],
 ];

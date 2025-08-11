@@ -1,10 +1,4 @@
-<nav id="sidebar">
-  <div class="sidebar-header">
-    <h3><a href="{{ route('auth.admin.dashboard') }}">OnStory</a></h3>
-    <strong>ON</strong>
-  </div>
 
-  <ul class="list-unstyled components" id="navbar-sidebar">
     <li>
       <a href="#member-sub-menu" data-bs-toggle="collapse" 
         aria-expanded="{{ request()->routeIs(['auth.admin.users*']) ? 'true' : 'false' }}"
@@ -26,7 +20,7 @@
         aria-expanded="{{ request()->routeIs(['auth.admin.config*']) ? 'true' : 'false' }}"
         class="dropdown-toggle">
         <i class="fa-solid fa-gear"></i>
-          환경설정
+          회원 환경설정
       </a>
       <ul class="collapse list-unstyled {{ request()->routeIs(['auth.admin.config*']) ? 'show' : '' }}" id="member-config-sub-menu">
         <li class="{{ request()->routeIs(['auth.admin.config']) ? 'current-page' : '' }}">
@@ -40,6 +34,4 @@
         </li>
       </ul>
     </li>
-    
-  </ul>
-</nav>
+
