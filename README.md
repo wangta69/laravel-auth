@@ -40,3 +40,31 @@ GITHUB_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 nohup php artisan queue:listen >> storage/logs/laravel.log &
 ```
+
+## Important
+> 아래내용은 수동으로 처리해 주어야 합니다.
+
+### .env
+> laravel 12 이상에서는 아래와 같이 .evn 파일을 변경해 주시기 바랍니다.
+```
+AUTH_MODEL=Pondol\Auth\Models\User\User
+```
+> laravel 11 이하 버전 (자동으로 변경)
+```
+/config/auth.php
+'model' => App\Models\User::class,", 
+=>
+'model' => Pondol\Auth\Models\User\User::class,"
+```
+### bootstrap/app.php
+> laravel 12 이상에서는 아래와 같이 설정을 추가해야 합니다.(12 미만 버전에서는  자동으로 처리됨)
+```
+// bootstrap/app.php
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->alias([
+        'admin' => \Pondol\Auth\Http\Middleware\CheckRole::class,
+        // 필요하다면 다른 역할에 대한 별칭도 추가할 수 있습니다.
+        // 'manager' => \Pondol\Auth\Http\Middleware\CheckRole::class,
+    ]);
+})
+```

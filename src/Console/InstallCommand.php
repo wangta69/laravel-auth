@@ -61,7 +61,7 @@ class InstallCommand extends Command
   }
 
   private function simpleCase() {
-    replaceInFile("'model' => App\Models\User::class,", "'model' => Pondol\Auth\Models\User\User::class,", config_path('auth.php'));
+    // replaceInFile("'model' => App\Models\User::class,", "'model' => Pondol\Auth\Models\User\User::class,", config_path('auth.php'));
     if(!Schema::hasTable('jobs')) {
       \Artisan::call('queue:table'); // job table  생성 (11 은 php artisan make:queue-table) 명령을 사용하는데 호환성 테스트 필요
     }

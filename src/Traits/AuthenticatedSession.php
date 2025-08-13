@@ -87,23 +87,26 @@ trait AuthenticatedSession {
   }
 
   private function storeToLog($user) {
-    $http_referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER']:"";
-    $http_origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN']:"";
-    $http_user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT']:"";
-    $remote_addr = $this->getRealIpAddr();
+    // $http_referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER']:"";
+    // $http_origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN']:"";
+    // $http_user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT']:"";
+    // $remote_addr = $this->getRealIpAddr();
 
     $log = new \Pondol\Auth\Models\User\UserLog;
     $log->user_id = $user->id;
-    $log->http_referer = $http_referer;
-    $log->http_origin = $http_origin;
-    $log->http_user_agent = $http_user_agent;
-    $log->remote_addr = $remote_addr;
+    $log->http_referer = $request->header('referer'); // $_SERVER['HTTP_REFERER'] 대신 사용
+    $log->http_origin = $request->header('origin');   // $_SERVER['HTTP_ORIGIN'] 대신 사용
+    $log->http_user_agent = $request->userAgent();  // $_SERVER['HTTP_USER_AGENT'] 대신 사용
+    $log->remote_addr = $request->ip();
 
     $log->save();
     return array("result"=>true);//, "inserted_id"=>$betting->id
   }
 
 
+  /**
+   * @Deprecated
+   */
   private function getRealIpAddr(){
     if(!empty($_SERVER['HTTP_CLIENT_IP']) && getenv('HTTP_CLIENT_IP')){
       return $_SERVER['HTTP_CLIENT_IP'];
