@@ -84,7 +84,7 @@ trait AuthenticatedSession {
     return Str::lower($request->input('email')).'|'.$request->ip();
   }
 
-  private function storeToLog($user) {
+  private function storeToLog($user, $request) {
     // $http_referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER']:"";
     // $http_origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN']:"";
     // $http_user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT']:"";
