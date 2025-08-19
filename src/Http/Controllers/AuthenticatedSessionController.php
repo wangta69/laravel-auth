@@ -75,7 +75,8 @@ class AuthenticatedSessionController extends Controller
       $request->session()->regenerateToken();
 
       return redirect()->back()
-      ->withErrors(['active'=>'인증대기중입니다.'])
+      ->with('error', '인증대기중입니다.')
+      // ->withErrors(['active'=>'인증대기중입니다.'])
       ->withInput($request->except('password'));
     }
 
@@ -118,6 +119,7 @@ class AuthenticatedSessionController extends Controller
     \Log::debug("Checking role: $role with path: $path");
       if (in_array($role, $userRoles)) {
         $redirectTo = $path; // 일치하는 첫 번째 역할을 찾으면 경로를 설정하고
+        return redirect($redirectTo);
         break; // 즉시 루프를 탈출합니다.
       }
     }
