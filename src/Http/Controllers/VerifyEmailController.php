@@ -6,7 +6,6 @@ namespace Pondol\Auth\Http\Controllers;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Pondol\Common\Facades\JsonKeyValue;
-use App\Providers\RouteServiceProvider;
 use App\Http\Controllers\Controller;
 
 class VerifyEmailController extends Controller
@@ -21,9 +20,10 @@ class VerifyEmailController extends Controller
   {
 
     $auth_cfg = JsonKeyValue::getAsJson('auth');
+    $defaultPath = config('pondol-auth.default_redirect_path', '/');
 
     if ($request->user()->hasVerifiedEmail()) {
-      return redirect()->intended(RouteServiceProvider::HOME.'?verified=1');
+      return redirect()->intended($defaultPath.'?verified=1');
     }
 
     if ($request->user()->markEmailAsVerified()) {
@@ -35,6 +35,6 @@ class VerifyEmailController extends Controller
       }
     }
 
-    return redirect()->intended(RouteServiceProvider::HOME.'?verified=1');
+    return redirect()->intended($defaultPath.'?verified=1');
   }
 }

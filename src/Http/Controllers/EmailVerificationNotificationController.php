@@ -3,7 +3,6 @@
 namespace Pondol\Auth\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
 use Pondol\Auth\Notifications\sendEmailVerificationNotification;
 
@@ -17,8 +16,10 @@ class EmailVerificationNotificationController extends Controller
    */
   public function store(Request $request)
   {
+    $defaultPath = config('pondol-auth.default_redirect_path', '/');
+    
     if ($request->user()->hasVerifiedEmail()) {
-      return redirect()->intended(RouteServiceProvider::HOME);
+      return redirect()->intended( $defaultPath);
     }
 
     $request->user()->notify(new sendEmailVerificationNotification);

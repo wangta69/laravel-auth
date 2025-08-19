@@ -17,7 +17,7 @@ use Pondol\Auth\Models\User\SocialAccount;
 use Pondol\Common\Facades\JsonKeyValue;
 use Pondol\Auth\Traits\AuthenticatedSession;
 
-use App\Providers\RouteServiceProvider;
+
 use App\Http\Controllers\Controller;
 
 // https://vuxy.tistory.com/entry/Laravel-8-%EC%86%8C%EC%85%9C%EB%A1%9C%EA%B7%B8%EC%9D%B8Laravel-Socialite-1
@@ -30,7 +30,7 @@ class AuthenticatedSessionController extends Controller
   {
 
   }
-  // 1. redirectToProvider() 구글에 로그인요청
+
   public function redirectToProvider($provider)
   {
     //리프레시 토큰을 가져오려면 옵션파라미터 'access_type'=>'offline', 'prompt'=>'consent' 으로 설정해줘야합니다.
@@ -52,7 +52,7 @@ class AuthenticatedSessionController extends Controller
   public function handleProviderCallback($provider)
   {
     $socialUser = Socialite::driver($provider)->stateless()->user();
-
+    $defaultPath = config('pondol-auth.default_redirect_path', '/');
 
     // 유저가 이미 회원인지 확인하는 메서드입니다.
     $result = $this->findOrCreateUser($provider, $socialUser);
@@ -70,7 +70,7 @@ class AuthenticatedSessionController extends Controller
     if($type=="register") {
       return redirect()->route('register.success');
     } else { // login
-      return redirect()->intended(RouteServiceProvider::HOME);
+      return redirect()->intended($defaultPath);
     }
 
   }

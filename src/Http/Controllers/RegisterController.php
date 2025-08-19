@@ -1,7 +1,6 @@
 <?php
 namespace Pondol\Auth\Http\Controllers;
 
-use App\Providers\RouteServiceProvider;
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
@@ -43,8 +42,6 @@ class RegisterController extends Controller
    *
    * @var string
    */
-  protected $redirectTo = RouteServiceProvider::HOME;
-
   /**
    * Create a new controller instance.
    *

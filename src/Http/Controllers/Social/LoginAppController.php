@@ -2,8 +2,7 @@
 
 namespace Pondol\Auth\Http\Controllers\Social;
 
-use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
+use App\Http\Controllers\Controller;//
 use Illuminate\Http\Request;
 use Validator;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;

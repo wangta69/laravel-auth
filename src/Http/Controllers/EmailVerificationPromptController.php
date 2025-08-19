@@ -3,7 +3,6 @@
 namespace Pondol\Auth\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
 
 class EmailVerificationPromptController extends Controller
@@ -16,9 +15,9 @@ class EmailVerificationPromptController extends Controller
    */
   public function __invoke(Request $request)
   {
-
+    $defaultPath = config('pondol-auth.default_redirect_path', '/');
     return $request->user()->hasVerifiedEmail()
-      ? redirect()->intended(RouteServiceProvider::HOME)
+      ? redirect()->intended($defaultPath)
       : view(auth_theme('user').'.verify-email');
   }
 }

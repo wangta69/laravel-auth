@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 
 use Validator;
 
-// use App\Providers\RouteServiceProvider;
 use Pondol\Auth\Traits\AuthenticatedSession;
 use Pondol\Common\Facades\JsonKeyValue;
 
