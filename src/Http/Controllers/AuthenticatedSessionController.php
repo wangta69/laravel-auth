@@ -91,7 +91,7 @@ class AuthenticatedSessionController extends Controller
     // $user->logined_at = date("Y-m-d H:i:s");
     $user->logined_at = now();
     $user->save();
-    $this->storeToLog($user, $request);
+    $this->storeToLog($user);
 
     // 1. 설정 파일에서 리디렉션 경로들을 가져옵니다.
     $redirectsByRole = config('pondol-auth.redirect_after_login', []);

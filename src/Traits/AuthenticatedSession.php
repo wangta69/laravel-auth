@@ -84,7 +84,7 @@ trait AuthenticatedSession {
     return Str::lower($request->input('email')).'|'.$request->ip();
   }
 
-  private function storeToLog($user, $request) {
+  private function storeToLog($user) {
     // $http_referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER']:"";
     // $http_origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN']:"";
     // $http_user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT']:"";
@@ -92,10 +92,10 @@ trait AuthenticatedSession {
 
     $log = new \Pondol\Auth\Models\User\UserLog;
     $log->user_id = $user->id;
-    $log->http_referer = $request->header('referer'); // $_SERVER['HTTP_REFERER'] 대신 사용
-    $log->http_origin = $request->header('origin');   // $_SERVER['HTTP_ORIGIN'] 대신 사용
-    $log->http_user_agent = $request->userAgent();  // $_SERVER['HTTP_USER_AGENT'] 대신 사용
-    $log->remote_addr = $request->ip();
+    $log->http_referer = request()->header('referer'); // $_SERVER['HTTP_REFERER'] 대신 사용
+    $log->http_origin = request()->header('origin');   // $_SERVER['HTTP_ORIGIN'] 대신 사용
+    $log->http_user_agent = request()->userAgent();  // $_SERVER['HTTP_USER_AGENT'] 대신 사용
+    $log->remote_addr = request()->ip();
 
     $log->save();
     return array("result"=>true);//, "inserted_id"=>$betting->id
