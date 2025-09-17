@@ -49,6 +49,15 @@ nohup php artisan queue:listen >> storage/logs/laravel.log &
 ```
 AUTH_MODEL=Pondol\Auth\Models\User\User
 ```
+혹은 기존 User extends 처리 하시기를 추천 드립니다.(추천 방식)
+```
+use Pondol\Auth\Models\User\User as PondolUser;
+
+class User extends PondolUser
+{
+}
+
+```
 > laravel 11 이하 버전 (자동으로 변경)
 ```
 /config/auth.php
@@ -67,4 +76,38 @@ AUTH_MODEL=Pondol\Auth\Models\User\User
         // 'manager' => \Pondol\Auth\Http\Middleware\CheckRole::class,
     ]);
 })
+```
+```
+<?php
+
+use Illuminate\Foundation\Application;
+use Illuminate\Foundation\Configuration\Exceptions;
+use Illuminate\Foundation\Configuration\Middleware;
+
+return Application::configure(basePath: dirname(__DIR__))
+    ->withRouting(
+        web: __DIR__.'/../routes/web.php',
+        commands: __DIR__.'/../routes/console.php',
+        health: '/up',
+        then: function () {
+            Route::middleware(['web', 'auth', 'admin:administrator']) // 적용할 미들웨어 그룹
+                 ->prefix('admin')                  // URL에 '/admin' 접두사 자동 추가
+                 ->name('admin.')                   // 라우트 이름에 'admin.' 접두사 자동 추가
+                 ->group(base_path('routes/admin.php')); // 로드할 라우트 파일 경로
+        }
+    )
+    ->withMiddleware(function (Middleware $middleware): void {
+        //
+        $middleware->alias([
+        'admin' => \Pondol\Auth\Http\Middleware\CheckRole::class,
+        // 필요하다면 다른 역할에 대한 별칭도 추가할 수 있습니다.
+        // 'manager' => \Pondol\Auth\Http\Middleware\CheckRole::class,
+        ]);
+
+
+    })
+    ->withExceptions(function (Exceptions $exceptions): void {
+        //
+    })->create();
+
 ```

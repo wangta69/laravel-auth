@@ -40,6 +40,7 @@
           <option value="{{$v}}" @if($v == $user['template']['user']) selected @endif>{{$v}}</option>
           @endforeach
         </select>
+       경로: resource_path('views/auth/templates/views')
       </div>
 
       <div class="input-group mt-1">
@@ -49,6 +50,7 @@
           <option value="{{$v}}" @if($v == $user['template']['mail']) selected @endif>{{$v}}</option>
           @endforeach
         </select>
+        경로: resource_path('views/auth/templates/mail')
       </div>
 
       <!-- <div class="input-group mt-1">
