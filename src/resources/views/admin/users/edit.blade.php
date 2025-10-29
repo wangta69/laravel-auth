@@ -37,8 +37,7 @@
           <label class="form-label">연락처</label>
         </div>
         <div class="col-4">
-          <input type="text" name="mobile" value="{{addHypenToMobile($user->mobile)}}" class="form-control" autocomplete="off">
-        {{-- addHypenToMobile($user->mobile) --}}
+          <input type="text" name="mobile" value="{{addHypenToMobile($user->mobile)}}" class="form-control" readonly  onfocus="this.removeAttribute('readonly');"><!-- 이상한 값이 채워지는 것을 강제로 막음 -->
         </div>
       </div>
       <div class="row mt-1">
