@@ -1,72 +1,85 @@
 # 라라벨용 회원관리프로그램
-## 공식문서 
+
+## 공식문서
+
 [Doc](https://www.onstory.fun/packages/laravel-auth)
-## Installation
-```
-composer require wangta69/laravel-auth
-php artisan pondol:install-auth
-```
-## Crate user
-> 세팅이후 관리자용 계정을 세팅합니다.
-```
-php artisan pondol:create-auth
-```
 
 ## 제공 기능
+
 - role 기능
 - social login 기능
 - JWTAuth
 
-## How to Use
-### Admin Page
-- yourdomain.com/auth/admin
+## Installation (설치) \* 필독
 
-### 일반링크
-> routes 폴더에 auth.php (프론트용) 및 auth-admin.php (관리자용) 이 있으므로 보시고 적절한 링크를 이용하시면 됩니다.
+### 1. Composer install
 
-## laravel/socialite 세팅
-> https://laravel.com/docs/11.x/socialite 참조하시어 생성 하시면 됩니다.
-.env
 ```
-GOOGLE_CLIENT_ID='xxxxxxxx-xxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com'
-GOOGLE_CLIENT_SECRET='GOCSPX-xxxxxxx_xxxxxx'
-
-GITHUB_CLIENT_ID=xxxxxxxx
-GITHUB_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+composer require wangta69/laravel-auth
+php artisan pondol:install-auth
 ```
 
-## 메일관련 세팅
-> 메일은 Event 및 Job으로 처리되므로 아래와 같이 세팅해 주어야 합니다.
+## 2. Crate user
+
+세팅이후 관리자용 계정을 세팅합니다.
+
 ```
-nohup php artisan queue:listen >> storage/logs/laravel.log &
+php artisan pondol:create-auth
 ```
 
-## Important
-> 아래내용은 수동으로 처리해 주어야 합니다.
+## 3. Auth Model 변경
 
-### .env
-> laravel 12 이상에서는 아래와 같이 .evn 파일을 변경해 주시기 바랍니다.
+아래 두가지 방법중 하나를 선택하여 처리
+
+### 3.1 Extends 사용(추천)
+
+app\Model\User 를 extends 처리
+
 ```
-AUTH_MODEL=Pondol\Auth\Models\User\User
-```
-혹은 기존 User extends 처리 하시기를 추천 드립니다.(추천 방식)
-```
+<?php
+
+namespace App\Models;
+
 use Pondol\Auth\Models\User\User as PondolUser;
 
 class User extends PondolUser
 {
 }
+```
+
+### 3.2 config mode 변경
+
+laravel 12 이하는 직접 config/auth.php 수정
 
 ```
-> laravel 11 이하 버전 (자동으로 변경)
+'providers' => [
+        'users' => [
+            'driver' => 'eloquent',
+            'model' => Pondol\Auth\Models\User\User::class,
+        ],
+    ],
 ```
-/config/auth.php
-'model' => App\Models\User::class,", 
-=>
-'model' => Pondol\Auth\Models\User\User::class,"
+
+laravel 12 이상은 .env 파일의 AUTH_MODEL에서 변경 혹은 추가
+
 ```
-### bootstrap/app.php
-> laravel 12 이상에서는 아래와 같이 설정을 추가해야 합니다.(12 미만 버전에서는  자동으로 처리됨)
+AUTH_MODEL=Pondol\Auth\Models\User\User
+```
+
+## How to Use
+
+### Admin Page
+
+- yourdomain.com/auth/admin
+
+### 일반링크
+
+> routes 폴더에 auth.php (프론트용) 및 auth-admin.php (관리자용) 이 있으므로 보시고 적절한 링크를 이용하시면 됩니다.
+
+## 권한설정이 안될 경우
+
+laravel 12 이상에서는 아래와 같이 bootstrap/app.php 설정을 추가해야 합니다.(12 미만 버전에서는 자동으로 처리됨)
+
 ```
 // bootstrap/app.php
 ->withMiddleware(function (Middleware $middleware) {
@@ -77,6 +90,7 @@ class User extends PondolUser
     ]);
 })
 ```
+
 ```
 <?php
 
@@ -110,4 +124,25 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })->create();
 
+```
+
+## laravel/socialite 세팅
+
+> https://laravel.com/docs/11.x/socialite 참조하시어 생성 하시면 됩니다.
+> .env
+
+```
+GOOGLE_CLIENT_ID='xxxxxxxx-xxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com'
+GOOGLE_CLIENT_SECRET='GOCSPX-xxxxxxx_xxxxxx'
+
+GITHUB_CLIENT_ID=xxxxxxxx
+GITHUB_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+## 메일관련 세팅
+
+> 메일은 Event 및 Job으로 처리되므로 아래와 같이 세팅해 주어야 합니다.
+
+```
+nohup php artisan queue:listen >> storage/logs/laravel.log &
 ```
