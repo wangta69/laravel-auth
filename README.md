@@ -68,11 +68,13 @@ AUTH_MODEL=Pondol\Auth\Models\User\User
 
 ## How to Use
 
-### Admin Page
+### Admin Page 접근
+
+세팅이 완료되면 브라우저 입력창에 auth/admin을 입력하면 관리자 페이지로 접근됩니다.
 
 - yourdomain.com/auth/admin
 
-### 일반링크
+### 일반페이지 링크
 
 > routes 폴더에 auth.php (프론트용) 및 auth-admin.php (관리자용) 이 있으므로 보시고 적절한 링크를 이용하시면 됩니다.
 
@@ -146,3 +148,10 @@ GITHUB_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 nohup php artisan queue:listen >> storage/logs/laravel.log &
 ```
+
+## 통합관리자단 만들기
+
+현재 제공중인 회원관리프로그램(wangta69/laravel-auth) 은 많은 패키지중 일부 입니다. 별도로 bbs나 market등 기타 package등도 제작/배포중에 있습니다.
+이들은 각각 별도의 관리자단을 가지고 있으며 이를 통합하기 위해서는 아래 링크를 참조해 주시기 바랍니다.
+
+[통합관리자단 만드는 방법 보기](https://www.onstory.fun/packages/laravel-package-admin-merge)
