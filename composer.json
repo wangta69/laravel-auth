@@ -1,45 +1,51 @@
 {
-    "name": "wangta69/laravel-auth",
-    "description": "Auth for Laravel(라라벨용 회원관리 프로그램)",
-    "keywords": ["laravel", "user", "auth" , "라라벨", "member"],
-    "homepage": "https://www.onstory.fun/packages/laravel-auth",
-    "license": "MIT",
-    "authors": [
-      {
-        "name": "Pondol",
-        "email": "wangta69@gmail.com",
-        "homepage": "https://www.onstory.fun"
-      }
+  "name": "wangta69/laravel-auth",
+  "description": "Auth for Laravel(라라벨용 회원관리 프로그램)",
+  "keywords": [
+    "laravel",
+    "user",
+    "auth",
+    "라라벨",
+    "member"
+  ],
+  "homepage": "https://www.onstory.fun/packages/laravel-auth",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Pondol",
+      "email": "wangta69@gmail.com",
+      "homepage": "https://www.onstory.fun"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "php": ">=8.0.0",
+    "bacon/bacon-qr-code": "^2.0",
+    "doctrine/dbal": "^4",
+    "guzzlehttp/guzzle": "^7",
+    "kyslik/column-sortable": "^7",
+    "laravel/ui": "*",
+    "pragmarx/google2fa-laravel": "^2.2",
+    "socialiteproviders/kakao": "^4.2",
+    "socialiteproviders/naver": "^4.1",
+    "tymon/jwt-auth": "^2",
+    "wangta69/laravel-editor": "^8.5",
+    "wangta69/laravel-components": "^1.0",
+    "wangta69/laravel-pondol": "^8.12"
+  },
+  "autoload": {
+    "files": [
+      "src/helpers.php"
     ],
-    "minimum-stability": "stable",
-    "require": {
-      "php": ">=8.0.0",
-      "bacon/bacon-qr-code": "^2.0",
-      "doctrine/dbal": "^4",
-      "guzzlehttp/guzzle": "^7",
-      "kyslik/column-sortable": "^7",
-      "laravel/ui": "*",
-      "pragmarx/google2fa-laravel": "^2.2",
-      "socialiteproviders/kakao": "^4.2",
-      "socialiteproviders/naver": "^4.1",
-      "tymon/jwt-auth": "^2",
-      "wangta69/laravel-editor": "*",
-      "wangta69/laravel-components": "*",
-      "wangta69/laravel-pondol": "*"
-    },
-    "autoload": {
-      "files": [
-        "src/helpers.php"
-      ],"psr-4": {
-        "Pondol\\Auth\\": "src/"
-      }
-    },
-    "extra": {
-      "laravel": {
-        "providers": [
-          "Pondol\\Auth\\AuthServiceProvider"
-        ]
-      }
+    "psr-4": {
+      "Pondol\\Auth\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Pondol\\Auth\\AuthServiceProvider"
+      ]
     }
   }
-  
+}
