@@ -1,4 +1,5 @@
 <?php
+// laravel-auth/src/routes/auth.php
 Route::get('register', 'RegisterController@create')->name('register')->middleware('guest');
 Route::post('register', 'RegisterController@store')->middleware('guest');
 Route::get('register/agreement', 'RegisterController@agreement')->name('register.agreement')->middleware('guest');

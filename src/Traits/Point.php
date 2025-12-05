@@ -1,56 +1,45 @@
 <?php
+
 namespace Pondol\Auth\Traits;
 
-use Pondol\Auth\Models\User\UserPoint;
+use Pondol\Auth\Services\PointService;
 use Pondol\Common\Facades\JsonKeyValue;
 
 trait Point
 {
-  /**
-   * 입금및 게임시 처리 (별도의 hold_point를 처리하지 않는다.)
-   * @param Object $user
-   * @param String $item : 포인트 지불 flag(admino, order, event)
-   * @param String $sub_item : $item 보다 디테일하게 처리, 가령 event 일경우 어떤 이벤트인지
-   * @param  Integer $rel_item: 참조테이블의 ID
-   */
-  public function _insertPoint($user, $point, $item = null, $sub_item = null, $rel_item = null) {
-    
+    /**
+     * 입금및 게임시 처리 (별도의 hold_point를 처리하지 않는다.)
+     *
+     * @param  object  $user
+     * @param  string  $item  : 포인트 지불 flag(admino, order, event)
+     * @param  string  $sub_item  : $item 보다 디테일하게 처리, 가령 event 일경우 어떤 이벤트인지
+     * @param  int  $rel_item:  참조테이블의 ID
+     */
+    public function _insertPoint($user, $point, $item = null, $sub_item = null, $rel_item = null)
+    {
+        $service = new PointService;
 
-    if(!$point) {
-      return;
+        // 기존 코드는 is_paid가 없었으므로 false(무상)로 처리
+        return $service->record($user, $point, $item, $sub_item, $rel_item, false);
     }
-    if(!$sub_item) {$sub_item = $item;}
-    
-    $cur_sum = $user->curPoint();
-    $userPoint = new UserPoint;
-    $userPoint->user_id = $user->id;
-    $userPoint->point = $point;
-    $userPoint->cur_sum = $cur_sum + $point;
-    $userPoint->item = $item;
-    $userPoint->sub_item = $sub_item;
-    $userPoint->rel_item = $rel_item;
 
-    $userPoint->save();
-
-    $user->increment('point', $point);
-    return;
-  }
-
-  // 회원가입 포인트
-  public function _register($user) {
-    $auth_cfg = JsonKeyValue::getAsJson('auth');
-    $point = $auth_cfg->point->register;
-    if($point) {
-      $this->_insertPoint($user, $point, 'register', null, $user->id);
+    // 회원가입 포인트
+    public function _register($user)
+    {
+        $auth_cfg = JsonKeyValue::getAsJson('auth');
+        $point = $auth_cfg->point->register;
+        if ($point) {
+            $this->_insertPoint($user, $point, 'register', null, $user->id);
+        }
     }
-  }
 
-  // 회원 로그인 포인트
-  public function _login($user) {
-    $auth_cfg = JsonKeyValue::getAsJson('auth');
-    $point = $auth_cfg->point->login;
-    if($point) {
-      $this->_insertPoint($user, $point, 'login', null, $user->id);
+    // 회원 로그인 포인트
+    public function _login($user)
+    {
+        $auth_cfg = JsonKeyValue::getAsJson('auth');
+        $point = $auth_cfg->point->login;
+        if ($point) {
+            $this->_insertPoint($user, $point, 'login', null, $user->id);
+        }
     }
-  }
 }

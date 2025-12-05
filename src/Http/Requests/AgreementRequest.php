@@ -7,9 +7,7 @@ use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash; // Password Rules 사용 시 필요
-// 필요시 사용
 use Illuminate\Support\Facades\Validator;
-// [변경] 커스텀 Request 클래스 추가
 use Illuminate\Validation\Rules;
 use Pondol\Auth\Events\Registered;
 use Pondol\Auth\Models\Role\Role;
@@ -70,41 +68,18 @@ class RegisterController extends Controller
         ]);
     }
 
-    public function agreementstore(Request $request)
+    public function agreementstore(AgreementRequest $request)
     {
+        // 1. 세션 저장 (유효성 검사는 이미 통과됨)
+        // validated()는 규칙에 정의된 필드만 안전하게 반환함
+        $request->session()->put('agreement', $request->validated());
 
-        // [디버깅 1] 데이터가 들어오는지 확인
-
-        $validator = Validator::make($request->all(), [
-            'aggree_terms_of_use' => ['required'],
-            'privacy_policy' => ['required'],
-        ]);
-
-        if ($validator->fails()) {
-            // [디버깅 2] 유효성 검사 실패 시 여기 걸림
-            // dd('Validation Failed', $validator->errors());
-
-            if ($request->wantsJson()) { // 기존 로직
-                return response()->json(['error' => $validator->errors()->first()], 203);
-            } else {
-                return redirect()->back()->withInput()->withErrors($validator->errors());
-            }
-        }
-
-        // 세션 저장
-        $request->session()->put('agreement', [
-            'aggree_terms_of_use' => $request->aggree_terms_of_use,
-            'privacy_policy' => $request->privacy_policy,
-        ]);
-
-        // [디버깅 3] 세션이 진짜 저장됐는지 확인
-        // dd('Session Saved', $request->session()->all());
-
-        // 성공 리턴
-        if ($request->wantsJson()) { // 기존 로직 수정됨 가정
+        // 2. 응답 분기 (JSON vs Redirect)
+        if ($request->wantsJson()) {
             return response()->json(['error' => false, 'next' => route('register')]);
         }
 
+        // 일반 웹 요청은 바로 페이지 이동
         return redirect()->route('register');
     }
 
