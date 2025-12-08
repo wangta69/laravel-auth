@@ -80,20 +80,10 @@ AUTH_MODEL=Pondol\Auth\Models\User\User
 
 ## 권한설정이 안될 경우
 
-laravel 12 이상에서는 아래와 같이 bootstrap/app.php 설정을 추가해야 합니다.(12 미만 버전에서는 자동으로 처리됨)
+laravel 11 이상에서는 아래와 같이 bootstrap/app.php 설정을 추가해야 합니다.(11 미만 버전에서는 자동으로 처리됨)
 
 ```
 // bootstrap/app.php
-->withMiddleware(function (Middleware $middleware) {
-    $middleware->alias([
-        'admin' => \Pondol\Auth\Http\Middleware\CheckRole::class,
-        // 필요하다면 다른 역할에 대한 별칭도 추가할 수 있습니다.
-        // 'manager' => \Pondol\Auth\Http\Middleware\CheckRole::class,
-    ]);
-})
-```
-
-```
 <?php
 
 use Illuminate\Foundation\Application;
@@ -102,25 +92,26 @@ use Illuminate\Foundation\Configuration\Middleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__.'/../routes/web.php',
+        using: function () {
+            // 1. 일반 웹 라우트 로드
+            Route::middleware('web')
+                ->group(base_path('routes/web.php'));
+
+            // 2. 관리자 라우트 로드 (auth와 admin 미들웨어를 순차적으로 적용)
+            Route::middleware(['web', 'auth', 'admin']) // <- 핵심!
+                ->prefix('admin')
+                ->name('admin.')
+                ->group(base_path('routes/admin.php'));
+        },
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
-        then: function () {
-            Route::middleware(['web', 'auth', 'admin:administrator']) // 적용할 미들웨어 그룹
-                 ->prefix('admin')                  // URL에 '/admin' 접두사 자동 추가
-                 ->name('admin.')                   // 라우트 이름에 'admin.' 접두사 자동 추가
-                 ->group(base_path('routes/admin.php')); // 로드할 라우트 파일 경로
-        }
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
         $middleware->alias([
-        'admin' => \Pondol\Auth\Http\Middleware\CheckRole::class,
-        // 필요하다면 다른 역할에 대한 별칭도 추가할 수 있습니다.
-        // 'manager' => \Pondol\Auth\Http\Middleware\CheckRole::class,
+            'admin' => \Pondol\Auth\Http\Middleware\CheckRole::class,
+            'role' => \Pondol\Auth\Http\Middleware\CheckRole::class,
         ]);
-
-
+        //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
