@@ -1,3 +1,5 @@
+This library is used in the production of [gilra.kr](https://www.gilra.kr) (Online Fortune Service).
+
 # 라라벨용 회원관리프로그램
 
 ## 공식문서
