@@ -178,10 +178,12 @@ env 파일에 아래 정보 추가
 KAKAO_CLIENT_ID=your_kakao_client_id
 KAKAO_CLIENT_SECRET=your_kakao_client_secret
 KAKAO_REDIRECT_URI=http(s)://도메인/auth/social/kakao/callback
+KAKAO_APP_REDIRECT_URIttp(s)://도메인/api/v1/auth/social/kakao/callback
 
 NAVER_CLIENT_ID=your_naver_client_id
 NAVER_CLIENT_SECRET=your_naver_client_secret
-NAVER_REDIRECT_URI=http(s)://도메인auth/social/naver/callback
+NAVER_REDIRECT_URI=http(s)://도메인/auth/social/naver/callback
+NAVER_APP_REDIRECT_URI=ttp(s)://도메인/api/v1/auth/social/naver/callback
 ```
 
 ---
@@ -209,6 +211,7 @@ NAVER_REDIRECT_URI=http(s)://도메인auth/social/naver/callback
     - 활성화 설정: `OFF`를 눌러 **`ON`**으로 변경.
     - **Redirect URI 등록**: 하단 버튼 클릭 후 입력.
       - `https://도메인/auth/social/kakao/callback`
+      - `https://도메인/api/v1/auth/social/kakao/callback`
       - (개발용) `http://localhost:8000/auth/social/kakao/callback`
 6.  **동의 항목 설정 (정보 수집):**
     - 좌측 메뉴: `카카오 로그인` > `동의항목`
@@ -246,6 +249,7 @@ NAVER_REDIRECT_URI=http(s)://도메인auth/social/naver/callback
     - **서비스 URL**: `https://도메인` (대표 도메인)
     - **Callback URL**:
       - `https://도메인/auth/social/naver/callback`
+      - `https://도메인/api/v1/auth/social/naver/callback`
       - `http://localhost:8000/auth/social/naver/callback` (개발용 추가 가능)
 5.  **키 값 확인:**
     - 등록 완료 후 `내 애플리케이션` 메뉴에서 방금 만든 앱 선택.

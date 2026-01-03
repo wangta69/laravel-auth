@@ -3,16 +3,15 @@
 namespace Pondol\Auth\Http\Controllers\Social;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use JWTAuth;
 use Laravel\Socialite\Facades\Socialite;
+use Pondol\Auth\Events\Registered;
 use Pondol\Auth\Models\Role\Role;
 use Pondol\Auth\Models\User\SocialAccount;
 use Pondol\Auth\Traits\AuthenticatedSession;
 use Pondol\Common\Facades\JsonKeyValue;
 
-// https://vuxy.tistory.com/entry/Laravel-8-%EC%86%8C%EC%85%9C%EB%A1%9C%EA%B7%B8%EC%9D%B8Laravel-Socialite-1
 class AuthenticatedSessionController extends Controller
 {
     use AuthenticatedSession;
