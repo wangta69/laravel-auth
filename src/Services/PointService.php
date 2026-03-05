@@ -147,4 +147,54 @@ class PointService
 
         return ['paid' => (int) $paid, 'free' => (int) $free];
     }
+
+    /**
+     * 회원가입 포인트 지급 (이벤트성)
+     */
+    public function grantRegisterPoint($user)
+    {
+        $auth_cfg = \Pondol\Common\Facades\JsonKeyValue::getAsJson('auth');
+        $point = $auth_cfg->point->register ?? 0;
+
+        if ($point > 0) {
+            // 프로젝트 설정의 free_type (기본 0)을 사용하여 적립
+            $this->record(
+                $user,
+                $point,
+                'event',
+                'register',
+                $user->id,
+                config('pondol-auth.point.free_type', 0)
+            );
+        }
+    }
+
+    /**
+     * 로그인 포인트 지급 (중복 지급 방지 로직 포함)
+     */
+    public function grantLoginPoint($user)
+    {
+        $auth_cfg = \Pondol\Common\Facades\JsonKeyValue::getAsJson('auth');
+        $point = $auth_cfg->point->login ?? 0;
+
+        if ($point > 0) {
+            // 오늘 이미 로그인 포인트를 받았는지 체크
+            $exists = UserPoint::where('user_id', $user->id)
+                ->where('item', 'event')
+                ->where('sub_item', 'login')
+                ->whereDate('created_at', now()->today())
+                ->exists();
+
+            if (! $exists) {
+                $this->record(
+                    $user,
+                    $point,
+                    'event',
+                    'login',
+                    $user->id,
+                    config('pondol-auth.point.free_type', 0)
+                );
+            }
+        }
+    }
 }
