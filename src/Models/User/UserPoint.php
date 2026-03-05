@@ -15,12 +15,12 @@ class UserPoint extends Model
         'item',
         'sub_item',
         'rel_item',
-        'is_paid',
+        'point_type',
         'expires_at',
     ];
 
     protected $casts = [
-        'is_paid' => 'boolean',
+        'point_type' => 'integer',
         'created_at' => 'datetime',
         'expires_at' => 'datetime',
     ];

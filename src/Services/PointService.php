@@ -2,17 +2,18 @@
 
 namespace Pondol\Auth\Services;
 
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Pondol\Auth\Models\User\UserPoint;
 use Pondol\Common\Facades\JsonKeyValue;
+use Schema;
 
 class PointService
 {
     /**
-     * 포인트 적립/차감 (핵심 로직)
-     * - DB 트랜잭션 적용으로 안전성 확보
+     * 포인트 적립/차감 (핵심 메커니즘)
      */
-    public function record($user, $amount, $item, $sub_item = null, $rel_item = null, $is_paid = false)
+    public function record($user, $amount, $item, $sub_item = null, $rel_item = null, $type = null)
     {
         if (! $amount) {
             return null;
@@ -21,32 +22,40 @@ class PointService
             $sub_item = $item;
         }
 
-        return DB::transaction(function () use ($user, $amount, $item, $sub_item, $rel_item, $is_paid) {
+        // 1. 타입 결정 (전달값이 없으면 설정파일의 기본값 사용)
+        if (is_null($type)) {
+            $type = config('pondol-auth.point.default_type', 0);
+        }
 
-            // 1. 유저 포인트 갱신 (동시성 문제 방지를 위해 increment 대신 lock을 권장하지만, 일단 간소화)
-            // 기존 로직: $user->increment('point', $point);
-            // 개선 로직: 모델의 point 값을 직접 수정하여 save (이벤트 트리거 등 활용 가능)
-            $currentPoint = $user->point;
-            $newPoint = $currentPoint + $amount;
+        return DB::transaction(function () use ($user, $amount, $item, $sub_item, $rel_item, $type) {
 
+            // 2. 유저 잔액 갱신
+            $user->refresh();
+            $newPoint = $user->point + $amount;
             $user->point = $newPoint;
             $user->save();
 
-            // 2. 로그 기록
+            // 3. 로그 생성
             $log = new UserPoint;
             $log->user_id = $user->id;
             $log->point = $amount;
-            $log->cur_sum = $newPoint; // 계산된 잔액
+            $log->cur_sum = $newPoint;
             $log->item = $item;
             $log->sub_item = $sub_item;
             $log->rel_item = $rel_item;
 
-            // [신규 컬럼] 마이그레이션이 되어 있다면 저장
-            if (\Schema::hasColumn('user_points', 'is_paid')) {
-                $log->is_paid = $is_paid;
+            // [범용] point_type 컬럼이 있으면 저장
+            if (Schema::hasColumn('user_points', 'point_type')) {
+                $log->point_type = $type;
             }
-            if (\Schema::hasColumn('user_points', 'expires_at') && ! $is_paid && $amount > 0) {
-                // 무상 포인트는 기본 1년 유효기간 (예시)
+            // [레거시] is_paid 컬럼만 있으면 설정의 paid_type과 비교하여 저장
+            elseif (Schema::hasColumn('user_points', 'is_paid')) {
+                $log->is_paid = ($type == config('pondol-auth.point.paid_type', 1));
+            }
+
+            // [자동 유효기간] 무료 포인트 적립 시에만 적용
+            if (Schema::hasColumn('user_points', 'expires_at') &&
+                $type == config('pondol-auth.point.free_type', 0) && $amount > 0) {
                 $log->expires_at = now()->addYear();
             }
 
@@ -57,61 +66,48 @@ class PointService
     }
 
     /**
-     * 포인트 사용 (차감) - DB 설정에 따른 우선순위 적용
+     * 프로젝트 정의 맵에 따른 잔액 동적 계산 (유연한 확장성)
      */
-    public function usePoint($user, $amount, $item, $sub_item = null, $rel_item = null)
+    public function getBalancesByMap($userId, array $typeMap)
     {
-        // 1. 총 잔액 확인
-        if ($user->point < $amount) {
-            throw new Exception('보유 복채가 부족합니다.');
+        $results = [];
+        foreach ($typeMap as $label => $value) {
+            $sum = UserPoint::where('user_id', $userId)->where('point_type', $value)->sum('point');
+            $results[$label] = (int) max(0, $sum);
         }
 
-        return DB::transaction(function () use ($user, $amount, $item, $sub_item, $rel_item) {
+        return $results;
+    }
 
-            // 2. DB(json_key_values)에서 설정 가져오기
-            $auth_cfg = JsonKeyValue::getAsJson('auth');
+    /**
+     * 특정 우선순위에 따른 순차 차감 (전략적 포인트 소진)
+     */
+    public function usePointWithPriority($user, $amount, array $priority, $item, $sub_item = null)
+    {
+        if ($user->point < $amount) {
+            throw new Exception('보유 포인트가 부족합니다.');
+        }
 
-            // 설정값이 없으면 기본값 'free_first' (무료 먼저 차감)
-            $priority = $auth_cfg->point->deduction_priority ?? 'free_first';
+        return DB::transaction(function () use ($user, $amount, $priority, $item, $sub_item) {
+            $remaining = $amount;
 
-            // 3. 현재 유/무료 잔액 조회
-            $balances = $this->getBalances($user->id);
-            $freeBal = $balances['free'];
-            $paidBal = $balances['paid'];
-
-            $deductFree = 0;
-            $deductPaid = 0;
-
-            // 4. 우선순위에 따른 분할 계산 로직
-            if ($priority === 'paid_first') {
-                // [유료 우선 차감]
-                if ($paidBal >= $amount) {
-                    $deductPaid = $amount;
-                } else {
-                    $deductPaid = $paidBal;
-                    $deductFree = $amount - $paidBal;
+            foreach ($priority as $type) {
+                if ($remaining <= 0) {
+                    break;
                 }
-            } else {
-                // [무료 우선 차감] (Default)
-                if ($freeBal >= $amount) {
-                    $deductFree = $amount;
-                } else {
-                    $deductFree = $freeBal;
-                    $deductPaid = $amount - $freeBal;
+
+                $typeBalance = UserPoint::where('user_id', $user->id)->where('point_type', $type)->sum('point');
+                if ($typeBalance <= 0) {
+                    continue;
                 }
+
+                $deduct = min($typeBalance, $remaining);
+                $this->record($user, -$deduct, $item, $sub_item, null, $type);
+                $remaining -= $deduct;
             }
 
-            // 5. record 메서드 호출하여 실제 저장
-            // (A) 무료 포인트 차감 기록
-            if ($deductFree > 0) {
-                // 차감이니까 음수(-deductFree), is_paid = false
-                $this->record($user, -$deductFree, $item, $sub_item, $rel_item, false);
-            }
-
-            // (B) 유료 포인트 차감 기록
-            if ($deductPaid > 0) {
-                // 차감이니까 음수(-deductPaid), is_paid = true
-                $this->record($user, -$deductPaid, $item, $sub_item, $rel_item, true);
+            if ($remaining > 0) {
+                throw new Exception('포인트 타입별 잔액 부족으로 차감에 실패했습니다.');
             }
 
             return true;
@@ -119,52 +115,36 @@ class PointService
     }
 
     /**
-     *  유저의 유료/무료 포인트 잔액 계산
+     * [Legacy] 기존 설정 기반 사용 (is_paid 방식과 point_type 방식 모두 지원)
+     */
+    public function usePoint($user, $amount, $item, $sub_item = null, $rel_item = null)
+    {
+        $auth_cfg = JsonKeyValue::getAsJson('auth');
+        $priorityCfg = $auth_cfg->point->deduction_priority ?? 'free_first';
+
+        $free = config('pondol-auth.point.free_type', 0);
+        $paid = config('pondol-auth.point.paid_type', 1);
+
+        $priority = ($priorityCfg === 'paid_first') ? [$paid, $free] : [$free, $paid];
+
+        return $this->usePointWithPriority($user, $amount, $priority, $item, $sub_item);
+    }
+
+    /**
+     * [Legacy] 기존 유/무료 기반 잔액 조회
      */
     public function getBalances($userId)
     {
+        if (Schema::hasColumn('user_points', 'point_type')) {
+            return $this->getBalancesByMap($userId, [
+                'free' => config('pondol-auth.point.free_type', 0),
+                'paid' => config('pondol-auth.point.paid_type', 1),
+            ]);
+        }
+
         $paid = UserPoint::where('user_id', $userId)->where('is_paid', true)->sum('point');
         $free = UserPoint::where('user_id', $userId)->where('is_paid', false)->sum('point');
 
-        return [
-            'paid' => max(0, $paid),
-            'free' => max(0, $free),
-        ];
-    }
-
-    /**
-     * 회원가입 포인트 지급 (Trait의 _register 대체)
-     */
-    public function grantRegisterPoint($user)
-    {
-        $auth_cfg = JsonKeyValue::getAsJson('auth');
-        $point = $auth_cfg->point->register ?? 0;
-
-        if ($point > 0) {
-            // 이미 지급받았는지 체크하는 로직을 추가할 수도 있음
-            $this->record($user, $point, 'event', 'register', $user->id, false);
-        }
-    }
-
-    /**
-     * 로그인 포인트 지급 (Trait의 _login 대체)
-     */
-    public function grantLoginPoint($user)
-    {
-        $auth_cfg = JsonKeyValue::getAsJson('auth');
-        $point = $auth_cfg->point->login ?? 0;
-
-        if ($point > 0) {
-            // [고도화] 오늘 이미 로그인을 했는지 체크 (중복 지급 방지)
-            $todayLoginPoint = UserPoint::where('user_id', $user->id)
-                ->where('item', 'event')
-                ->where('sub_item', 'login')
-                ->whereDate('created_at', now()->today())
-                ->exists();
-
-            if (! $todayLoginPoint) {
-                $this->record($user, $point, 'event', 'login', $user->id, false);
-            }
-        }
+        return ['paid' => (int) $paid, 'free' => (int) $free];
     }
 }

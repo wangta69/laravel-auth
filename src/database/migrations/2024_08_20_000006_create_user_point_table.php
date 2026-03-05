@@ -18,8 +18,7 @@ class CreateUserPointTable extends Migration
                 $table->string('sub_item', 20)->nullable()->comment('상세 구분');
                 $table->bigInteger('rel_item')->nullable()->unsigned()->comment('참조 ID');
 
-                // [고도화 추가] 유료 여부 및 만료일
-                $table->boolean('is_paid')->default(false)->comment('true:유상, false:무상');
+                $table->tinyInteger('point_type')->default(0)->index()->comment('0:무상, 1:유상, 2:수익 등 프로젝트별 정의');
                 $table->timestamp('expires_at')->nullable()->comment('소멸 예정일');
 
                 $table->timestamp('created_at')->index();
