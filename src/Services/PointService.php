@@ -4,9 +4,9 @@ namespace Pondol\Auth\Services;
 
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Pondol\Auth\Models\User\UserPoint;
 use Pondol\Common\Facades\JsonKeyValue;
-use Schema;
 
 class PointService
 {
@@ -22,20 +22,16 @@ class PointService
             $sub_item = $item;
         }
 
-        // 1. 타입 결정 (전달값이 없으면 설정파일의 기본값 사용)
         if (is_null($type)) {
             $type = config('pondol-auth.point.default_type', 0);
         }
 
         return DB::transaction(function () use ($user, $amount, $item, $sub_item, $rel_item, $type) {
-
-            // 2. 유저 잔액 갱신
             $user->refresh();
             $newPoint = $user->point + $amount;
             $user->point = $newPoint;
             $user->save();
 
-            // 3. 로그 생성
             $log = new UserPoint;
             $log->user_id = $user->id;
             $log->point = $amount;
@@ -44,19 +40,17 @@ class PointService
             $log->sub_item = $sub_item;
             $log->rel_item = $rel_item;
 
-            // [범용] point_type 컬럼이 있으면 저장
             if (Schema::hasColumn('user_points', 'point_type')) {
                 $log->point_type = $type;
-            }
-            // [레거시] is_paid 컬럼만 있으면 설정의 paid_type과 비교하여 저장
-            elseif (Schema::hasColumn('user_points', 'is_paid')) {
+            } elseif (Schema::hasColumn('user_points', 'is_paid')) {
                 $log->is_paid = ($type == config('pondol-auth.point.paid_type', 1));
             }
 
-            // [자동 유효기간] 무료 포인트 적립 시에만 적용
-            if (Schema::hasColumn('user_points', 'expires_at') &&
-                $type == config('pondol-auth.point.free_type', 0) && $amount > 0) {
-                $log->expires_at = now()->addYear();
+            // 만료일 로직: 적립 시에만 적용
+            if (Schema::hasColumn('user_points', 'expires_at') && $amount > 0) {
+                if ($type == config('pondol-auth.point.free_type', 0)) {
+                    $log->expires_at = now()->addYear();
+                }
             }
 
             $log->save();
@@ -72,8 +66,16 @@ class PointService
     {
         $results = [];
         foreach ($typeMap as $label => $value) {
-            $sum = UserPoint::where('user_id', $userId)->where('point_type', $value)->sum('point');
-            $results[$label] = (int) max(0, $sum);
+            $query = UserPoint::where('user_id', $userId)->where('point_type', $value);
+
+            // [추가] 만료된 포인트는 잔액 합산에서 제외 (매우 중요)
+            if (Schema::hasColumn('user_points', 'expires_at')) {
+                $query->where(function ($q) {
+                    $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
+                });
+            }
+
+            $results[$label] = (int) max(0, $query->sum('point'));
         }
 
         return $results;
@@ -90,27 +92,38 @@ class PointService
 
         return DB::transaction(function () use ($user, $amount, $priority, $item, $sub_item) {
             $remaining = $amount;
+            $usageReport = []; // 어떤 타입을 얼마나 썼는지 기록
 
             foreach ($priority as $type) {
                 if ($remaining <= 0) {
                     break;
                 }
 
-                $typeBalance = UserPoint::where('user_id', $user->id)->where('point_type', $type)->sum('point');
+                // 해당 타입의 가용 잔액 확인 (만료된 것 제외)
+                $query = UserPoint::where('user_id', $user->id)->where('point_type', $type);
+                if (Schema::hasColumn('user_points', 'expires_at')) {
+                    $query->where(function ($q) {
+                        $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
+                    });
+                }
+
+                $typeBalance = (int) $query->sum('point');
                 if ($typeBalance <= 0) {
                     continue;
                 }
 
                 $deduct = min($typeBalance, $remaining);
                 $this->record($user, -$deduct, $item, $sub_item, null, $type);
+
+                $usageReport[$type] = $deduct;
                 $remaining -= $deduct;
             }
 
             if ($remaining > 0) {
-                throw new Exception('포인트 타입별 잔액 부족으로 차감에 실패했습니다.');
+                throw new Exception('가용 잔액이 부족합니다. (만료된 복채 제외)');
             }
 
-            return true;
+            return $usageReport; // 차감 내역 반환
         });
     }
 
@@ -124,10 +137,15 @@ class PointService
 
         $free = config('pondol-auth.point.free_type', 0);
         $paid = config('pondol-auth.point.paid_type', 1);
-
         $priority = ($priorityCfg === 'paid_first') ? [$paid, $free] : [$free, $paid];
 
-        return $this->usePointWithPriority($user, $amount, $priority, $item, $sub_item);
+        $report = $this->usePointWithPriority($user, $amount, $priority, $item, $sub_item);
+
+        // [하위 호환성] 기존의 ['free' => x, 'paid' => y] 형식으로 반환
+        return [
+            'free' => $report[$free] ?? 0,
+            'paid' => $report[$paid] ?? 0,
+        ];
     }
 
     /**
@@ -135,17 +153,16 @@ class PointService
      */
     public function getBalances($userId)
     {
-        if (Schema::hasColumn('user_points', 'point_type')) {
-            return $this->getBalancesByMap($userId, [
-                'free' => config('pondol-auth.point.free_type', 0),
-                'paid' => config('pondol-auth.point.paid_type', 1),
-            ]);
-        }
+        $free = config('pondol-auth.point.free_type', 0);
+        $paid = config('pondol-auth.point.paid_type', 1);
 
-        $paid = UserPoint::where('user_id', $userId)->where('is_paid', true)->sum('point');
-        $free = UserPoint::where('user_id', $userId)->where('is_paid', false)->sum('point');
+        $res = $this->getBalancesByMap($userId, ['free' => $free, 'paid' => $paid]);
 
-        return ['paid' => (int) $paid, 'free' => (int) $free];
+        return [
+            'paid' => $res['paid'],
+            'free' => $res['free'],
+            'total' => $res['paid'] + $res['free'],
+        ];
     }
 
     /**
@@ -153,19 +170,10 @@ class PointService
      */
     public function grantRegisterPoint($user)
     {
-        $auth_cfg = \Pondol\Common\Facades\JsonKeyValue::getAsJson('auth');
+        $auth_cfg = JsonKeyValue::getAsJson('auth');
         $point = $auth_cfg->point->register ?? 0;
-
         if ($point > 0) {
-            // 프로젝트 설정의 free_type (기본 0)을 사용하여 적립
-            $this->record(
-                $user,
-                $point,
-                'event',
-                'register',
-                $user->id,
-                config('pondol-auth.point.free_type', 0)
-            );
+            $this->record($user, $point, 'event', 'register', $user->id, config('pondol-auth.point.free_type', 0));
         }
     }
 
@@ -174,11 +182,10 @@ class PointService
      */
     public function grantLoginPoint($user)
     {
-        $auth_cfg = \Pondol\Common\Facades\JsonKeyValue::getAsJson('auth');
+        $auth_cfg = JsonKeyValue::getAsJson('auth');
         $point = $auth_cfg->point->login ?? 0;
 
         if ($point > 0) {
-            // 오늘 이미 로그인 포인트를 받았는지 체크
             $exists = UserPoint::where('user_id', $user->id)
                 ->where('item', 'event')
                 ->where('sub_item', 'login')
@@ -186,14 +193,7 @@ class PointService
                 ->exists();
 
             if (! $exists) {
-                $this->record(
-                    $user,
-                    $point,
-                    'event',
-                    'login',
-                    $user->id,
-                    config('pondol-auth.point.free_type', 0)
-                );
+                $this->record($user, $point, 'event', 'login', $user->id, config('pondol-auth.point.free_type', 0));
             }
         }
     }
