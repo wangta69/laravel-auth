@@ -29,7 +29,7 @@
     "socialiteproviders/kakao": "^4.2",
     "socialiteproviders/naver": "^4.1",
     "tymon/jwt-auth": "^2",
-    "wangta69/laravel-editor": "^8.5",
+    "wangta69/laravel-editor": "^8.12",
     "wangta69/laravel-components": "^1.0",
     "wangta69/laravel-pondol": "^8.12"
   },
