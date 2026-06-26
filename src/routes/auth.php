@@ -1,4 +1,5 @@
 <?php
+
 // laravel-auth/src/routes/auth.php
 Route::get('register', 'RegisterController@create')->name('register')->middleware('guest');
 Route::post('register', 'RegisterController@store')->middleware('guest');
@@ -15,10 +16,14 @@ Route::post('forgot-password', 'PasswordResetLinkController@store')->name('passw
 Route::get('reset-password/{token}', 'NewPasswordController@create')->name('password.reset')->middleware('guest');
 Route::post('reset-password', 'NewPasswordController@store')->name('password.update')->middleware('guest');
 
-
 Route::get('cancel-account', 'DestroyController@delete')->name('cancel.account')->middleware('auth');
 Route::delete('cancel-account', 'DestroyController@destroy')->middleware('auth');
 Route::get('cancel-account/success', 'DestroyController@success')->name('cancel.account.success');
+
+// 이메일 수신 거부 (로그인 불필요, 서명된 URL 사용)
+Route::get('unsubscribe/{user}', 'UserController@unsubscribe')
+    ->name('unsubscribe')
+    ->middleware('signed');
 
 // 로그인창 가져오기위한 라우터
 Route::get('/auth/social/{provider}/redirect', 'Social\AuthenticatedSessionController@redirectToProvider');
@@ -28,7 +33,6 @@ Route::get('/auth/social/{provider}/callback', 'Social\AuthenticatedSessionContr
 Route::get('verify-email', 'EmailVerificationPromptController@__invoke')->name('verification.notice')->middleware(['auth', 'bypassverify']);
 Route::get('verify-email/{id}/{hash}', 'VerifyEmailController@__invoke')->middleware(['auth', 'signed', 'bypassverify', 'throttle:6,1'])->name('verification.verify');
 Route::post('email/verification-notification', 'EmailVerificationNotificationController@store')->middleware('auth', 'bypassverify', 'throttle:6,1')->name('verification.send');
-
 
 Route::get('/user', 'UserController@profile')->name('user.profile')->middleware(['auth']); // , 'verified'
 Route::get('/user/edit', 'UserController@edit')->name('user.edit')->middleware('auth');

@@ -7,44 +7,51 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class sendEmailRegisteredNotification extends Notification  implements ShouldQueue
+class sendEmailRegisteredNotification extends Notification implements ShouldQueue
 {
-  use Queueable;
+    use Queueable;
 
-  /**
-   * Create a new notification instance.
-   *
-   * @return void
-   */
-  public function __construct()
-  {
-      //
-  }
+    /**
+     * Create a new notification instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        //
+    }
 
-  /**
-   * Get the notification's delivery channels.
-   *
-   * @param  mixed  $notifiable
-   * @return array
-   */
-  public function via($notifiable)
-  {
-    return ['mail'];
-  }
+    /**
+     * Get the notification's delivery channels.
+     *
+     * @param  mixed  $notifiable
+     * @return array
+     */
+    public function via($notifiable)
+    {
+        return ['mail'];
+    }
 
-  /**
-   * Get the mail representation of the notification.
-   *
-   * @param  mixed  $notifiable
-   * @return \Illuminate\Notifications\Messages\MailMessage
-   */
-  public function toMail($notifiable)
-  {
-    
-    return (new MailMessage)->subject('['.config('app.name').'] 회원가입안내 메일')->view(
-      auth_theme('mail').'.register', compact('notifiable'));
+    /**
+     * Get the mail representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return \Illuminate\Notifications\Messages\MailMessage
+     */
+    public function toMail($notifiable)
+    {
+        // 설정에서 'as' 접두사를 가져와서 라우트 이름을 만듭니다.
+        $as = config('pondol-auth.route_auth.as', '');
+        $routeName = $as.'unsubscribe';
 
-  }
+        // 서명된 URL 생성
+        $unsubscribeUrl = \URL::signedRoute($routeName, ['user' => $notifiable->id]);
 
-
+        return (new MailMessage)
+            ->subject('['.config('app.name').'] 회원가입안내 메일')
+            ->view(auth_theme('mail').'.register', [
+                'notifiable' => $notifiable,
+                'unsubscribeUrl' => $unsubscribeUrl, // 뷰로 전달
+            ]);
+    }
 }
