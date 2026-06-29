@@ -174,6 +174,6 @@ class UserController extends Controller
         $user->save();
 
         // 2. 패키지 전용 뷰 반환 (사용자가 나중에 커스텀할 수 있도록 설계)
-        return view('pondol-auth::user.unsubscribed', compact('user'));
+        return view(auth_theme('user').'.unsubscribed', compact('user'));
     }
 }
