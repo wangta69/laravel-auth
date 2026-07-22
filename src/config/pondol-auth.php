@@ -1,5 +1,6 @@
 <?php
 
+// src/config/pondol-auth.php
 return [
     'roles' => [
         'default_role' => 'user',
