@@ -137,7 +137,13 @@ class PointService
 
         $free = config('pondol-auth.point.free_type', 0);
         $paid = config('pondol-auth.point.paid_type', 1);
-        $priority = ($priorityCfg === 'paid_first') ? [$paid, $free] : [$free, $paid];
+        $earning = config('pondol-auth.point.earning_type', 2);
+
+        if ($priorityCfg === 'paid_first') {
+            $priority = [$paid, $free, $earning];
+        } else {
+            $priority = [$free, $paid, $earning];
+        }
 
         $report = $this->usePointWithPriority($user, $amount, $priority, $item, $sub_item);
 
@@ -145,6 +151,7 @@ class PointService
         return [
             'free' => $report[$free] ?? 0,
             'paid' => $report[$paid] ?? 0,
+            'earning' => $report[$earning] ?? 0,
         ];
     }
 
@@ -155,13 +162,15 @@ class PointService
     {
         $free = config('pondol-auth.point.free_type', 0);
         $paid = config('pondol-auth.point.paid_type', 1);
+        $earning = config('pondol-auth.point.earning_type', 2);
 
-        $res = $this->getBalancesByMap($userId, ['free' => $free, 'paid' => $paid]);
+        $res = $this->getBalancesByMap($userId, ['free' => $free, 'paid' => $paid, 'earning' => $earning]);
 
         return [
             'paid' => $res['paid'],
             'free' => $res['free'],
-            'total' => $res['paid'] + $res['free'],
+            'earning' => $res['earning'],
+            'total' => $res['paid'] + $res['free'] + $res['earning'],
         ];
     }
 
