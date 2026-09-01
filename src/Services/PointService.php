@@ -55,7 +55,11 @@ class PointService
             if (Schema::hasColumn('user_points', 'expires_at') && $amount > 0) {
                 // 무상 포인트 등에 대해 만료일 설정 (프로젝트 정책에 따름)
                 if ($type == config('pondol-auth.point.free_type', 0)) {
+                    // 무상(보너스/이벤트) 복채: 지급일로부터 1년
                     $log->expires_at = now()->addYear();
+                } elseif ($type == config('pondol-auth.point.paid_type', 1)) {
+                    // [정책 반영] 유료 복채: 유효기간 제한 없음
+                    $log->expires_at = null;
                 }
             }
 
@@ -248,5 +252,161 @@ class PointService
                 $this->record($user, $point, 'event', 'login', $user->id, config('pondol-auth.point.free_type', 0));
             }
         }
+    }
+
+    /**
+     * 특정 타입을 지정하여 FIFO 순서로 잔액을 차감 (환불 신청 시 사용)
+     */
+    public function deductByType($user, $amount, $type, $item, $sub_item, $rel_item = null)
+    {
+        return DB::transaction(function () use ($user, $amount, $type, $item, $sub_item, $rel_item) {
+            $remaining = $amount;
+            $sources = UserPoint::where('user_id', $user->id)
+                ->where('point_type', $type)
+                ->where('remaining_point', '>', 0)
+                ->orderBy('created_at', 'asc')
+                ->get();
+
+            foreach ($sources as $source) {
+                if ($remaining <= 0) {
+                    break;
+                }
+                $take = min($source->remaining_point, $remaining);
+
+                $source->remaining_point -= $take;
+                $source->save();
+
+                // 마이너스 로그 기록 (record 내부에서 remaining_point = 0으로 저장됨)
+                $this->record($user, -$take, $item, $sub_item, $rel_item, $type);
+                $remaining -= $take;
+            }
+
+            if ($remaining > 0) {
+                throw new Exception('환불 가능한 유료 잔액이 부족합니다.');
+            }
+
+            return true;
+        });
+    }
+
+    /**
+     * 특정 결제건(payment_id)에 연결된 포인트 잔액을 직접 0으로 만듦 (외부 취소/웹훅 시 사용)
+     */
+    public function invalidatePaymentPoints($user, $paymentId)
+    {
+        return DB::transaction(function () use ($user, $paymentId) {
+            // 해당 결제건으로 적립된 모든 로그를 찾음 (유료+보너스 모두)
+            $points = UserPoint::where('user_id', $user->id)
+                ->where('rel_item', $paymentId)
+                ->where('point', '>', 0)
+                ->where('remaining_point', '>', 0)
+                ->get();
+
+            foreach ($points as $p) {
+                $amountToVoid = $p->remaining_point;
+
+                // 1. 해당 행의 잔액을 0으로 만듦
+                $p->remaining_point = 0;
+                $p->save();
+
+                // 2. 마이너스 로그 기록하여 전체 잔액 동기화
+                $this->record($user, -$amountToVoid, 'refund', '결제 취소에 따른 회수', $paymentId, $p->point_type);
+            }
+        });
+    }
+
+    /**
+     * 특정 결제건에 연결된 포인트 잔액을 직접 회수 (관리자 취소/외부 웹훅 시 사용)
+     */
+    public function cancelPaymentPoints($user, $paymentId, $cancelAmount, $isFullRefund)
+    {
+        // 1. 유료 포인트(원금) 회수
+        if ($cancelAmount > 0) {
+            $paidLog = UserPoint::where('user_id', $user->id) // [보완] user_id 조건 추가
+                ->where('rel_item', $paymentId)
+                ->where('point_type', config('pondol-auth.point.paid_type', 1)) // [보완] 하드코딩 대신 config 사용
+                ->where('point', '>', 0)
+                ->first();
+
+            if ($paidLog && $paidLog->remaining_point > 0) {
+                $take = min($paidLog->remaining_point, $cancelAmount);
+                $paidLog->remaining_point -= $take;
+                $paidLog->save();
+                $this->record($user, -$take, 'refund', '결제 취소(원금회수)', $paymentId, config('pondol-auth.point.paid_type', 1));
+            }
+        }
+
+        // 2. 보너스 포인트 회수 (사용자님의 핵심 정책 반영 구역)
+        if ($isFullRefund) {
+            $bonusLog = UserPoint::where('user_id', $user->id) // [보완] user_id 조건 추가
+                ->where('rel_item', $paymentId)
+                ->where('point_type', config('pondol-auth.point.free_type', 0)) // [보완] 하드코딩 대신 config 사용
+                ->where('point', '>', 0)
+                ->first();
+
+            if ($bonusLog && $bonusLog->remaining_point > 0) {
+                $recoverableBonus = $bonusLog->remaining_point;
+                $bonusLog->remaining_point = 0;
+                $bonusLog->save();
+
+                $this->record($user, -$recoverableBonus, 'refund', '결제 취소(보너스회수)', $paymentId, config('pondol-auth.point.free_type', 0));
+            }
+        }
+    }
+
+    /**
+     * 환불을 위한 유료 포인트 차감 (최신순 차감 - LIFO)
+     *
+     * @param  int|null  $daysLimit  제한 기간 (사용자 신청 시 7, 관리자 임의 취소 시 null)
+     */
+    public function deductForRefund($user, $amount, $rel_item, $daysLimit = null)
+    {
+        return DB::transaction(function () use ($user, $amount, $rel_item, $daysLimit) {
+            $remaining = $amount;
+
+            // 1. 차감 대상 유료 적립 로그 조회
+            $query = UserPoint::where('user_id', $user->id)
+                ->where('point_type', config('pondol-auth.point.paid_type', 1))
+                ->where('point', '>', 0)
+                ->where('remaining_point', '>', 0);
+
+            // [정책 반영] 기간 제한이 있는 경우(사용자 신청) 필터 적용
+            if ($daysLimit) {
+                $query->where('created_at', '>=', now()->subDays($daysLimit));
+            }
+
+            // [정책 반영] 가장 최근에 충전한 것부터 차감 (최신순 정렬)
+            $sources = $query->orderBy('created_at', 'desc')->get();
+
+            foreach ($sources as $source) {
+                if ($remaining <= 0) {
+                    break;
+                }
+
+                $take = min($source->remaining_point, $remaining);
+
+                // 원본 행의 잔액 직접 차감
+                $source->remaining_point -= $take;
+                $source->save();
+
+                // 차감 마이너스 로그 기록
+                $this->record(
+                    $user,
+                    -$take,
+                    'refund',
+                    $daysLimit ? '결제 취소 신청(선차감)' : '관리자 직권 환불 차감',
+                    $rel_item,
+                    config('pondol-auth.point.paid_type', 1)
+                );
+
+                $remaining -= $take;
+            }
+
+            if ($remaining > 0) {
+                throw new Exception($daysLimit ? '환불 가능한 최근 7일 이내 유료 잔액이 부족합니다.' : '환불 가능한 유료 잔액이 부족합니다.');
+            }
+
+            return true;
+        });
     }
 }

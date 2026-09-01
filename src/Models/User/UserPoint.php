@@ -11,6 +11,7 @@ class UserPoint extends Model
     protected $fillable = [
         'user_id',
         'point',
+        'remaining_point',
         'cur_sum',
         'item',
         'sub_item',
