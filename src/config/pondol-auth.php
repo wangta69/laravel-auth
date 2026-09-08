@@ -29,7 +29,10 @@ return [
         'free_type' => 0,    // 무상/이벤트 포인트 식별자
         'paid_type' => 1,    // 유상/충전 포인트 식별자
         'earning_type' => 2,    // 마스터 수익/정산 포인트 식별자 (길라 사주인 등에서 활용)
-
+        'strategies' => [
+            'purchase_order' => 'asc',  // 구매 시 차감 순서: asc(오래된순-FIFO), desc(최신순-LIFO)
+            'refund_order' => 'asc', // 환불 시 차감 순서: asc(오래된순-FIFO), desc(최신순-LIFO)
+        ],
         'initial_register_point' => 0, // 회원가입 시 지급 포인트
         'daily_login_point' => 0, // 일일 로그인 지급 포인트
     ],

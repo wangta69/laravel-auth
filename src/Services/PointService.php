@@ -108,19 +108,22 @@ class PointService
             $remaining = $amount;
             $usageReport = [];
 
+            // 설정에서 구매 전략을 읽어옴 (기본값 asc)
+            $order = config('pondol-auth.point.strategies.purchase_order', 'asc');
+
             foreach ($priority as $type) {
                 if ($remaining <= 0) {
                     break;
                 }
 
-                // [FIFO] 해당 타입의 적립 로그 중 잔액이 있는 것을 오래된 순서대로 가져옴
                 $sources = UserPoint::where('user_id', $user->id)
                     ->where('point_type', $type)
                     ->where('remaining_point', '>', 0)
                     ->where(function ($q) {
                         $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
                     })
-                    ->orderBy('created_at', 'asc') // 오래된 것부터
+                    ->orderBy('created_at', $order) // 설정된 정렬 적용
+                    ->orderBy('id', $order)        // 같은 시간일 경우 ID로 순서 보장
                     ->get();
 
                 foreach ($sources as $source) {
@@ -364,19 +367,22 @@ class PointService
         return DB::transaction(function () use ($user, $amount, $rel_item, $daysLimit) {
             $remaining = $amount;
 
-            // 1. 차감 대상 유료 적립 로그 조회
+            // 설정에서 환불 전략을 읽어옴 (기본값 asc)
+            $order = config('pondol-auth.point.strategies.refund_order', 'asc');
+
             $query = UserPoint::where('user_id', $user->id)
                 ->where('point_type', config('pondol-auth.point.paid_type', 1))
                 ->where('point', '>', 0)
                 ->where('remaining_point', '>', 0);
 
-            // [정책 반영] 기간 제한이 있는 경우(사용자 신청) 필터 적용
             if ($daysLimit) {
                 $query->where('created_at', '>=', now()->subDays($daysLimit));
             }
 
-            // [정책 반영] 가장 최근에 충전한 것부터 차감 (최신순 정렬)
-            $sources = $query->orderBy('created_at', 'desc')->get();
+            // 설정된 정렬(asc 또는 desc) 적용
+            $sources = $query->orderBy('created_at', $order)
+                ->orderBy('id', $order)
+                ->get();
 
             foreach ($sources as $source) {
                 if ($remaining <= 0) {
