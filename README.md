@@ -1,6 +1,4 @@
-This library is used in the production of [gilra.kr](https://www.gilra.kr) (Online Fortune Service).
-
-# 라라벨용 회원관리프로그램
+# 라라벨용 회원관리프로그램 (wangta69/laravel-auth)
 
 ## 공식문서
 
@@ -8,36 +6,42 @@ This library is used in the production of [gilra.kr](https://www.gilra.kr) (Onli
 
 ## 제공 기능
 
-- role 기능
-- social login 기능
-- JWTAuth
+- **Role & 권한 관리**: 다중 역할(Admin, Manager, User 등) 관리 및 미들웨어 검증
+- **Social Login**: 구글, 깃허브, 카카오, 네이버 간편 로그인 및 기존 계정 연동 지원
+- **Public Profile (공개 프로필)**: 커뮤니티, 게시판 연동형 타인 프로필 열람 페이지
+- **Google 2FA**: Google Authenticator 기반 2단계 보안 인증
+- **범용 포인트 시스템**: 무료/유료/정산용 포인트 분리 관리 및 차감 정책(FIFO/LIFO)
+- **이메일 수신 거부**: 서명된(Signed) 안전한 URL 기반 원클릭 Unsubscribe
+- **JWTAuth**: 모바일 앱 및 REST API 대응 인증 토큰 발급
+
+---
 
 ## Installation (설치) \* 필독
 
 ### 1. Composer install
 
-```
+```bash
 composer require wangta69/laravel-auth
 php artisan pondol:install-auth
 ```
 
-## 2. Crate user
+### 2. Create User (관리자 생성)
 
-세팅이후 관리자용 계정을 세팅합니다.
+기본 설정 완료 후 최초 관리자용 계정을 생성합니다.
 
-```
+```bash
 php artisan pondol:create-auth
 ```
 
-## 3. Auth Model 변경
+### 3. Auth Model 변경
 
-아래 두가지 방법중 하나를 선택하여 처리
+아래 두 가지 방법 중 하나를 선택하여 처리합니다.
 
-### 3.1 Extends 사용(추천)
+#### 3.1 Extends 사용 (추천)
 
-app\Model\User 를 extends 처리
+`app/Models/User.php`에서 패키지의 `PondolUser`를 상속(extends)받도록 변경합니다.
 
-```
+```php
 <?php
 
 namespace App\Models;
@@ -49,42 +53,105 @@ class User extends PondolUser
 }
 ```
 
-### 3.2 config mode 변경
+#### 3.2 config 또는 .env 변경
 
-laravel 12 이하는 직접 config/auth.php 수정
+- **Laravel 11 이하:** `config/auth.php` 파일 직접 수정
 
-```
-'providers' => [
-        'users' => [
-            'driver' => 'eloquent',
-            'model' => Pondol\Auth\Models\User\User::class,
-        ],
-    ],
-```
+  ```php
+  'providers' => [
+      'users' => [
+          'driver' => 'eloquent',
+          'model' => Pondol\Auth\Models\User\User::class,
+      ],
+  ],
+  ```
 
-laravel 12 이상은 .env 파일의 AUTH_MODEL에서 변경 혹은 추가
+- **Laravel 12 이상:** `.env` 파일에 환경 변수 추가
+  ```env
+  AUTH_MODEL=Pondol\Auth\Models\User\User
+  ```
 
-```
-AUTH_MODEL=Pondol\Auth\Models\User\User
-```
+---
 
 ## How to Use
 
-### Admin Page 접근
+### 1. 관리자 페이지 접근 (Admin Page)
 
-세팅이 완료되면 브라우저 입력창에 auth/admin을 입력하면 관리자 페이지로 접근됩니다.
+세팅이 완료되면 브라우저에서 `/auth/admin`으로 접속합니다.
 
-- yourdomain.com/auth/admin
+- `https://yourdomain.com/auth/admin`
 
-### 일반페이지 링크
+### 2. 일반 프론트 페이지 링크
 
-> routes 폴더에 auth.php (프론트용) 및 auth-admin.php (관리자용) 이 있으므로 보시고 적절한 링크를 이용하시면 됩니다.
+프론트엔드용 라우트(`routes/auth.php`)에서 기본 제공되는 대표 링크 목록입니다:
 
-## 권한설정이 안될 경우
+- **로그인 / 회원가입**: `route('login')`, `route('register')`
+- **마이페이지 (내 정보 수정)**: `route('user.profile')`, `route('user.edit')`
+- **비밀번호 변경**: `route('user.change-password')`
+- **2FA 보안 설정**: `route('2fa.setting')`
+- **회원 탈퇴**: `route('cancel.account')`
 
-laravel 11 이상에서는 아래와 같이 bootstrap/app.php 설정을 추가해야 합니다.(11 미만 버전에서는 자동으로 처리됨)
+---
 
+## 타인 공개 프로필 (Public Profile) 연동
+
+게시판(`laravel-bbs`)이나 댓글 등에서 작성자의 이름을 클릭했을 때 해당 사용자의 프로필 카드(아바타, 역할, 가입일 등)를 열람할 수 있는 공개 프로필 기능을 기본 제공합니다.
+
+### 1. 링크 사용법 (Blade)
+
+게시글 목록 또는 상세 화면의 작성자명에 아래와 같이 라우트를 연결합니다:
+
+```blade
+<a href="{{ route('user.public-profile', $article->user_id) }}" class="text-decoration-none">
+    {{ $article->writer_name }}
+</a>
 ```
+
+### 2. 공개 프로필 옵션 설정 (`config/pondol-auth.php`)
+
+타인에게 노출되는 정보 범위를 자유롭게 제어할 수 있습니다:
+
+```php
+'public_profile' => [
+    // 마스킹된 이메일 노출 여부 (예: pon***@naver.com)
+    'show_email' => false,
+
+    // 가입일 노출 여부
+    'show_joined_at' => true,
+
+    // 역할(Role) 배지 표시 여부
+    'show_roles' => true,
+],
+```
+
+---
+
+## 포인트 시스템 설정 (`config/pondol-auth.php`)
+
+서비스 내 유/무상 포인트 및 정산 포인트 구분을 위한 전략을 지원합니다.
+
+```php
+'point' => [
+    'default_type' => 0,    // 기본 포인트 타입
+    'free_type' => 0,       // 무상/이벤트 포인트 식별자
+    'paid_type' => 1,       // 유상/충전 포인트 식별자
+    'earning_type' => 2,    // 마스터 수익/정산 포인트 식별자 (길라 사주인 등)
+    'strategies' => [
+        'purchase_order' => 'asc',  // 구매 차감 순서: asc(FIFO 오래된순), desc(LIFO 최신순)
+        'refund_order'   => 'asc',  // 환불 차감 순서: asc(FIFO 오래된순), desc(LIFO 최신순)
+    ],
+    'initial_register_point' => 0, // 가입 시 축하 포인트
+    'daily_login_point' => 0,      // 1일 1회 로그인 지급 포인트
+],
+```
+
+---
+
+## 권한 설정이 안 될 경우 (Laravel 11 이상)
+
+Laravel 11 이상 버전에서는 `bootstrap/app.php`에 미들웨어 별칭(Alias)을 등록해 주어야 합니다:
+
+```php
 // bootstrap/app.php
 <?php
 
@@ -95,12 +162,10 @@ use Illuminate\Foundation\Configuration\Middleware;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         using: function () {
-            // 1. 일반 웹 라우트 로드
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
 
-            // 2. 관리자 라우트 로드 (auth와 admin 미들웨어를 순차적으로 적용)
-            Route::middleware(['web', 'auth', 'admin']) // <- 핵심!
+            Route::middleware(['web', 'auth', 'admin'])
                 ->prefix('admin')
                 ->name('admin.')
                 ->group(base_path('routes/admin.php'));
@@ -111,54 +176,44 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'admin' => \Pondol\Auth\Http\Middleware\CheckRole::class,
-            'role' => \Pondol\Auth\Http\Middleware\CheckRole::class,
+            'role'  => \Pondol\Auth\Http\Middleware\CheckRole::class,
         ]);
-        //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
-
 ```
 
-## laravel/socialite 세팅
+---
 
-> https://laravel.com/docs/11.x/socialite 참조하시어 생성 하시면 됩니다.
-> .env
+## 소셜 로그인 (Socialite) 연동 가이드
 
-```
-GOOGLE_CLIENT_ID='xxxxxxxx-xxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com'
-GOOGLE_CLIENT_SECRET='GOCSPX-xxxxxxx_xxxxxx'
+> 공식 문서: https://laravel.com/docs/socialite
 
-GITHUB_CLIENT_ID=xxxxxxxx
-GITHUB_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
+### 1. 패키지 설치
 
-### 네이버, 카카오 세팅
-
-#### composer install
-
-```
+```bash
 composer require socialiteproviders/kakao socialiteproviders/naver
 ```
 
-#### app/Providers/EventServiceProvider.php
+### 2. Event Listener 등록
 
-```
+- **Laravel 10 이하:** `app/Providers/EventServiceProvider.php`
+
+```php
 protected $listen = [
     \SocialiteProviders\Manager\SocialiteWasCalled::class => [
-        // ... 기존 드라이버들 ...
         \SocialiteProviders\Kakao\KakaoExtendSocialite::class,
         \SocialiteProviders\Naver\NaverExtendSocialite::class,
     ],
 ];
 ```
 
-#### config/services.php
+- **Laravel 11 이상:** `bootstrap/providers.php` 또는 `AppServiceProvider::boot()`에서 이벤트 리스너 등록
 
-env 파일에 아래 정보 추가
+### 3. `config/services.php` 설정
 
-```
+```php
 'kakao' => [
     'client_id' => env('KAKAO_CLIENT_ID'),
     'client_secret' => env('KAKAO_CLIENT_SECRET'),
@@ -172,132 +227,71 @@ env 파일에 아래 정보 추가
 ],
 ```
 
-.env
+### 4. `.env` 파일 환경 변수 설정
 
-```
-KAKAO_CLIENT_ID=your_kakao_client_id
-KAKAO_CLIENT_SECRET=your_kakao_client_secret
-KAKAO_REDIRECT_URI=http(s)://도메인/auth/social/kakao/callback
-KAKAO_APP_REDIRECT_URIttp(s)://도메인/api/v1/auth/social/kakao/callback
+```env
+# GOOGLE
+GOOGLE_CLIENT_ID='xxxxxxxx-xxxxxxxx.apps.googleusercontent.com'
+GOOGLE_CLIENT_SECRET='GOCSPX-xxxxxxx'
 
-NAVER_CLIENT_ID=your_naver_client_id
-NAVER_CLIENT_SECRET=your_naver_client_secret
-NAVER_REDIRECT_URI=http(s)://도메인/auth/social/naver/callback
-NAVER_APP_REDIRECT_URI=ttp(s)://도메인/api/v1/auth/social/naver/callback
-```
+# GITHUB
+GITHUB_CLIENT_ID=xxxxxxxx
+GITHUB_CLIENT_SECRET=xxxxxxxx
 
----
-
-### 1. 🟡 카카오 (Kakao Developers)
-
-카카오는 **REST API 키**를 `Client ID`로 사용합니다.
-
-1.  **접속 및 로그인:**
-    - [카카오 개발자 센터](https://developers.kakao.com/)에 접속하여 카카오 계정으로 로그인합니다.
-2.  **애플리케이션 추가:**
-    - 메뉴: `내 애플리케이션` > `애플리케이션 추가하기`
-    - 앱 이름: **길라잡이** / 사업자명: (본인 이름 또는 회사명) 입력 후 저장.
-3.  **키 값 확인 (중요):**
-    - 생성된 앱을 클릭하고 좌측 메뉴 `요약 정보` 또는 `앱 키`를 누릅니다.
-    - **REST API 키**: 이것이 **`KAKAO_CLIENT_ID`** 입니다. (복사해두세요)
-4.  **플랫폼 설정:**
-    - 좌측 메뉴: `플랫폼` > `Web 플랫폼 등록`
-    - 사이트 도메인:
-      - `https://도메인`
-      - `http://localhost:8000` (개발 테스트용)
-      - (줄바꿈으로 모두 등록)
-5.  **카카오 로그인 활성화 & Redirect URI:**
-    - 좌측 메뉴: `카카오 로그인`
-    - 활성화 설정: `OFF`를 눌러 **`ON`**으로 변경.
-    - **Redirect URI 등록**: 하단 버튼 클릭 후 입력.
-      - `https://도메인/auth/social/kakao/callback`
-      - `https://도메인/api/v1/auth/social/kakao/callback`
-      - (개발용) `http://localhost:8000/auth/social/kakao/callback`
-6.  **동의 항목 설정 (정보 수집):**
-    - 좌측 메뉴: `카카오 로그인` > `동의항목`
-    - **닉네임**: 필수 동의
-    - **카카오계정(이메일)**: 권한 없음 or 선택 동의 (비즈니스 앱 전환 시 필수 가능)
-    - **성별, 생일, 출생연도**: 운세 사이트이므로 가능하다면 '선택 동의'로 설정해두면 좋습니다.
-7.  **Client Secret (보안 코드):**
-    - 좌측 메뉴: `카카오 로그인` > `보안`
-    - Client Secret 코드를 `생성` 버튼 눌러서 발급.
-    - 이 값이 **`KAKAO_CLIENT_SECRET`** 입니다. (활성화 상태 '사용함' 체크 필수)
-
----
-
-### 2. 🟢 네이버 (Naver Developers)
-
-네이버는 회원가입 후 애플리케이션 등록 승인이 필요 없으며 즉시 발급됩니다.
-
-1.  **접속 및 로그인:**
-    - [네이버 개발자 센터](https://developers.naver.com/)에 접속하여 로그인합니다.
-2.  **애플리케이션 등록:**
-    - 상단 메뉴: `Application` > `애플리케이션 등록`
-    - 애플리케이션 이름: **길라잡이**
-    - **사용 API**: `네이버 로그인` 선택.
-3.  **정보 제공 동의 설정:**
-    - 필수/추가/사용안함 선택 화면이 나옵니다.
-    - **회원 이름**: 필수
-    - **이메일 주소**: 필수
-    - **별명**: 필수
-    - **성별**: 필수 (운세용)
-    - **생일**: 필수 (운세용)
-    - **출생연도**: 필수 (운세용)
-    - _(참고: 검수 단계 전에는 '필수'로 체크해도 개발 중에는 다 넘어옵니다.)_
-4.  **환경 설정 (로그인 오픈 API 서비스 환경):**
-    - `PC 웹` 선택.
-    - **서비스 URL**: `https://도메인` (대표 도메인)
-    - **Callback URL**:
-      - `https://도메인/auth/social/naver/callback`
-      - `https://도메인/api/v1/auth/social/naver/callback`
-      - `http://localhost:8000/auth/social/naver/callback` (개발용 추가 가능)
-5.  **키 값 확인:**
-    - 등록 완료 후 `내 애플리케이션` 메뉴에서 방금 만든 앱 선택.
-    - **Client ID**: **`NAVER_CLIENT_ID`**
-    - **Client Secret**: **`NAVER_CLIENT_SECRET`** (보기 버튼 눌러서 확인)
-
----
-
-### 3. 📝 Laravel .env 파일 적용
-
-위에서 복사한 키 값들을 프로젝트 루트의 `.env` 파일 맨 아래에 붙여넣으세요.
-
-```ini
-# .env 파일
-
-# ==================================
-# KAKAO LOGIN
-# ==================================
-KAKAO_CLIENT_ID=복사한_REST_API_키
-KAKAO_CLIENT_SECRET=복사한_보안_코드
-# 개발 환경이면 localhost, 배포 환경이면 실제 도메인
+# KAKAO
+KAKAO_CLIENT_ID=REST_API_키
+KAKAO_CLIENT_SECRET=보안코드
 KAKAO_REDIRECT_URI=https://도메인/auth/social/kakao/callback
+KAKAO_APP_REDIRECT_URI=https://도메인/api/v1/auth/social/kakao/callback
 
-# ==================================
-# NAVER LOGIN
-# ==================================
-NAVER_CLIENT_ID=복사한_Client_ID
-NAVER_CLIENT_SECRET=복사한_Client_Secret
+# NAVER
+NAVER_CLIENT_ID=Client_ID
+NAVER_CLIENT_SECRET=Client_Secret
 NAVER_REDIRECT_URI=https://도메인/auth/social/naver/callback
+NAVER_APP_REDIRECT_URI=https://도메인/api/v1/auth/social/naver/callback
 ```
 
-### 💡 주의 사항
+---
 
-- **Redirect URI 불일치:** 개발자 센터에 등록한 주소와 `.env`에 적은 주소가 **글자 하나라도(http/https, www 유무, 끝에 슬래시 등) 다르면** 오류가 발생합니다. 정확히 일치시켜 주세요.
-- **서비스 URL:** 네이버의 경우 서비스 URL(`https://도메인`)과 실제 접속해서 로그인을 시도하는 도메인이 다르면 오류가 날 수 있습니다. 로컬 개발 시에는 호스트 파일 설정 등을 확인하세요.
--
+### 🟡 카카오 (Kakao Developers) 설정 요약
 
-## 메일관련 세팅
+1. [카카오 개발자 센터](https://developers.kakao.com/) 접속 및 앱 생성
+2. **요약 정보**의 `REST API 키` 복사 -> `KAKAO_CLIENT_ID`
+3. **플랫폼** > `Web` 플랫폼 등록 (사이트 도메인 등록)
+4. **카카오 로그인** > 활성화 설정 `ON` 변경 후 **Redirect URI** 등록:
+   - `https://도메인/auth/social/kakao/callback`
+5. **동의항목**: `닉네임`(필수), `카카오계정 이메일`(선택/필수) 설정
+6. **보안**: `Client Secret` 코드 생성 및 활성화 -> `KAKAO_CLIENT_SECRET`
 
-> 메일은 Event 및 Job으로 처리되므로 아래와 같이 세팅해 주어야 합니다.
+---
 
-```
+### 🟢 네이버 (Naver Developers) 설정 요약
+
+1. [네이버 개발자 센터](https://developers.naver.com/) 접속 및 Application 등록
+2. 사용 API: `네이버 로그인` 선택
+3. 제공 항목: 이름, 이메일, 별명 필수 선택
+4. **환경 설정**: `PC 웹` 선택 후 서비스 URL 및 Callback URL 입력:
+   - `https://도메인/auth/social/naver/callback`
+5. 발급된 `Client ID`, `Client Secret` 확인 후 `.env`에 기입
+
+---
+
+## 메일 및 큐 (Queue) 세팅
+
+가입 인증 메일, 비밀번호 재설정 메일 등은 Event & Queue Job을 통해 비동기로 발송됩니다. 반드시 큐 리스너를 실행해 주세요.
+
+```bash
 nohup php artisan queue:listen >> storage/logs/laravel.log &
 ```
 
-## 통합관리자단 만들기
+---
 
-현재 제공중인 회원관리프로그램(wangta69/laravel-auth) 은 많은 패키지중 일부 입니다. 별도로 bbs나 market등 기타 package등도 제작/배포중에 있습니다.
-이들은 각각 별도의 관리자단을 가지고 있으며 이를 통합하기 위해서는 아래 링크를 참조해 주시기 바랍니다.
+## 패키지 통합 관리자단 구성
 
-[통합관리자단 만드는 방법 보기](https://www.onstory.fun/packages/laravel-package-admin-merge)
+`wangta69/laravel-auth`는 게시판(`laravel-bbs`), 쇼핑몰(`laravel-market`) 등 당사의 다른 패키지와 독립적인 관리자 환경을 공유할 수 있도록 설계되어 있습니다.
+
+[통합 관리자단 만드는 방법 보러가기](https://www.onstory.fun/packages/laravel-package-admin-merge)
+
+## 실제 사용 사이트
+
+This library is used in the production of [길라(gilra.kr) ](https://www.gilra.kr) (Online Fortune Service).

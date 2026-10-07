@@ -40,6 +40,9 @@ Route::put('/user/edit', 'UserController@update')->middleware('auth');
 Route::get('/user/password', 'UserController@changePassword')->name('user.change-password')->middleware('auth');
 Route::put('/user/password', 'UserController@updatePassword')->middleware('auth');
 
+// 공개 프로필 라우트
+Route::get('profile/{user}', 'UserController@show')->name('user.public-profile');
+
 // 2fa
 Route::get('2fa/setting', 'Google2FAController@setting')->name('2fa.setting');
 Route::get('2fa/enable', 'Google2FAController@enableTwoFactor')->name('2fa.enable');

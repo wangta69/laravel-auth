@@ -5,6 +5,7 @@ namespace Pondol\Auth\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Pondol\Auth\Models\User\SocialAccount;
 use Pondol\Auth\Models\User\User;
 use Pondol\Auth\Traits\CanManageSubscription;
 use Validator;
@@ -18,7 +19,11 @@ class UserController extends Controller
      *
      * @return void
      */
-    public function __construct() {}
+    public function __construct()
+    {
+        $modelClass = config('auth.providers.users.model', \Pondol\Auth\Models\User\User::class);
+        $this->userModel = new $modelClass;
+    }
 
     public function profile(Request $request)
     {
@@ -175,5 +180,36 @@ class UserController extends Controller
 
         // 2. 패키지 전용 뷰 반환 (사용자가 나중에 커스텀할 수 있도록 설계)
         return view(auth_theme('user').'.unsubscribed', compact('user'));
+    }
+
+    /**
+     * 타인에게 공개되는 공개 프로필 (Public Profile)
+     *
+     * @param  int|string  $id
+     * @return \Illuminate\View\View
+     */
+    public function show($id)
+    {
+        // 1. 회원 조회 (탈퇴 회원 제외, 없으면 404)
+        $user = $this->userModel->where('id', $id)->firstOrFail();
+
+        // 2. 아바타 이미지 추출 (사용자 컬럼 우선 -> 없으면 연동된 소셜 계정의 아바타 탐색)
+        $avatar = $user->avatar ?? null;
+
+        if (! $avatar) {
+            if (method_exists($user, 'socialAccounts')) {
+                $avatar = $user->socialAccounts()->whereNotNull('avatar')->value('avatar');
+            } else {
+                $avatar = SocialAccount::where('user_id', $user->id)
+                    ->whereNotNull('avatar')
+                    ->value('avatar');
+            }
+        }
+
+        // 3. 사용자 등급/역할
+        $roles = method_exists($user, 'roles') ? $user->roles->pluck('name') : collect();
+
+        // 4. 패키지 지정 테마 뷰로 반환
+        return view(auth_theme('user').'.public-profile', compact('user', 'avatar', 'roles'));
     }
 }
