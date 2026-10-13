@@ -2,6 +2,7 @@
 
 namespace Pondol\Auth\Traits\Admin;
 
+use Illuminate\Support\Facades\File;
 use Pondol\Common\Facades\JsonKeyValue;
 
 trait Config
@@ -10,22 +11,11 @@ trait Config
     {
         $user = JsonKeyValue::getAsArray('auth');
 
-        // auth templates directory scan
-        $templates = [];
-        $template_dir = resource_path('views/auth/templates/views');
-        // 폴더가 없을 경우 대비
-        if (\File::exists($template_dir)) {
-            $templates['user'] = array_map('basename', \File::directories($template_dir));
-        } else {
-            $templates['user'] = [];
-        }
-
-        $template_dir = resource_path('views/auth/templates/mail');
-        if (\File::exists($template_dir)) {
-            $templates['mail'] = array_map('basename', \File::directories($template_dir));
-        } else {
-            $templates['mail'] = [];
-        }
+        // 템플릿 스킨 스캔 (패키지 내장 스킨 + 프로젝트 vendor 스킨 병합)
+        $templates = [
+            'user' => $this->scanTemplateDirectories('views'),
+            'mail' => $this->scanTemplateDirectories('mail'),
+        ];
 
         return [
             'user' => $user,
@@ -33,9 +23,36 @@ trait Config
         ];
     }
 
+    /**
+     * 템플릿 디렉토리 스캔 및 병합
+     *
+     * @param  string  $type  'views' | 'mail'
+     */
+    protected function scanTemplateDirectories(string $type): array
+    {
+        $skins = [];
+
+        // 1. 패키지 내장 기본 스킨 디렉토리
+        $packageDir = __DIR__.'/../../resources/views/templates/'.$type;
+        if (File::isDirectory($packageDir)) {
+            $skins = array_merge($skins, array_map('basename', File::directories($packageDir)));
+        }
+
+        // 2. 라라벨 표준 프로젝트 오버라이딩 디렉토리 (resources/views/vendor/pondol-auth/templates/...)
+        $projectVendorDir = resource_path('views/vendor/pondol-auth/templates/'.$type);
+        if (File::isDirectory($projectVendorDir)) {
+            $skins = array_merge($skins, array_map('basename', File::directories($projectVendorDir)));
+        }
+
+        // 3. 중복 제거 및 이름순 정렬
+        $skins = array_unique($skins);
+        sort($skins);
+
+        return $skins;
+    }
+
     public function _update($request)
     {
-        // [수정] point 배열에 deduction_priority 추가
         $config = [
             'activate' => $request->activate,
             'template' => [
@@ -45,7 +62,6 @@ trait Config
             'point' => [
                 'register' => $request->input('r_point', 0),
                 'login' => $request->input('l_point', 0),
-                // 차감 우선순위 저장 (기본값: free_first)
                 'deduction_priority' => $request->input('deduction_priority', 'free_first'),
             ],
         ];
